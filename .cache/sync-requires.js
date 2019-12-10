@@ -5,7 +5,8 @@ const preferDefault = m => m && m.default || m
 
 
 exports.components = {
-  "component---node-modules-lekoarts-gatsby-theme-cara-src-templates-cara-tsx": hot(preferDefault(require("/Users/Ryan/wtc_/good-grades/node_modules/@lekoarts/gatsby-theme-cara/src/templates/cara.tsx"))),
-  "component---cache-dev-404-page-js": hot(preferDefault(require("/Users/Ryan/wtc_/good-grades/.cache/dev-404-page.js")))
+  "component---cache-dev-404-page-js": hot(preferDefault(require("/Users/Ryan/wtc_/good-grades/gatsby-starter-mate/.cache/dev-404-page.js"))),
+  "component---src-pages-404-js": hot(preferDefault(require("/Users/Ryan/wtc_/good-grades/gatsby-starter-mate/src/pages/404.js"))),
+  "component---src-pages-index-js": hot(preferDefault(require("/Users/Ryan/wtc_/good-grades/gatsby-starter-mate/src/pages/index.js")))
 }
 

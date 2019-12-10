@@ -3,38 +3,15 @@
     "develop": {
       "plugins": [
         {
-          "name": "@babel/plugin-proposal-object-rest-spread",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-optional-chaining/lib/index.js",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-nullish-coalescing-operator/lib/index.js",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-numeric-separator/lib/index.js",
-          "options": {}
-        }
-      ],
-      "presets": [
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/preset-typescript/lib/index.js",
+          "name": "babel-plugin-styled-components",
+          "stage": "develop",
           "options": {
-            "plugins": []
-          }
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@emotion/babel-preset-css-prop/dist/babel-preset-css-prop.cjs.js",
-          "options": {
-            "sourceMap": true,
-            "autoLabel": true,
-            "plugins": []
+            "plugins": [],
+            "ssr": false
           }
         }
       ],
+      "presets": [],
       "options": {
         "cacheDirectory": true,
         "sourceType": "unambiguous"
@@ -43,38 +20,15 @@
     "develop-html": {
       "plugins": [
         {
-          "name": "@babel/plugin-proposal-object-rest-spread",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-optional-chaining/lib/index.js",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-nullish-coalescing-operator/lib/index.js",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-numeric-separator/lib/index.js",
-          "options": {}
-        }
-      ],
-      "presets": [
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/preset-typescript/lib/index.js",
+          "name": "babel-plugin-styled-components",
+          "stage": "develop-html",
           "options": {
-            "plugins": []
-          }
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@emotion/babel-preset-css-prop/dist/babel-preset-css-prop.cjs.js",
-          "options": {
-            "sourceMap": true,
-            "autoLabel": true,
-            "plugins": []
+            "plugins": [],
+            "ssr": false
           }
         }
       ],
+      "presets": [],
       "options": {
         "cacheDirectory": true,
         "sourceType": "unambiguous"
@@ -83,38 +37,15 @@
     "build-html": {
       "plugins": [
         {
-          "name": "@babel/plugin-proposal-object-rest-spread",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-optional-chaining/lib/index.js",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-nullish-coalescing-operator/lib/index.js",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-numeric-separator/lib/index.js",
-          "options": {}
-        }
-      ],
-      "presets": [
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/preset-typescript/lib/index.js",
+          "name": "babel-plugin-styled-components",
+          "stage": "build-html",
           "options": {
-            "plugins": []
-          }
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@emotion/babel-preset-css-prop/dist/babel-preset-css-prop.cjs.js",
-          "options": {
-            "sourceMap": true,
-            "autoLabel": true,
-            "plugins": []
+            "plugins": [],
+            "ssr": true
           }
         }
       ],
+      "presets": [],
       "options": {
         "cacheDirectory": true,
         "sourceType": "unambiguous"
@@ -123,38 +54,15 @@
     "build-javascript": {
       "plugins": [
         {
-          "name": "@babel/plugin-proposal-object-rest-spread",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-optional-chaining/lib/index.js",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-nullish-coalescing-operator/lib/index.js",
-          "options": {}
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/plugin-proposal-numeric-separator/lib/index.js",
-          "options": {}
-        }
-      ],
-      "presets": [
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@babel/preset-typescript/lib/index.js",
+          "name": "babel-plugin-styled-components",
+          "stage": "build-javascript",
           "options": {
-            "plugins": []
-          }
-        },
-        {
-          "name": "/Users/Ryan/wtc_/good-grades/node_modules/@emotion/babel-preset-css-prop/dist/babel-preset-css-prop.cjs.js",
-          "options": {
-            "sourceMap": true,
-            "autoLabel": true,
-            "plugins": []
+            "plugins": [],
+            "ssr": true
           }
         }
       ],
+      "presets": [],
       "options": {
         "cacheDirectory": true,
         "sourceType": "unambiguous"

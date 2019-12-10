@@ -1,47 +1,66 @@
-require(`dotenv`).config({
-  path: `.env`,
-})
+const contentful = require('contentful');
+const manifestConfig = require('./manifest-config');
+require('dotenv').config();
 
-module.exports = {
-  siteMetadata: {
-    siteTitleAlt: `Cara - Gatsby Starter Portfolio`,
+const { ACCESS_TOKEN, SPACE_ID, ANALYTICS_ID, DETERMINISTIC } = process.env;
+
+const client = contentful.createClient({
+  space: SPACE_ID,
+  accessToken: ACCESS_TOKEN,
+});
+
+const getAboutEntry = entry => entry.sys.contentType.sys.id === 'about';
+
+const plugins = [
+  'gatsby-plugin-react-helmet',
+  {
+    resolve: 'gatsby-plugin-web-font-loader',
+    options: {
+      google: {
+        families: ['Cabin', 'Open Sans'],
+      },
+    },
   },
-  plugins: [
-    {
-      resolve: `@lekoarts/gatsby-theme-cara`,
-      options: {},
+  {
+    resolve: 'gatsby-plugin-manifest',
+    options: manifestConfig,
+  },
+  'gatsby-plugin-styled-components',
+  {
+    resolve: 'gatsby-source-contentful',
+    options: {
+      spaceId: SPACE_ID,
+      accessToken: ACCESS_TOKEN,
     },
-    {
-      resolve: `gatsby-plugin-google-analytics`,
+  },
+  'gatsby-transformer-remark',
+  'gatsby-plugin-offline',
+];
+
+module.exports = client.getEntries().then(entries => {
+  const { mediumUser } = entries.items.find(getAboutEntry).fields;
+
+  plugins.push({
+    resolve: 'gatsby-source-medium-fix',
+    options: {
+      username: mediumUser || '@medium',
+    },
+  });
+
+  if (ANALYTICS_ID) {
+    plugins.push({
+      resolve: 'gatsby-plugin-google-analytics',
       options: {
-        trackingId: process.env.GOOGLE_ANALYTICS_ID,
+        trackingId: ANALYTICS_ID,
       },
+    });
+  }
+
+  return {
+    siteMetadata: {
+      isMediumUserDefined: !!mediumUser,
+      deterministicBehaviour: !!DETERMINISTIC,
     },
-    {
-      resolve: `gatsby-plugin-manifest`,
-      options: {
-        name: `Cara - @lekoarts/gatsby-theme-cara`,
-        short_name: `Cara`,
-        description: `Playful and Colorful One-Page portfolio featuring Parallax effects and animations`,
-        start_url: `/`,
-        background_color: `#141821`,
-        theme_color: `#f6ad55`,
-        display: `standalone`,
-        icons: [
-          {
-            src: `/android-chrome-192x192.png`,
-            sizes: `192x192`,
-            type: `image/png`,
-          },
-          {
-            src: `/android-chrome-512x512.png`,
-            sizes: `512x512`,
-            type: `image/png`,
-          },
-        ],
-      },
-    },
-    `gatsby-plugin-offline`,
-    `gatsby-plugin-netlify`,
-  ],
-}
+    plugins,
+  };
+});
