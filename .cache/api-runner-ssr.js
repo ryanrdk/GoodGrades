@@ -1,14 +1,14 @@
 var plugins = [{
-      plugin: require('/Users/Ryan/wtc_/good-grades/gatsby-starter-mate/node_modules/gatsby-plugin-react-helmet/gatsby-ssr'),
+      plugin: require('/Users/Ryan/wtc_/good-grades/node_modules/gatsby-plugin-react-helmet/gatsby-ssr'),
       options: {"plugins":[]},
     },{
-      plugin: require('/Users/Ryan/wtc_/good-grades/gatsby-starter-mate/node_modules/gatsby-plugin-manifest/gatsby-ssr'),
+      plugin: require('/Users/Ryan/wtc_/good-grades/node_modules/gatsby-plugin-manifest/gatsby-ssr'),
       options: {"plugins":[],"name":"Mate Gatsby Starter","short_name":"Mate Gatsby Starter","start_url":"/","background_color":"#FFFFFF","theme_color":"#7c37ad","display":"minimal-ui","icon":"media/icon.png"},
     },{
-      plugin: require('/Users/Ryan/wtc_/good-grades/gatsby-starter-mate/node_modules/gatsby-plugin-styled-components/gatsby-ssr'),
+      plugin: require('/Users/Ryan/wtc_/good-grades/node_modules/gatsby-plugin-styled-components/gatsby-ssr'),
       options: {"plugins":[]},
     },{
-      plugin: require('/Users/Ryan/wtc_/good-grades/gatsby-starter-mate/node_modules/gatsby-plugin-offline/gatsby-ssr'),
+      plugin: require('/Users/Ryan/wtc_/good-grades/node_modules/gatsby-plugin-offline/gatsby-ssr'),
       options: {"plugins":[]},
     }]
 // During bootstrap, we write requires at top of this file which looks like:
