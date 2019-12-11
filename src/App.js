@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Button from '@material-ui/core/Button';
+import Modal from './components/Modal';
 
 function App() {
   return (
@@ -12,9 +13,7 @@ function App() {
           Create Room
         </Button>
         <br></br>
-        <Button variant='contained' color='secondary'>
-          Join Room
-        </Button>
+        <Modal />
       </header>
     </div>
   );
