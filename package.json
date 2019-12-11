@@ -7,7 +7,7 @@
     "build": "gatsby clean && gatsby build",
     "develop": "gatsby clean && gatsby develop",
     "start": "npm run develop",
-    "serve": "npm run build && gatsby serve -p 9000",
+    "serve": "SPACE_ID=cfwv3eureptz ACCESS_TOKEN=X2W3UVy0pU-s_mGUKi9d7OgI6TS-LIMylk4bR61gIJc npm run build && gatsby serve -p 9000",
     "lint": "eslint ./src",
     "setup": "node ./bin/setup.js",
     "e2e:open": "cypress open",
