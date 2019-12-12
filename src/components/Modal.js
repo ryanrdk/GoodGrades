@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import { Modal } from '@material-ui/core';
 import { Backdrop } from '@material-ui/core';
-import { Input } from '@material-ui/core';
 import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is required for IE 11 support
 
 const useStyles = makeStyles(theme => ({
@@ -55,6 +55,28 @@ Fade.propTypes = {
 export default function SpringModal() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [redirect, setRedirect] = React.useState(false);
+  const [roomCode, setRoomCode] = React.useState(null);
+
+  const handleRedirect = () => {
+    console.log({redirect});
+    setRedirect(!redirect);
+  }
+
+  const renderRedirect = () => {
+    console.log({roomCode})
+    if (redirect) {
+      return <Route path='/privacy-policy' component={() => { 
+                    window.location.href = 'https://room.sh/go' + roomCode; 
+                    return null;
+              }}/>
+    }
+  }
+
+  const handleChange = (event) => {
+    setRoomCode(event.target.value)
+    console.log({roomCode});
+  }
 
   const handleOpen = () => {
     setOpen(true);
@@ -69,6 +91,7 @@ export default function SpringModal() {
       <Button variant='contained' color='secondary' onClick={handleOpen}>
         Join Room
       </Button>
+      {redirect ? renderRedirect : <></>}
       <Modal
         aria-labelledby='spring-modal-title'
         aria-describedby='spring-modal-description'
@@ -82,10 +105,13 @@ export default function SpringModal() {
         }}>
         <Fade in={open}>
           <div className={classes.paper}>
-            <h2 id='unique-code'>Unique Code</h2>
-            <Input id='room-code' type='text' />
-            <br></br>
-            <input type='submit' value='Submit'></input>
+            <form onSubmit = {handleRedirect}>
+              <label>
+                Unique Code
+                <input type="text" name="name" onChange={handleChange}/>
+              </label>
+              <input type="submit" value="Submit" />
+            </form>
           </div>
         </Fade>
       </Modal>
