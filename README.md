@@ -1,6 +1,4 @@
-[![CircleCI](https://circleci.com/gh/rde-kwaa/GoodGrades.svg?style=svg)](https://circleci.com/gh/rde-kwaa/GoodGrades)
-
-# GoodGrades
+# Good Grades   [![CircleCI](https://circleci.com/gh/rde-kwaa/GoodGrades/tree/master.svg?style=svg&circle-token=89cb641d483622d9806976e3ad3095d55aa1d800)](https://circleci.com/gh/rde-kwaa/GoodGrades/tree/master)
 
   Good Grades is a communications platform for students to connect to tutors and receive assistance with problematic subject  matter.
 
