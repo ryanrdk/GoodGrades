@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
-import Login from './controllers/Login';
-import { PrivateRoute } from './controllers/Login';
+import Login from './authentication/Login';
+import { PrivateRoute } from './authentication/Login';
 import { HomeView } from './components/HomeView';
 
 function App() {
