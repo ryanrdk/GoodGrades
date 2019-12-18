@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import logo from '../logo.svg';
 import Button from '@material-ui/core/Button';
 import JoinModalButton from '../components/JoinModalButton';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 //Makes API call to GoodGradesServer to create a new room object
 
@@ -27,7 +28,12 @@ export const HomeView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
-          {room ? <h2>{room.room_code}</h2> : <></>}
+          {room ? <h2>{room.room_code}</h2> : null}
+          {room ? (
+            <CopyToClipboard text={room.room_code}>
+              <button>Copy to Clipboard</button>
+            </CopyToClipboard>
+          ) : null}
           <img src={logo} className='App-logo' alt='logo' />
           <Button variant='contained' color='primary' onClick={createRoom}>
             Create Room
