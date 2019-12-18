@@ -46,7 +46,7 @@ export const HomeView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
-          <h1>Welcome {props.user.name}</h1>
+          <h1>Welcome {props.user.givenName}</h1>
           {room ? <h2>{room.room_code}</h2> : null}
           {room ? (
             <div>
@@ -61,7 +61,6 @@ export const HomeView = props => {
           <img src={logo} className='App-logo' alt='logo' />
           <br></br>
           <JoinModalButton />
-          <button onClick={createRoom}>Butt</button>
         </header>
       </div>
     </div>
