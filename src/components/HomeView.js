@@ -35,9 +35,6 @@ export const HomeView = props => {
             </CopyToClipboard>
           ) : null}
           <img src={logo} className='App-logo' alt='logo' />
-          <Button variant='contained' color='primary' onClick={createRoom}>
-            Create Room
-          </Button>
           <br></br>
           <JoinModalButton />
         </header>
