@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../logo.svg';
 import Button from '@material-ui/core/Button';
 import JoinModalButton from '../components/JoinModalButton';
@@ -28,6 +28,7 @@ export const HomeView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
+          <h1>Welcome {props.user.name}</h1>
           {room ? <h2>{room.room_code}</h2> : null}
           {room ? (
             <CopyToClipboard text={room.room_code}>
