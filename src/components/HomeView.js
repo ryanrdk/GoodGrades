@@ -24,6 +24,24 @@ export const HomeView = props => {
       });
   };
 
+  useEffect(() => {
+    if (!room && props.user.type == 'tutor'){
+      var targetUrl = 'http://localhost:5000/api/users/' + props.user.email + '/room';
+      fetch(targetUrl)
+        .then(blob => blob.json())
+        .then(data => {
+          console.table(data);
+          setRoom(data);
+          return data;
+        })
+        .catch(e => {
+          console.log(e);
+          return e;
+        });
+    }
+    
+  });
+
   return (
     <div>
       <div className='App'>
