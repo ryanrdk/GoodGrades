@@ -3,11 +3,19 @@ import logo from '../logo.svg';
 import JoinModalButton from '../components/JoinModalButton';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { WhatsappShareButton, WhatsappIcon } from 'react-share';
+import { Button } from '@material-ui/core';
+
 
 //Makes API call to GoodGradesServer to create a new room object
 
 export const HomeView = props => {
   const [room, setRoom] = useState(null);
+  const [redirect, setRedirect] = React.useState(false);
+
+  const handleRedirect = () => {
+    console.log({redirect});
+    setRedirect(!redirect);
+  }
 
   const createRoom = () => {
     var targetUrl = 'https://good-grades-server.herokuapp.com/api/rooms';
@@ -25,7 +33,7 @@ export const HomeView = props => {
   };
 
   useEffect(() => {
-    if (!room && props.user.type == 'tutor'){
+    if (!room && props.user.type === 'tutor'){
       var targetUrl = 'http://localhost:5000/api/users/' + props.user.email + '/room';
       fetch(targetUrl)
         .then(blob => blob.json())
@@ -39,7 +47,11 @@ export const HomeView = props => {
           return e;
         });
     }
-    
+    if (redirect) {
+      // do something meaningful, Promises, if/else, whatever, and then
+      // console.log("room.sh/go/" + roomCode)
+      window.location.assign("//room.sh/go/" + room.room_code);
+    }
   });
 
   return (
@@ -60,7 +72,13 @@ export const HomeView = props => {
           ) : null}
           <img src={logo} className='App-logo' alt='logo' />
           <br></br>
-          <JoinModalButton />
+          {props.user.type === "student" ? <JoinModalButton /> : 
+          
+            <Button variant='contained' color='secondary' onClick={handleRedirect}>
+              Join Room
+            </Button>}
+          
+          
         </header>
       </div>
     </div>
