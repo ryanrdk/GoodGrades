@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../logo.svg';
 import JoinModalButton from '../components/JoinModalButton';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -24,10 +24,29 @@ export const HomeView = props => {
       });
   };
 
+  useEffect(() => {
+    if (!room && props.user.type == 'tutor'){
+      var targetUrl = 'http://localhost:5000/api/users/' + props.user.email + '/room';
+      fetch(targetUrl)
+        .then(blob => blob.json())
+        .then(data => {
+          console.table(data);
+          setRoom(data);
+          return data;
+        })
+        .catch(e => {
+          console.log(e);
+          return e;
+        });
+    }
+    
+  });
+
   return (
     <div>
       <div className='App'>
         <header className='App-header'>
+          <h1>Welcome {props.user.givenName}</h1>
           {room ? <h2>{room.room_code}</h2> : null}
           {room ? (
             <div>
@@ -42,7 +61,6 @@ export const HomeView = props => {
           <img src={logo} className='App-logo' alt='logo' />
           <br></br>
           <JoinModalButton />
-          <button onClick={createRoom}>Butt</button>
         </header>
       </div>
     </div>
