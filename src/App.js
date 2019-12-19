@@ -19,7 +19,7 @@ function App() {
           path='/login'
           render={props => <Login {...props} handleSetUser={handleSetUser} />}
         />
-        <PrivateRoute exact path='/' component={HomeView} />
+        <PrivateRoute exact path='/' component={HomeView} user={user}/>
       </div>
     </BrowserRouter>
   );
