@@ -1,7 +1,10 @@
 import React from 'react';
+import logo from '../';
 import { Redirect, Route } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
-import Button from '@material-ui/core/Button';
+import { Button, Card } from 'antd';
+
+const { Meta } = Card;
 
 const responseGoogle = response => {
   console.log(response);
@@ -145,6 +148,13 @@ class Login extends React.Component {
       <div>
       <div className='App'>
         <header className='App-header'>
+        <Card
+          hoverable
+          cover={<img alt="example" src={logo} />}
+        >
+          <Meta title="Europe Street beat" description="www.instagram.com" />
+        </Card>
+        <h1>Welcome to Good Grades</h1>
           <GoogleLogin
             clientId="198987621325-8mjc0d3e410b1lt5goj0hj81qmrni2bk.apps.googleusercontent.com"
             buttonText="Continue with Google"
