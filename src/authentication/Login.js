@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
+import ReactLoading from 'react-loading';
 import Button from '@material-ui/core/Button';
 
 const responseGoogle = response => {
@@ -42,7 +43,8 @@ class Login extends React.Component {
     redirectToReferrer: false,
     redirectToUserType: false,
     user: {},
-    profileObj: {}
+    profileObj: {},
+    loading: false
   }
 
   login = (response) => {
@@ -84,7 +86,7 @@ class Login extends React.Component {
   createUser = (response) => {
 
     let tmp = {...this.state.user, type: response};
-    this.setState({user: tmp});
+    this.setState({user: tmp, loading: true});
     var targetUrl = 'https://good-grades-server.herokuapp.com/api/users/createUser'
     fetch(targetUrl, {
       method: 'POST', // or 'PUT'
@@ -103,6 +105,7 @@ class Login extends React.Component {
             this.setState(() => ({
               redirectToUserType: false,
               redirectToReferrer: true,
+              loading: false,
             }))
           })
           console.log({data, response});
@@ -117,7 +120,17 @@ class Login extends React.Component {
 
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/' } }
-    const { redirectToReferrer, redirectToUserType } = this.state
+    const { redirectToReferrer, redirectToUserType, loading } = this.state
+
+    if (loading === true){
+      return <div>
+              <div className='App'>
+                <header className='App-header'>
+                <ReactLoading height={'20%'} width={'20%'} />
+                </header>
+              </div>
+            </div>
+    }
 
     if (redirectToReferrer === true) {
       return <Redirect to={from} />
