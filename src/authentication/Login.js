@@ -146,7 +146,7 @@ class Login extends React.Component {
       <div className='App'>
         <header className='App-header'>
           <GoogleLogin
-            clientId="198987621325-8mjc0d3e410b1lt5goj0hj81qmrni2bk.apps.googleusercontent.com"
+            clientId="198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com"
             buttonText="Continue with Google"
             onSuccess={this.login}
             onFailure={responseGoogle}
