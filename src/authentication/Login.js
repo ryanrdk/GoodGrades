@@ -46,7 +46,7 @@ class Login extends React.Component {
   }
 
   login = (response) => {
-    var targetUrl = 'http://localhost:5000/api/users/' + response.profileObj.email;
+    var targetUrl = 'https://good-grades-server.herokuapp.com/api/users/' + response.profileObj.email;
     console.log(targetUrl)
     fetch(targetUrl)
       .then(blob => blob.json())
@@ -85,7 +85,7 @@ class Login extends React.Component {
 
     let tmp = {...this.state.user, type: response};
     this.setState({user: tmp});
-    var targetUrl = 'http://localhost:5000/api/users/createUser'
+    var targetUrl = 'https://good-grades-server.herokuapp.com/api/users/createUser'
     fetch(targetUrl, {
       method: 'POST', // or 'PUT'
       body: JSON.stringify({...this.state.user, type: response}), // data can be `string` or {object}!
@@ -105,7 +105,8 @@ class Login extends React.Component {
               redirectToReferrer: true,
             }))
           })
-          this.props.handleSetUser({...response.profileObj, type: data.type})
+          console.log({data, response});
+          this.props.handleSetUser({...this.state.profileObj, type: data.type})
         }
         return data})
     .catch(e => {

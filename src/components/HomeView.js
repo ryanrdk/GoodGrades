@@ -34,7 +34,7 @@ export const HomeView = props => {
 
   useEffect(() => {
     if (!room && props.user.type === 'tutor'){
-      var targetUrl = 'http://localhost:5000/api/users/' + props.user.email + '/room';
+      var targetUrl = 'https://good-grades-server.herokuapp.com/api/users/' + props.user.email + '/room';
       fetch(targetUrl)
         .then(blob => blob.json())
         .then(data => {
