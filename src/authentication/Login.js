@@ -2,7 +2,15 @@ import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
 import ReactLoading from 'react-loading';
-import Button from '@material-ui/core/Button';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Divider,
+  Typography
+} from '@material-ui/core';
+import LoginCard from '../components/LoginCard';
 
 const responseGoogle = response => {
   console.log(response);
@@ -25,7 +33,7 @@ export const PrivateRoute = ({ component: Component, ...rest }) => (
     {...rest}
     render={props =>
       fakeAuth.isAuthenticated === true ? (
-        <Component {...props} {...rest}/>
+        <Component {...props} {...rest} />
       ) : (
         <Redirect
           to={{
@@ -47,23 +55,23 @@ class Login extends React.Component {
     loading: false
   }
 
-  login = (response) => {
-    var targetUrl = 'https://good-grades-server.herokuapp.com/api/users/' + response.profileObj.email;
-    console.log(targetUrl)
+  login = response => {
+    var targetUrl =
+      'https://good-grades-server.herokuapp.com/api/users/' +
+      response.profileObj.email;
+    console.log(targetUrl);
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {
-        if (data.email && data.type){
+        if (data.email && data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
             this.setState(() => ({
-              redirectToReferrer: true,
-            }))
-          })
-          this.props.handleSetUser({...response.profileObj, type: data.type})
-          
-        }
-        else {
+              redirectToReferrer: true
+            }));
+          });
+          this.props.handleSetUser({ ...response.profileObj, type: data.type });
+        } else {
           this.setState(() => ({
             profileObj: response.profileObj,
             redirectToUserType: true,
@@ -71,9 +79,9 @@ class Login extends React.Component {
               email: response.profileObj.email,
               username: response.profileObj.name
             }
-          }))
+          }));
         }
-        
+
         console.log(data);
         return data;
       })
@@ -81,7 +89,7 @@ class Login extends React.Component {
         console.log(e);
         return e;
       });
-  }
+  };
 
   createUser = (response) => {
 
@@ -90,16 +98,17 @@ class Login extends React.Component {
     var targetUrl = 'https://good-grades-server.herokuapp.com/api/users/createUser'
     fetch(targetUrl, {
       method: 'POST', // or 'PUT'
-      body: JSON.stringify({...this.state.user, type: response}), // data can be `string` or {object}!
+      body: JSON.stringify({ ...this.state.user, type: response }), // data can be `string` or {object}!
       headers: {
         'Content-Type': 'application/json'
       }
-    }).then(blob => {
-        return blob.json()
     })
-    .then(data => {
+      .then(blob => {
+        return blob.json();
+      })
+      .then(data => {
         console.log(data);
-        if (data.email && data.type){
+        if (data.email && data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
             this.setState(() => ({
@@ -111,12 +120,13 @@ class Login extends React.Component {
           console.log({data, response});
           this.props.handleSetUser({...this.state.profileObj, type: data.type})
         }
-        return data})
-    .catch(e => {
-        console.log(e)
-        return e
-    });
-  }
+        return data;
+      })
+      .catch(e => {
+        console.log(e);
+        return e;
+      });
+  };
 
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/' } }
@@ -133,42 +143,72 @@ class Login extends React.Component {
     }
 
     if (redirectToReferrer === true) {
-      return <Redirect to={from} />
+      return <Redirect to={from} />;
     }
 
     if (redirectToUserType === true) {
-      return <div>
-              <div className='App'>
-                <header className='App-header'>
-                  Are you a
-                  <Button variant='contained' color='primary' value="student" onClick = {()=> this.createUser("student")}>
+      return (
+        <div>
+          <div className='App'>
+            <header className='App-header'>
+              <Card raised='true' style={{ width: 320 }}>
+                <CardContent>
+                  <Typography
+                    gutterBottom
+                    variant='h4'
+                    color='textSecondary'
+                    component='h2'>
+                    Are you a
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    value='student'
+                    fullWidth='true'
+                    onClick={() => this.createUser('student')}>
                     Student
                   </Button>
-                  or 
-                  <Button variant='contained' color='primary' value="tutor"onClick = {()=> this.createUser("tutor")}>
+                  <Typography
+                    variant='body2'
+                    color='textSecondary'
+                    component='p'>
+                    or
+                    <Divider orientation='vertical' />
+                  </Typography>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    value='tutor'
+                    fullWidth='true'
+                    onClick={() => this.createUser('tutor')}>
                     Tutor
                   </Button>
-                  ?
-                </header>
-              </div>
-            </div>
+                </CardActions>
+              </Card>
+            </header>
+          </div>
+        </div>
+      );
     }
 
     return (
       <div>
-      <div className='App'>
-        <header className='App-header'>
-          <GoogleLogin
-            clientId="198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com"
-            buttonText="Continue with Google"
-            onSuccess={this.login}
-            onFailure={responseGoogle}
-            cookiePolicy={'single_host_origin'}
-          />
-        </header>
+        <div className='App'>
+          <header className='App-header'>
+            <LoginCard />
+            <GoogleLogin
+              clientId="198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com"
+              buttonText='Continue with Google'
+              onSuccess={this.login}
+              onFailure={responseGoogle}
+              cookiePolicy={'single_host_origin'}
+            />
+          </header>
+        </div>
       </div>
-    </div>
-    )
+    );
   }
 }
 
