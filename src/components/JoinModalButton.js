@@ -118,15 +118,14 @@ export default function SpringModal() {
             <CardContent>
               <FormControl className={classes.margin}>
                 <form onSubmit={handleRedirect}>
-                  <InputLabel
-                    htmlFor='input-with-icon-adornment'
-                    type='text'
-                    name='name'
-                    onChange={handleChange}>
+                  <InputLabel htmlFor='input-with-icon-adornment'>
                     Unique Room Code
                   </InputLabel>
                   <Input
                     id='input-with-icon-adornment'
+                    type='text'
+                    name='name'
+                    onChange={handleChange}
                     startAdornment={
                       <InputAdornment position='start'>
                         <School />
