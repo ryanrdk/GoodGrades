@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import JoinModalButton from '../components/JoinModalButton';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { WhatsappShareButton, WhatsappIcon } from 'react-share';
-import { Button } from 'antd';
+import IconTextField from '../components/IconTextField';
+import { Button } from '@material-ui/core';
 
 //Makes API call to GoodGradesServer to create a new room object
 
@@ -62,13 +61,7 @@ export const HomeView = props => {
           <h1>Welcome {props.user.givenName}</h1>
           {room ? (
             <div>
-              <h2>{room.room_code}</h2>
-              <WhatsappShareButton title='Room Code:' url={room.room_code}>
-                <WhatsappIcon round={true} />
-              </WhatsappShareButton>
-              <CopyToClipboard text={room.room_code}>
-                <button>Copy to Clipboard</button>
-              </CopyToClipboard>
+              <IconTextField value={room.room_code}></IconTextField>
             </div>
           ) : null}
           <br></br>
@@ -77,7 +70,7 @@ export const HomeView = props => {
           ) : (
             <Button
               variant='contained'
-              color='secondary'
+              color='primary'
               onClick={handleRedirect}>
               Join Room
             </Button>
