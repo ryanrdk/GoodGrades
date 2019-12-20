@@ -1,10 +1,18 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Route } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
-import { Button } from '@material-ui/core';
-import { Modal } from '@material-ui/core';
-import { Backdrop } from '@material-ui/core';
+import {
+  Button,
+  Backdrop,
+  Card,
+  CardContent,
+  FormControl,
+  Input,
+  InputLabel,
+  InputAdornment,
+  Modal
+} from '@material-ui/core';
+import School from '@material-ui/icons/School';
 import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is required for IE 11 support
 
 const useStyles = makeStyles(theme => ({
@@ -15,9 +23,14 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3)
+  },
+  card: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 180
   }
 }));
 
@@ -62,19 +75,19 @@ export default function SpringModal() {
     if (redirect) {
       // do something meaningful, Promises, if/else, whatever, and then
       // console.log("room.sh/go/" + roomCode)
-      window.location.assign("//room.sh/go/" + roomCode);
+      window.location.assign('//room.sh/go/' + roomCode);
     }
   });
 
   const handleRedirect = () => {
-    console.log({redirect});
+    console.log({ redirect });
     setRedirect(!redirect);
-  }
+  };
 
-  const handleChange = (event) => {
-    setRoomCode(event.target.value)
-    console.log({roomCode});
-  }
+  const handleChange = event => {
+    setRoomCode(event.target.value);
+    console.log({ roomCode });
+  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -101,15 +114,30 @@ export default function SpringModal() {
           timeout: 500
         }}>
         <Fade in={open}>
-          <div className={classes.paper}>
-            <form onSubmit = {handleRedirect}>
-              <label>
-                Unique Code
-                <input type="text" name="name" onChange={handleChange}/>
-              </label>
-              <input type="submit" value="Submit" />
-            </form>
-          </div>
+          <Card className={classes.card}>
+            <CardContent>
+              <FormControl className={classes.margin}>
+                <form onSubmit={handleRedirect}>
+                  <InputLabel htmlFor='input-with-icon-adornment'>
+                    Unique Room Code
+                  </InputLabel>
+                  <Input
+                    id='input-with-icon-adornment'
+                    type='text'
+                    name='name'
+                    onChange={handleChange}
+                    startAdornment={
+                      <InputAdornment position='start'>
+                        <School />
+                      </InputAdornment>
+                    }
+                    fullWidth='true'
+                  />
+                  <Button type='submit' value='Submit'></Button>
+                </form>
+              </FormControl>
+            </CardContent>
+          </Card>
         </Fade>
       </Modal>
     </div>

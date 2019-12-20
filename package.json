@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.7.2",
+    "@material-ui/icons": "^4.5.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -18,7 +19,9 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.0",
     "react-share": "^3.0.1",
-    "react-spring": "^8.0.27"
+    "react-spring": "^8.0.27",
+    "styled-components": "^4.4.1",
+    "typeface-roboto": "0.0.75"
   },
   "scripts": {
     "start": "node server.js",
