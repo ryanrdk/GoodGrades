@@ -9,8 +9,10 @@ import {
   CardActions,
   CardContent,
   Divider,
-  Typography
+  Typography,
 } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+
 import LoginCard from '../components/LoginCard';
 
 const responseGoogle = response => {
@@ -61,11 +63,12 @@ class Login extends React.Component {
     redirectToUserType: false,
     user: {},
     profileObj: {},
-    loading: false
+    loading: false,
+    emailPrompt: false,
   }
 
   login = response => {
-    let profileObj = {};
+    let {profileObj} = this.state;
     if (!response.profileObj){
       let names = response.name.split(' ');
       console.log(names)
@@ -75,6 +78,9 @@ class Login extends React.Component {
     }
     else{
       profileObj = response.profileObj
+    }
+    if (!profileObj.email){
+      this.setState({emailPrompt: true})
     }
     var targetUrl =
       'https://good-grades-server.herokuapp.com/api/users/' +
@@ -148,6 +154,14 @@ class Login extends React.Component {
       });
   };
 
+  setEmailPrompt = () => {
+    this.setState({emailPrompt: !this.state.emailPrompt});
+  }
+
+  handleEmailChange = (email) => {
+    this.setState({profileObj: {...this.state.profileObj, email: email}});
+  }
+
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/' } }
     const { redirectToReferrer, redirectToUserType, loading } = this.state
@@ -164,6 +178,23 @@ class Login extends React.Component {
 
     if (redirectToReferrer === true) {
       return <Redirect to={from} />;
+    }
+
+    if (this.state.emailPrompt){        
+      return (
+        <div>
+            <TextField id="email" label="Email" type="email" required value={this.state.profileObj.email} onChange={this.handleEmailChange}/>
+            <Button
+              variant='contained'
+              color='primary'
+              value='email'
+              fullWidth='true'
+              onClick={() => this.setEmailPrompt()}>
+            >
+              Next
+            </Button>
+        </div>
+      )
     }
 
     if (redirectToUserType === true) {
