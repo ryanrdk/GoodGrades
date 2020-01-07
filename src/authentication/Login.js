@@ -64,7 +64,6 @@ class Login extends React.Component {
     user: {},
     profileObj: {},
     loading: false,
-    emailPrompt: false,
   }
 
   login = response => {
@@ -75,13 +74,12 @@ class Login extends React.Component {
       console.log(names)
       profileObj.givenName = names[0];
       profileObj.familyName =  names[names.length - 1];
+      profileObj.id = response.userID;
       profileObj = {...profileObj, ...response}
     }
     else{
       profileObj = response.profileObj
-    }
-    if (!profileObj.email){
-      this.setState({emailPrompt: true})
+      profileObj.id = response.profileObj.googleId
     }
     var targetUrl =
       'https://good-grades-server.herokuapp.com/api/users/' +
@@ -90,7 +88,7 @@ class Login extends React.Component {
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {
-        if (data.email && data.type) {
+        if (data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
             this.setState(() => ({
@@ -103,6 +101,7 @@ class Login extends React.Component {
             profileObj: profileObj,
             redirectToUserType: true,
             user: {
+              id: profileObj.id,
               email: profileObj.email,
               username: profileObj.name
             }
@@ -180,23 +179,6 @@ class Login extends React.Component {
 
     if (redirectToReferrer === true) {
       return <Redirect to={from} />;
-    }
-
-    if (this.state.emailPrompt){        
-      return (
-        <div>
-            <TextField id="email" label="Email" type="email" required value={this.state.profileObj.email} onChange={this.handleEmailChange}/>
-            <Button
-              variant='contained'
-              color='primary'
-              value='email'
-              fullWidth='true'
-              onClick={() => this.setEmailPrompt()}>
-            >
-              Next
-            </Button>
-        </div>
-      )
     }
 
     if (redirectToUserType === true) {
