@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
 import ReactLoading from 'react-loading';
 import {
   Button,
@@ -14,6 +15,14 @@ import LoginCard from '../components/LoginCard';
 
 const responseGoogle = response => {
   console.log(response);
+};
+
+const responseFacebook = response => {
+  console.log(response);
+};
+
+const componentClicked = click => {
+  console.log(click);
 };
 
 const fakeAuth = {
@@ -56,10 +65,21 @@ class Login extends React.Component {
   }
 
   login = response => {
+    let profileObj = {};
+    if (!response.profileObj){
+      let names = response.name.split(' ');
+      console.log(names)
+      profileObj.givenName = names[0];
+      profileObj.familyName =  names[names.length - 1];
+      profileObj = {...profileObj, ...response}
+    }
+    else{
+      profileObj = response.profileObj
+    }
     var targetUrl =
       'https://good-grades-server.herokuapp.com/api/users/' +
-      response.profileObj.email;
-    console.log(targetUrl);
+      profileObj.email;
+    console.log(profileObj);
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {
@@ -70,14 +90,14 @@ class Login extends React.Component {
               redirectToReferrer: true
             }));
           });
-          this.props.handleSetUser({ ...response.profileObj, type: data.type });
+          this.props.handleSetUser({ ...profileObj, type: data.type });
         } else {
           this.setState(() => ({
-            profileObj: response.profileObj,
+            profileObj: profileObj,
             redirectToUserType: true,
             user: {
-              email: response.profileObj.email,
-              username: response.profileObj.name
+              email: profileObj.email,
+              username: profileObj.name
             }
           }));
         }
@@ -200,10 +220,17 @@ class Login extends React.Component {
             <LoginCard />
             <GoogleLogin
               clientId="198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com"
-              buttonText='Continue with Google'
+              buttonText='Login with Google'
               onSuccess={this.login}
               onFailure={responseGoogle}
               cookiePolicy={'single_host_origin'}
+            />
+            <FacebookLogin
+              appId="473647886861679"
+              autoLoad={true}
+              fields="name,email,picture"
+              // onClick={componentClicked}
+              callback={this.login} 
             />
           </header>
         </div>

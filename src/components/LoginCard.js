@@ -42,12 +42,11 @@ export default function MediaCard() {
             className={classes.secondaryTextLight}
             color='textSecondary'
             component='h2'>
-            Welcome to the next step in your acedemics
+            Welcome to the next step in your academics
           </Typography>
-          <Typography variant='body2' color='textSecondary' component='p'>
-            In order for you to proceed further along your journey to the top,
-            please may you login with your Google account.
-          </Typography>
+          {/* <Typography variant='body2' color='textSecondary' component='p'>
+
+          </Typography> */}
         </CardContent>
       </CardActionArea>
     </Card>
