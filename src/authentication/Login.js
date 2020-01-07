@@ -68,6 +68,7 @@ class Login extends React.Component {
   }
 
   login = response => {
+    console.log(response)
     let {profileObj} = this.state;
     if (!response.profileObj){
       let names = response.name.split(' ');
@@ -159,6 +160,7 @@ class Login extends React.Component {
   }
 
   handleEmailChange = (email) => {
+    console.log(this.state.profileObj.email, email)
     this.setState({profileObj: {...this.state.profileObj, email: email}});
   }
 
