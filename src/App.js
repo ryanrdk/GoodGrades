@@ -4,7 +4,10 @@ import 'typeface-roboto';
 import './App.css';
 import Login from './authentication/Login';
 import { PrivateRoute } from './authentication/Login';
+import { BookingsView } from './views/BookingsView';
 import { HomeView } from './views/HomeView';
+import { SchedulerView } from './views/SchedulerView';
+import SwipeableRoutes from 'react-swipeable-routes';
 
 function App() {
   const [user, setUser] = useState({});
@@ -20,7 +23,23 @@ function App() {
           path='/login'
           render={props => <Login {...props} handleSetUser={handleSetUser} />}
         />
-        <PrivateRoute exact path='/' component={HomeView} user={user} />
+        <SwipeableRoutes>
+          <PrivateRoute
+            exact
+            path='/bookings'
+            render={props => <BookingsView {...props} user={user} />}
+          />
+          <PrivateRoute
+            exact
+            path='/'
+            render={props => <HomeView {...props} user={user} />}
+          />
+          <PrivateRoute
+            exact
+            path='/scheduler'
+            render={props => <SchedulerView {...props} user={user} />}
+          />
+        </SwipeableRoutes>
       </div>
     </BrowserRouter>
   );
