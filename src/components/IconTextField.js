@@ -10,8 +10,7 @@ import {
   Input,
   InputLabel,
   InputAdornment,
-  FormControl,
-  Typography
+  FormControl
 } from '@material-ui/core';
 import School from '@material-ui/icons/School';
 

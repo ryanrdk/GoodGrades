@@ -1,12 +1,6 @@
 import React from 'react';
 
 export const BookingsView = props => {
-  const [redirect, setRedirect] = React.useState(false);
-
-  const handleRedirect = () => {
-    setRedirect(!redirect);
-  };
-
   return (
     <div>
       <div className='App'>

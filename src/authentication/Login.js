@@ -1,5 +1,5 @@
-import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import React, { Fragment } from 'react';
+import { Redirect } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
 import ReactLoading from 'react-loading';
 import {
@@ -28,22 +28,14 @@ const fakeAuth = {
   }
 };
 
-export const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      fakeAuth.isAuthenticated === true ? (
-        <Component {...props} {...rest} />
-      ) : (
-        <Redirect
-          to={{
-            pathname: '/login',
-            state: { from: props.location }
-          }}
-        />
-      )
-    }
-  />
+export const PrivateRoute = props => (
+  <Fragment>
+    {fakeAuth.isAuthenticated ? (
+      props.children
+    ) : (
+      <Redirect to={{ pathname: '/login' }} />
+    )}
+  </Fragment>
 );
 
 class Login extends React.Component {
@@ -66,20 +58,20 @@ class Login extends React.Component {
         if (data.email && data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
-            this.setState(() => ({
+            this.setState({
               redirectToReferrer: true
-            }));
+            });
           });
           this.props.handleSetUser({ ...response.profileObj, type: data.type });
         } else {
-          this.setState(() => ({
+          this.setState({
             profileObj: response.profileObj,
             redirectToUserType: true,
             user: {
               email: response.profileObj.email,
               username: response.profileObj.name
             }
-          }));
+          });
         }
 
         console.log(data);

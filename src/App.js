@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import 'typeface-roboto';
 import './App.css';
+import TopNavigation from './components/TopNavigation';
 import Login from './authentication/Login';
 import { PrivateRoute } from './authentication/Login';
 import { BookingsView } from './views/BookingsView';
@@ -23,23 +24,26 @@ function App() {
           path='/login'
           render={props => <Login {...props} handleSetUser={handleSetUser} />}
         />
-        <SwipeableRoutes>
-          <PrivateRoute
-            exact
-            path='/bookings'
-            render={props => <BookingsView {...props} user={user} />}
-          />
-          <PrivateRoute
-            exact
-            path='/'
-            render={props => <HomeView {...props} user={user} />}
-          />
-          <PrivateRoute
-            exact
-            path='/scheduler'
-            render={props => <SchedulerView {...props} user={user} />}
-          />
-        </SwipeableRoutes>
+        <PrivateRoute>
+          <TopNavigation />
+          <SwipeableRoutes>
+            <Route
+              exact
+              path='/bookings'
+              render={props => <BookingsView {...props} user={user} />}
+            />
+            <Route
+              exact
+              path='/'
+              render={props => <HomeView {...props} user={user} />}
+            />
+            <Route
+              exact
+              path='/scheduler'
+              render={props => <SchedulerView {...props} user={user} />}
+            />
+          </SwipeableRoutes>
+        </PrivateRoute>
       </div>
     </BrowserRouter>
   );
