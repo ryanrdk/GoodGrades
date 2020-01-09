@@ -1,5 +1,5 @@
-import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import React, { Fragment } from 'react';
+import { Redirect } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 import ReactLoading from 'react-loading';
@@ -39,22 +39,14 @@ const fakeAuth = {
   }
 };
 
-export const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      fakeAuth.isAuthenticated === true ? (
-        <Component {...props} {...rest} />
-      ) : (
-        <Redirect
-          to={{
-            pathname: '/login',
-            state: { from: props.location }
-          }}
-        />
-      )
-    }
-  />
+export const PrivateRoute = props => (
+  <Fragment>
+    {fakeAuth.isAuthenticated ? (
+      props.children
+    ) : (
+      <Redirect to={{ pathname: '/login' }} />
+    )}
+  </Fragment>
 );
 
 class Login extends React.Component {
@@ -74,16 +66,16 @@ class Login extends React.Component {
       console.log(names)
       profileObj.givenName = names[0];
       profileObj.familyName =  names[names.length - 1];
-      profileObj.id = response.userID;
+      profileObj.unique_id = response.userID;
       profileObj = {...profileObj, ...response}
     }
     else{
       profileObj = response.profileObj
-      profileObj.id = response.profileObj.googleId
+      profileObj.unique_id = response.profileObj.googleId
     }
     var targetUrl =
       'https://good-grades-server.herokuapp.com/api/users/' +
-      profileObj.email;
+      profileObj.unique_id;
     console.log(profileObj);
     fetch(targetUrl)
       .then(blob => blob.json())
@@ -101,7 +93,7 @@ class Login extends React.Component {
             profileObj: profileObj,
             redirectToUserType: true,
             user: {
-              id: profileObj.id,
+              unique_id: profileObj.unique_id,
               email: profileObj.email,
               username: profileObj.name
             }
@@ -134,7 +126,7 @@ class Login extends React.Component {
       })
       .then(data => {
         console.log(data);
-        if (data.email && data.type) {
+        if (data.unique_id && data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
             this.setState(() => ({
@@ -154,14 +146,6 @@ class Login extends React.Component {
       });
   };
 
-  setEmailPrompt = () => {
-    this.setState({emailPrompt: !this.state.emailPrompt});
-  }
-
-  handleEmailChange = (email) => {
-    console.log(this.state.profileObj.email, email)
-    this.setState({profileObj: {...this.state.profileObj, email: email}});
-  }
 
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/' } }
