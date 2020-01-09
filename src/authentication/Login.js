@@ -1,5 +1,5 @@
-import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import React, { Fragment } from 'react';
+import { Redirect } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
 import ReactLoading from 'react-loading';
@@ -9,8 +9,10 @@ import {
   CardActions,
   CardContent,
   Divider,
-  Typography
+  Typography,
 } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+
 import LoginCard from '../components/LoginCard';
 
 const responseGoogle = response => {
@@ -37,22 +39,14 @@ const fakeAuth = {
   }
 };
 
-export const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={props =>
-      fakeAuth.isAuthenticated === true ? (
-        <Component {...props} {...rest} />
-      ) : (
-        <Redirect
-          to={{
-            pathname: '/login',
-            state: { from: props.location }
-          }}
-        />
-      )
-    }
-  />
+export const PrivateRoute = props => (
+  <Fragment>
+    {fakeAuth.isAuthenticated ? (
+      props.children
+    ) : (
+      <Redirect to={{ pathname: '/login' }} />
+    )}
+  </Fragment>
 );
 
 class Login extends React.Component {
@@ -61,29 +55,32 @@ class Login extends React.Component {
     redirectToUserType: false,
     user: {},
     profileObj: {},
-    loading: false
+    loading: false,
   }
 
   login = response => {
-    let profileObj = {};
+    console.log(response)
+    let {profileObj} = this.state;
     if (!response.profileObj){
       let names = response.name.split(' ');
       console.log(names)
       profileObj.givenName = names[0];
       profileObj.familyName =  names[names.length - 1];
+      profileObj.unique_id = response.userID;
       profileObj = {...profileObj, ...response}
     }
     else{
       profileObj = response.profileObj
+      profileObj.unique_id = response.profileObj.googleId
     }
     var targetUrl =
       'https://good-grades-server.herokuapp.com/api/users/' +
-      profileObj.email;
+      profileObj.unique_id;
     console.log(profileObj);
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {
-        if (data.email && data.type) {
+        if (data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
             this.setState(() => ({
@@ -96,6 +93,7 @@ class Login extends React.Component {
             profileObj: profileObj,
             redirectToUserType: true,
             user: {
+              unique_id: profileObj.unique_id,
               email: profileObj.email,
               username: profileObj.name
             }
@@ -128,7 +126,7 @@ class Login extends React.Component {
       })
       .then(data => {
         console.log(data);
-        if (data.email && data.type) {
+        if (data.unique_id && data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
             this.setState(() => ({
@@ -147,6 +145,7 @@ class Login extends React.Component {
         return e;
       });
   };
+
 
   render() {
     const { from } = this.props.location.state || { from: { pathname: '/' } }
