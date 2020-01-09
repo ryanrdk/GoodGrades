@@ -56,7 +56,6 @@ export const HomeView = props => {
 
   return (
     <div>
-      {console.log(props)}
       <div className='App'>
         <header className='App-header'>
           <h1>Welcome {props.user ? props.user.givenName : 'huest'}</h1>
