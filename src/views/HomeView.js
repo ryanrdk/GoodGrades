@@ -30,10 +30,10 @@ export const HomeView = props => {
   };
 
   useEffect(() => {
-    if (!room && props.user.type === 'tutor') {
+    if (!room && props.user && props.user.type === 'tutor') {
       var targetUrl =
         'https://good-grades-server.herokuapp.com/api/users/' +
-        props.user.email +
+        props.user.unique_id +
         '/room';
       fetch(targetUrl)
         .then(blob => blob.json())
@@ -58,7 +58,7 @@ export const HomeView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
-          <h1>Welcome {props.user.givenName}</h1>
+          <h1>Welcome {props.user ? props.user.givenName : 'huest'}</h1>
           {room ? (
             <div>
               <IconTextField value={room.room_code}></IconTextField>

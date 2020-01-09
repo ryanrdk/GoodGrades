@@ -1,7 +1,6 @@
 import React from 'react';
 import logo from '../logo.png';
 import { makeStyles } from '@material-ui/core/styles';
-import styled from 'styled-components';
 import {
   Card,
   CardActionArea,
