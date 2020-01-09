@@ -142,10 +142,6 @@ export default class SchedulerView extends React.Component {
     this.loadData();
   }
 
-  // componentDidUpdate() {
-  //   this.loadData();
-  // }
-
   loadData() {
     fetch(
       'https://good-grades-server.herokuapp.com/api/events/byTutor/3325863450774184',
@@ -155,19 +151,17 @@ export default class SchedulerView extends React.Component {
           'content-type': 'application/json'
         }
       }
-    ).then(response => {
-      response.json();
-    });
-    // .then(({ data }) => {
-    //   setTimeout(() => {
-    //     console.log(data);
-    //     this.setState({
-    //       data,
-    //       loading: false
-    //     });
-    //   }, 1000);
-    // })
-    // .catch(() => this.setState({ loading: false }));
+    )
+      .then(response => response.json())
+      .then(data =>
+        setTimeout(() => {
+          this.setState({
+            data,
+            loading: false
+          });
+        }, 2200)
+      )
+      .catch(() => this.setState({ loading: false }));
   }
 
   changeAddedAppointment(addedAppointment) {
