@@ -1,6 +1,8 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import teal from '@material-ui/core/colors/teal';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { ViewState, EditingState } from '../components/dx-react-scheduler';
@@ -75,6 +77,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const styles = {
+  toolbarRoot: {
+    position: 'relative'
+  },
+  progress: {
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
+    left: 0
+  }
+};
+
 const TimeIndicator = ({ top, ...restProps }) => {
   const classes = useStyles({ top });
   return (
@@ -85,11 +99,26 @@ const TimeIndicator = ({ top, ...restProps }) => {
   );
 };
 
+const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
+  ({ children, classes, ...restProps }) => (
+    <div className={classes.toolbarRoot}>
+      <Toolbar.Root {...restProps}>{children}</Toolbar.Root>
+      <LinearProgress className={classes.progress} />
+    </div>
+  )
+);
+
+const mapAppointmentData = dataToMap => ({
+  startDate: dataToMap.start_time,
+  endDate: dataToMap.end_time
+});
+
 export default class SchedulerView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: [],
+      loading: true,
       currentDate: Date.now(),
 
       addedAppointment: {},
@@ -97,6 +126,7 @@ export default class SchedulerView extends React.Component {
       editingAppointmentId: undefined
     };
 
+    this.loadData = this.loadData.bind(this);
     this.commitChanges = this.commitChanges.bind(this);
     this.changeAddedAppointment = this.changeAddedAppointment.bind(this);
     this.changeAppointmentChanges = this.changeAppointmentChanges.bind(this);
@@ -108,8 +138,16 @@ export default class SchedulerView extends React.Component {
     };
   }
 
-  hitEndPoint() {
-    return fetch(
+  componentDidMount() {
+    this.loadData();
+  }
+
+  // componentDidUpdate() {
+  //   this.loadData();
+  // }
+
+  loadData() {
+    fetch(
       'https://good-grades-server.herokuapp.com/api/events/byTutor/3325863450774184',
       {
         method: 'GET',
@@ -117,7 +155,19 @@ export default class SchedulerView extends React.Component {
           'content-type': 'application/json'
         }
       }
-    ).then(response => response.json());
+    ).then(response => {
+      response.json();
+    });
+    // .then(({ data }) => {
+    //   setTimeout(() => {
+    //     console.log(data);
+    //     this.setState({
+    //       data,
+    //       loading: false
+    //     });
+    //   }, 1000);
+    // })
+    // .catch(() => this.setState({ loading: false }));
   }
 
   changeAddedAppointment(addedAppointment) {
@@ -158,17 +208,19 @@ export default class SchedulerView extends React.Component {
     const {
       currentDate,
       data,
+      loading,
       addedAppointment,
       appointmentChanges,
       editingAppointmentId
     } = this.state;
-    console.log(this.hitEndPoint());
+    var formattedData = data ? data.map(mapAppointmentData) : [];
+    console.log(formattedData);
     return (
       <div>
         <div className='App'>
           <header className='App-header'>
             <Paper>
-              <Scheduler data={data} height={700}>
+              <Scheduler data={formattedData} height={700}>
                 <ViewState
                   currentDate={currentDate}
                   onCurrentDateChange={this.currentDateChange}
@@ -184,7 +236,9 @@ export default class SchedulerView extends React.Component {
                 />
                 <WeekView startDayHour={5} endDayHour={23} />
                 <AllDayPanel />
-                <Toolbar />
+                <Toolbar
+                  {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
+                />
                 <EditRecurrenceMenu />
                 <Appointments />
                 <AppointmentTooltip showOpenButton showDeleteButton />
