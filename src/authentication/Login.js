@@ -222,7 +222,7 @@ class Login extends React.Component {
             />
             <FacebookLogin
               appId='473647886861679'
-              autoLoad={true}
+              autoLoad={false}
               fields="name,email,picture"
               callback={this.login} 
             />
