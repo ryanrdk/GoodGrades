@@ -181,14 +181,12 @@ export default class SchedulerView extends React.Component {
   commitChanges({ added, changed, deleted }) {
     this.setState(state => {
       let { data } = state;
-      console.log(data);
       if (added) {
         const startingAddedId =
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
         data = [...data, { id: startingAddedId, ...added }];
       }
       if (changed) {
-        console.log(changed);
         data = data.map(appointment =>
           changed[appointment.id]
             ? { ...appointment, ...changed[appointment.id] }
@@ -236,11 +234,15 @@ export default class SchedulerView extends React.Component {
                 <Toolbar
                   {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
                 />
-                <EditRecurrenceMenu />
+                {this.props.user.type === 'tutor' ? (
+                  <EditRecurrenceMenu />
+                ) : null}
                 <Appointments />
                 <AppointmentTooltip showOpenButton showDeleteButton />
-                <AppointmentForm />
-                <ConfirmationDialog />
+                {this.props.user.type === 'tutor' ? <AppointmentForm /> : null}
+                {this.props.user.type === 'tutor' ? (
+                  <ConfirmationDialog />
+                ) : null}
                 <DragDropProvider />
                 <DateNavigator />
                 <CurrentTimeIndicator
