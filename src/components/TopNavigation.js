@@ -14,20 +14,10 @@ const useStyles = makeStyles({
 
 export default function CenteredTabs() {
   const classes = useStyles();
-  const [value, setValue] = React.useState(1);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
 
   return (
     <Paper className={classes.root}>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        indicatorColor='primary'
-        textColor='primary'
-        centered>
+      <Tabs textColor='primary' centered>
         <Tab label='Bookings' component={Link} to='/bookings' />
         <Tab label='Home' component={Link} to='/' />
         <Tab label='Scheduler' component={Link} to='/scheduler' />
