@@ -7,7 +7,7 @@ import Login from './authentication/Login';
 import { PrivateRoute } from './authentication/Login';
 import { BookingsView } from './views/BookingsView';
 import { HomeView } from './views/HomeView';
-import { SchedulerView } from './views/SchedulerView';
+import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
 
 function App() {
