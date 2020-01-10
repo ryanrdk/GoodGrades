@@ -11,7 +11,6 @@ import {
   Divider,
   Typography,
 } from '@material-ui/core';
-import TextField from '@material-ui/core/TextField';
 
 import LoginCard from '../components/LoginCard';
 
@@ -19,13 +18,7 @@ const responseGoogle = response => {
   console.log(response);
 };
 
-const responseFacebook = response => {
-  console.log(response);
-};
 
-const componentClicked = click => {
-  console.log(click);
-};
 
 const fakeAuth = {
   isAuthenticated: false,
@@ -228,7 +221,6 @@ class Login extends React.Component {
               appId="473647886861679"
               autoLoad={true}
               fields="name,email,picture"
-              // onClick={componentClicked}
               callback={this.login} 
             />
           </header>
