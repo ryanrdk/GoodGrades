@@ -111,7 +111,9 @@ const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
 const mapAppointmentData = (dataToMap, index) => ({
   id: index,
   startDate: dataToMap.start_time,
-  endDate: dataToMap.end_time
+  endDate: dataToMap.end_time,
+  old_start_time: dataToMap.start_time,
+  ...dataToMap,
 });
 
 export default class SchedulerView extends React.Component {
@@ -146,7 +148,7 @@ export default class SchedulerView extends React.Component {
   loadData() {
     console.log('fetchin frahm api');
     fetch(
-      'https://good-grades-server.herokuapp.com/api/events/byTutor/3325863450774184',
+      `https://good-grades-server.herokuapp.com/api/events/byTutor/${this.props.user.unique_id}`,
       {
         method: 'GET',
         headers: {
@@ -185,18 +187,59 @@ export default class SchedulerView extends React.Component {
       if (added) {
         const startingAddedId =
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
-        data = [...data, { id: startingAddedId, ...added }];
+          let newAppointment = { id: startingAddedId, ...added, tutor: this.props.user.unique_id, old_start_time: added.startDate, start_time: added.startDate, end_time: added.endDate};
+          data = [...data, newAppointment];
+          fetch(
+            'https://good-grades-server.herokuapp.com/api/events/createEvent',
+            {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body:JSON.stringify({
+                ...newAppointment
+              })
+            }
+          )
+            .then(response => response.json())
+            .then(data => console.log(data)
+              // setTimeout(() => {}, 2200)
+            )
+            .catch(() => console.log("Error"));
       }
       if (changed) {
-        console.log(changed);
-        data = data.map(appointment =>
-          changed[appointment.id]
-            ? { ...appointment, ...changed[appointment.id] }
-            : appointment
+        console.log(changed)
+        data = data.map(appointment => {
+          if (changed[appointment.id]){
+            let changedAppointment = { ...appointment, ...changed[appointment.id], new_start_time: changed[appointment.id].startDate, new_end_time: changed[appointment.id].endDate};
+            fetch(
+              'https://good-grades-server.herokuapp.com/api/events/updateEvent',
+              {
+                method: 'POST',
+                headers: {
+                  'content-type': 'application/json'
+                },
+                body:JSON.stringify({
+                  ...changedAppointment
+                })
+              }
+            )
+              .then(response => response.json())
+              .then(data => console.log(data)
+                // setTimeout(() => {}, 2200)
+              )
+              .catch(() => console.log("Error"));
+            changedAppointment.old_start_time = changedAppointment.new_start_time;
+            return changedAppointment
+          }
+          else{
+            return appointment;
+          }
+        }
         );
       }
       if (deleted !== undefined) {
-        data = data.filter(appointment => appointment.id !== deleted);
+        data = data.filter(appointment => {console.log(appointment, deleted); return appointment.id !== deleted});
       }
       return { data };
     });
