@@ -108,7 +108,8 @@ const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
   )
 );
 
-const mapAppointmentData = dataToMap => ({
+const mapAppointmentData = (dataToMap, index) => ({
+  id: index,
   startDate: dataToMap.start_time,
   endDate: dataToMap.end_time
 });
@@ -143,6 +144,7 @@ export default class SchedulerView extends React.Component {
   }
 
   loadData() {
+    console.log('fetchin frahm api');
     fetch(
       'https://good-grades-server.herokuapp.com/api/events/byTutor/3325863450774184',
       {
@@ -156,7 +158,7 @@ export default class SchedulerView extends React.Component {
       .then(data =>
         setTimeout(() => {
           this.setState({
-            data,
+            data: data ? data.map(mapAppointmentData) : [],
             loading: false
           });
         }, 2200)
@@ -179,12 +181,14 @@ export default class SchedulerView extends React.Component {
   commitChanges({ added, changed, deleted }) {
     this.setState(state => {
       let { data } = state;
+      console.log(data);
       if (added) {
         const startingAddedId =
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
         data = [...data, { id: startingAddedId, ...added }];
       }
       if (changed) {
+        console.log(changed);
         data = data.map(appointment =>
           changed[appointment.id]
             ? { ...appointment, ...changed[appointment.id] }
@@ -207,14 +211,13 @@ export default class SchedulerView extends React.Component {
       appointmentChanges,
       editingAppointmentId
     } = this.state;
-    var formattedData = data ? data.map(mapAppointmentData) : [];
-    console.log(formattedData);
+
     return (
       <div>
         <div className='App'>
           <header className='App-header'>
             <Paper>
-              <Scheduler data={formattedData} height={700}>
+              <Scheduler data={data} height={700}>
                 <ViewState
                   currentDate={currentDate}
                   onCurrentDateChange={this.currentDateChange}
