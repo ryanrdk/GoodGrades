@@ -231,14 +231,6 @@ class Login extends React.Component {
               onFailure={responseGoogle}
               cookiePolicy={'single_host_origin'}
             />
-            <FacebookLogin
-              appId='473647886861679'
-              autoLoad={true}
-              fields='name,email,picture'
-              // onClick={componentClicked}
-              callback={this.login}
-              icon={<TiSocialFacebookCircular />}
-            />
           </header>
         </div>
       </div>
