@@ -14,21 +14,6 @@ export const HomeView = props => {
     setRedirect(!redirect);
   };
 
-  const createRoom = () => {
-    var targetUrl = 'https://good-grades-server.herokuapp.com/api/rooms';
-    fetch(targetUrl)
-      .then(blob => blob.json())
-      .then(data => {
-        console.table(data);
-        setRoom(data);
-        return data;
-      })
-      .catch(e => {
-        console.log(e);
-        return e;
-      });
-  };
-
   useEffect(() => {
     if (!room && props.user && props.user.type === 'tutor') {
       var targetUrl =
