@@ -1,6 +1,9 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import teal from '@material-ui/core/colors/teal';
@@ -14,6 +17,7 @@ import {
   ConfirmationDialog,
   CurrentTimeIndicator,
   DateNavigator,
+  DayView,
   DragDropProvider,
   EditRecurrenceMenu,
   Scheduler,
@@ -89,6 +93,18 @@ const styles = {
   }
 };
 
+const ExternalViewSwitcher = ({ currentViewName, onChange }) => (
+  <RadioGroup
+    aria-label='Views'
+    style={{ flexDirection: 'row', paddingLeft: 16 }}
+    name='views'
+    value={currentViewName}
+    onChange={onChange}>
+    <FormControlLabel value='Week' control={<Radio />} label='Week' />
+    <FormControlLabel value='Day' control={<Radio />} label='Day' />
+  </RadioGroup>
+);
+
 const TimeIndicator = ({ top, ...restProps }) => {
   const classes = useStyles({ top });
   return (
@@ -121,7 +137,7 @@ export default class SchedulerView extends React.Component {
       data: [],
       loading: true,
       currentDate: Date.now(),
-
+      currentViewName: 'Week',
       addedAppointment: {},
       appointmentChanges: {},
       editingAppointmentId: undefined
@@ -136,6 +152,9 @@ export default class SchedulerView extends React.Component {
     );
     this.currentDateChange = currentDate => {
       this.setState({ currentDate });
+    };
+    this.currentViewNameChange = e => {
+      this.setState({ currentViewName: e.target.value });
     };
   }
 
@@ -203,6 +222,7 @@ export default class SchedulerView extends React.Component {
   render() {
     const {
       currentDate,
+      currentViewName,
       data,
       loading,
       addedAppointment,
@@ -214,10 +234,15 @@ export default class SchedulerView extends React.Component {
       <div>
         <div className='App'>
           <header className='App-header'>
+            <ExternalViewSwitcher
+              currentViewName={currentViewName}
+              onChange={this.currentViewNameChange}
+            />
             <Paper>
               <Scheduler data={data} height={700}>
                 <ViewState
                   currentDate={currentDate}
+                  currentViewName={currentViewName}
                   onCurrentDateChange={this.currentDateChange}
                 />
                 <EditingState
@@ -230,6 +255,7 @@ export default class SchedulerView extends React.Component {
                   onEditingAppointmentIdChange={this.changeEditingAppointmentId}
                 />
                 <WeekView startDayHour={5} endDayHour={23} />
+                <DayView startDayHour={0} endDayHour={23} />
                 <AllDayPanel />
                 <Toolbar
                   {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
@@ -241,7 +267,7 @@ export default class SchedulerView extends React.Component {
                 <AppointmentTooltip showOpenButton showDeleteButton />
                 {this.props.user.type === 'tutor' ? <AppointmentForm /> : null}
                 {this.props.user.type === 'tutor' ? (
-                  <ConfirmationDialog />
+                  <ConfirmationDialog ignoreDelete />
                 ) : null}
                 <DragDropProvider />
                 <DateNavigator />
