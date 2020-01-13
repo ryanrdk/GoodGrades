@@ -25,6 +25,7 @@ export const HomeView = props => {
         .then(data => {
           console.table(data);
           setRoom(data);
+          props.user.room_code = data.room_code
           return data;
         })
         .catch(e => {
