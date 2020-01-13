@@ -17,7 +17,7 @@ export const HomeView = props => {
   useEffect(() => {
     if (!room && props.user && props.user.type === 'tutor') {
       var targetUrl =
-        'https://good-grades-server.herokuapp.com/api/users/' +
+        'http://localhost:5000/api/users/' +
         props.user.unique_id +
         '/room';
       fetch(targetUrl)
