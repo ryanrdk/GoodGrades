@@ -40,10 +40,8 @@ export const BookingsView = props => {
 
   // const classes = useStyles();
   // const bull = <span className={classes.bullet}>•</span>;
-  console.log("propers", props)
 
   const handleRedirect = () => {
-    console.log({ redirect });
     setRedirect(!redirect);
   };
 

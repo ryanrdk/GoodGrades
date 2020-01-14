@@ -30,6 +30,8 @@ import classNames from 'clsx';
 import { IconButton, Grid, Button } from '@material-ui/core';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Room from '@material-ui/icons/Room';
+import { connectProps } from '@devexpress/dx-react-core';
+import SchedulerToolBar from '../components/SchedulerToolBar';
 
 
 const useStyles = makeStyles(theme => ({
@@ -152,8 +154,9 @@ const TimeIndicator = ({ top, ...restProps }) => {
 const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
   ({ children, classes, ...restProps }) => (
     <div className={classes.toolbarRoot}>
-      <Toolbar.Root {...restProps}>{children}</Toolbar.Root>
+      <Toolbar.Root {...restProps} flexibleSpaceComponent={this.flexibleSpace}>{children}</Toolbar.Root>
       <LinearProgress className={classes.progress} />
+      
     </div>
   )
 );
@@ -166,6 +169,7 @@ const mapAppointmentData = (dataToMap, index) => ({
   ...dataToMap,
 });
 
+
 export default class SchedulerView extends React.Component {
   constructor(props) {
     super(props);
@@ -176,7 +180,8 @@ export default class SchedulerView extends React.Component {
       currentViewName: 'Week',
       addedAppointment: {},
       appointmentChanges: {},
-      editingAppointmentId: undefined
+      editingAppointmentId: undefined,
+      currentPriority: 0,
     };
 
     this.loadData = this.loadData.bind(this);
@@ -192,20 +197,22 @@ export default class SchedulerView extends React.Component {
     this.currentViewNameChange = currentViewName => {
       this.setState({ currentViewName });
     };
+
   }
 
   componentDidMount() {
     this.loadData();
   }
 
-  // componentDidUpdate() {
-  //   this.loadData();
-  // }
+  componentDidUpdate() {
+    // this.flexibleSpace.update();
+  }
 
   loadData() {
     console.log('fetchin frahm api');
+    let url = `https://good-grades-server.herokuapp.com/api/events/byTutor/${this.props.user.unique_id}`
     fetch(
-      `https://good-grades-server.herokuapp.com/api/events/byTutor/${this.props.user.unique_id}`,
+      url,
       {
         method: 'GET',
         headers: {
@@ -342,6 +349,9 @@ export default class SchedulerView extends React.Component {
       )
       .catch(() => this.setState({ loading: false }));
   }
+  setLoading(bool){
+    this.setState({loading: bool||!this.state.loading})
+  }
 
   header = withStyles(style, { name: 'Header' })(({
     children, appointmentData, classes, ...restProps
@@ -384,6 +394,8 @@ export default class SchedulerView extends React.Component {
     <AppointmentTooltip.CommandButton {...restProps} className={classes.commandButton} />
   ));
 
+  
+
   render() {
     const {
       currentDate,
@@ -420,9 +432,7 @@ export default class SchedulerView extends React.Component {
                 <WeekView startDayHour={5} endDayHour={23} />
                 <DayView startDayHour={0} endDayHour={23} />
                 <AllDayPanel />
-                <Toolbar
-                  {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
-                />
+                <SchedulerToolBar setLoading={this.setLoading} loading={loading}/>
                 <ViewSwitcher />
                 {this.props.user.type === 'tutor' ? (
                   <EditRecurrenceMenu />
