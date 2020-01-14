@@ -23,12 +23,11 @@ export const HomeView = props => {
       fetch(targetUrl)
         .then(blob => blob.json())
         .then(data => {
-          console.table(data);
           setRoom(data);
+          props.user.room_code = data.room_code
           return data;
         })
         .catch(e => {
-          console.log(e);
           return e;
         });
     }

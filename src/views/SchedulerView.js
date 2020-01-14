@@ -1,6 +1,9 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import teal from '@material-ui/core/colors/teal';
@@ -14,13 +17,20 @@ import {
   ConfirmationDialog,
   CurrentTimeIndicator,
   DateNavigator,
+  DayView,
   DragDropProvider,
   EditRecurrenceMenu,
   Scheduler,
   Toolbar,
-  WeekView
+  WeekView,
+  ViewSwitcher,
+  TodayButton,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import classNames from 'clsx';
+import { IconButton, Grid, Button } from '@material-ui/core';
+import MoreIcon from '@material-ui/icons/MoreVert';
+import Room from '@material-ui/icons/Room';
+
 
 const useStyles = makeStyles(theme => ({
   line: {
@@ -89,6 +99,46 @@ const styles = {
   }
 };
 
+const style = ({ palette }) => ({
+  icon: {
+    color: palette.action.active,
+  },
+  textCenter: {
+    textAlign: 'center',
+  },
+  firstRoom: {
+    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/Lobby-4.jpg)',
+  },
+  secondRoom: {
+    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/MeetingRoom-4.jpg)',
+  },
+  thirdRoom: {
+    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/MeetingRoom-0.jpg)',
+  },
+  header: {
+    height: '260px',
+    backgroundSize: 'cover',
+  },
+  commandButton: {
+    backgroundColor: 'rgba(255,255,255,0.65)',
+  },
+});
+
+
+
+
+// const ExternalViewSwitcher = ({ currentViewName, onChange }) => (
+//   <RadioGroup
+//     aria-label='Views'
+//     style={{ flexDirection: 'row', paddingLeft: 16 }}
+//     name='views'
+//     value={currentViewName}
+//     onChange={onChange}>
+//     <FormControlLabel value='Week' control={<Radio />} label='Week' />
+//     <FormControlLabel value='Day' control={<Radio />} label='Day' />
+//   </RadioGroup>
+// );
+
 const TimeIndicator = ({ top, ...restProps }) => {
   const classes = useStyles({ top });
   return (
@@ -111,7 +161,9 @@ const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
 const mapAppointmentData = (dataToMap, index) => ({
   id: index,
   startDate: dataToMap.start_time,
-  endDate: dataToMap.end_time
+  endDate: dataToMap.end_time,
+  old_start_time: dataToMap.start_time,
+  ...dataToMap,
 });
 
 export default class SchedulerView extends React.Component {
@@ -121,7 +173,7 @@ export default class SchedulerView extends React.Component {
       data: [],
       loading: true,
       currentDate: Date.now(),
-
+      currentViewName: 'Week',
       addedAppointment: {},
       appointmentChanges: {},
       editingAppointmentId: undefined
@@ -137,16 +189,23 @@ export default class SchedulerView extends React.Component {
     this.currentDateChange = currentDate => {
       this.setState({ currentDate });
     };
+    this.currentViewNameChange = currentViewName => {
+      this.setState({ currentViewName });
+    };
   }
 
   componentDidMount() {
     this.loadData();
   }
 
+  // componentDidUpdate() {
+  //   this.loadData();
+  // }
+
   loadData() {
     console.log('fetchin frahm api');
     fetch(
-      'https://good-grades-server.herokuapp.com/api/events/byTutor/3325863450774184',
+      `https://good-grades-server.herokuapp.com/api/events/byTutor/${this.props.user.unique_id}`,
       {
         method: 'GET',
         headers: {
@@ -184,25 +243,151 @@ export default class SchedulerView extends React.Component {
       if (added) {
         const startingAddedId =
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
-        data = [...data, { id: startingAddedId, ...added }];
+          let newAppointment = { id: startingAddedId, ...added, tutor: this.props.user.unique_id, old_start_time: added.startDate, start_time: added.startDate, end_time: added.endDate};
+          data = [...data, newAppointment];
+          let test = 
+          fetch(
+            'https://good-grades-server.herokuapp.com/api/events/createEvent',
+            {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json'
+              },
+              body:JSON.stringify({
+                ...newAppointment
+              })
+            }
+          )
+            .then(response => response.json())
+            .then(data => data
+              // setTimeout(() => {}, 2200)
+            )
+            .catch(() => console.log("Error"));
+          console.log({test})
       }
       if (changed) {
-        data = data.map(appointment =>
-          changed[appointment.id]
-            ? { ...appointment, ...changed[appointment.id] }
-            : appointment
+        console.log(changed)
+        data = data.map(appointment => {
+          if (changed[appointment.id]){
+            let changedAppointment = { ...appointment, ...changed[appointment.id], new_start_time: changed[appointment.id].startDate, new_end_time: changed[appointment.id].endDate};
+            fetch(
+              'https://good-grades-server.herokuapp.com/api/events/updateEvent',
+              {
+                method: 'POST',
+                headers: {
+                  'content-type': 'application/json'
+                },
+                body:JSON.stringify({
+                  ...changedAppointment
+                })
+              }
+            )
+              .then(response => response.json())
+              .then(data => console.log(data)
+                // setTimeout(() => {}, 2200)
+              )
+              .catch(() => console.log("Error"));
+            changedAppointment.old_start_time = changedAppointment.new_start_time;
+            return changedAppointment
+          }
+          else{
+            return appointment;
+          }
+        }
         );
       }
       if (deleted !== undefined) {
-        data = data.filter(appointment => appointment.id !== deleted);
+        fetch(
+          'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
+          {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body:JSON.stringify({
+              ...data[deleted]
+            })
+          }
+        )
+          .then(response => response.json())
+          .then(data => console.log(data)
+            // setTimeout(() => {}, 2200)
+          )
+          .catch(() => console.log("Error"));
+        console.log(data[deleted])
+        data = data.filter(appointment => {console.log(appointment, deleted); return appointment.id !== deleted});
       }
       return { data };
     });
   }
 
+  bookSession(appointmentData){
+    console.log({appointmentData})
+    fetch(
+      `https://good-grades-server.herokuapp.com/api/events/addStudentToEvent`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...appointmentData,
+          student_id: this.props.user.unique_id
+        })
+      }
+    )
+      .then(response => response.json())
+      .then(data =>
+        console.log("Complete")
+      )
+      .catch(() => this.setState({ loading: false }));
+  }
+
+  header = withStyles(style, { name: 'Header' })(({
+    children, appointmentData, classes, ...restProps
+  }) => (
+    <AppointmentTooltip.Header
+      {...restProps}
+      appointmentData={appointmentData}
+    >
+      <IconButton
+        /* eslint-disable-next-line no-alert */
+        onClick={() => alert(JSON.stringify(appointmentData))}
+        className={classes.commandButton}
+      >
+        <MoreIcon />
+      </IconButton>
+      <Button onClick={() => this.bookSession(appointmentData)} className={classes.commandButton}>
+        Book Session
+      </Button>
+    </AppointmentTooltip.Header>
+  ));
+  
+  content = withStyles(style, { name: 'Content' })(({
+    children, appointmentData, classes, ...restProps
+  }) => (
+    <AppointmentTooltip.Content {...restProps} appointmentData={appointmentData}>
+      <Grid container alignItems="center">
+        <Grid item xs={2} className={classes.textCenter}>
+          <Room className={classes.icon} />
+        </Grid>
+        <Grid item xs={10}>
+          <span>{appointmentData.location}</span>
+        </Grid>
+      </Grid>
+    </AppointmentTooltip.Content>
+  ));
+  
+  commandButton = withStyles(style, { name: 'CommandButton' })(({
+    classes, ...restProps
+  }) => (
+    <AppointmentTooltip.CommandButton {...restProps} className={classes.commandButton} />
+  ));
+
   render() {
     const {
       currentDate,
+      currentViewName,
       data,
       loading,
       addedAppointment,
@@ -218,7 +403,9 @@ export default class SchedulerView extends React.Component {
               <Scheduler data={data} height={700}>
                 <ViewState
                   currentDate={currentDate}
+                  currentViewName={currentViewName}
                   onCurrentDateChange={this.currentDateChange}
+                  onCurrentViewNameChange = {this.currentViewNameChange}
                 />
                 <EditingState
                   onCommitChanges={this.commitChanges}
@@ -229,22 +416,33 @@ export default class SchedulerView extends React.Component {
                   editingAppointmentId={editingAppointmentId}
                   onEditingAppointmentIdChange={this.changeEditingAppointmentId}
                 />
+                
                 <WeekView startDayHour={5} endDayHour={23} />
+                <DayView startDayHour={0} endDayHour={23} />
                 <AllDayPanel />
                 <Toolbar
                   {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
                 />
+                <ViewSwitcher />
                 {this.props.user.type === 'tutor' ? (
                   <EditRecurrenceMenu />
                 ) : null}
                 <Appointments />
-                <AppointmentTooltip showOpenButton showDeleteButton />
+                <AppointmentTooltip 
+                  headerComponent={this.header}
+                  contentComponent={this.content}
+                  commandButtonComponent={this.commandButton}
+                  showOpenButton
+                  showDeleteButton
+                  showCloseButton
+                />
                 {this.props.user.type === 'tutor' ? <AppointmentForm /> : null}
                 {this.props.user.type === 'tutor' ? (
-                  <ConfirmationDialog />
+                  <ConfirmationDialog ignoreDelete />
                 ) : null}
                 <DragDropProvider />
                 <DateNavigator />
+                <TodayButton />
                 <CurrentTimeIndicator
                   indicatorComponent={TimeIndicator}
                   shadePreviousCells
