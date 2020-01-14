@@ -27,6 +27,10 @@ import {
   TodayButton,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import classNames from 'clsx';
+import { IconButton, Grid, Button } from '@material-ui/core';
+import MoreIcon from '@material-ui/icons/MoreVert';
+import Room from '@material-ui/icons/Room';
+
 
 const useStyles = makeStyles(theme => ({
   line: {
@@ -95,17 +99,45 @@ const styles = {
   }
 };
 
-const ExternalViewSwitcher = ({ currentViewName, onChange }) => (
-  <RadioGroup
-    aria-label='Views'
-    style={{ flexDirection: 'row', paddingLeft: 16 }}
-    name='views'
-    value={currentViewName}
-    onChange={onChange}>
-    <FormControlLabel value='Week' control={<Radio />} label='Week' />
-    <FormControlLabel value='Day' control={<Radio />} label='Day' />
-  </RadioGroup>
-);
+const style = ({ palette }) => ({
+  icon: {
+    color: palette.action.active,
+  },
+  textCenter: {
+    textAlign: 'center',
+  },
+  firstRoom: {
+    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/Lobby-4.jpg)',
+  },
+  secondRoom: {
+    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/MeetingRoom-4.jpg)',
+  },
+  thirdRoom: {
+    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/MeetingRoom-0.jpg)',
+  },
+  header: {
+    height: '260px',
+    backgroundSize: 'cover',
+  },
+  commandButton: {
+    backgroundColor: 'rgba(255,255,255,0.65)',
+  },
+});
+
+
+
+
+// const ExternalViewSwitcher = ({ currentViewName, onChange }) => (
+//   <RadioGroup
+//     aria-label='Views'
+//     style={{ flexDirection: 'row', paddingLeft: 16 }}
+//     name='views'
+//     value={currentViewName}
+//     onChange={onChange}>
+//     <FormControlLabel value='Week' control={<Radio />} label='Week' />
+//     <FormControlLabel value='Day' control={<Radio />} label='Day' />
+//   </RadioGroup>
+// );
 
 const TimeIndicator = ({ top, ...restProps }) => {
   const classes = useStyles({ top });
@@ -157,8 +189,8 @@ export default class SchedulerView extends React.Component {
     this.currentDateChange = currentDate => {
       this.setState({ currentDate });
     };
-    this.currentViewNameChange = e => {
-      this.setState({ currentViewName: e.target.value });
+    this.currentViewNameChange = currentViewName => {
+      this.setState({ currentViewName });
     };
   }
 
@@ -289,6 +321,69 @@ export default class SchedulerView extends React.Component {
     });
   }
 
+  bookSession(appointmentData){
+    console.log({appointmentData})
+    fetch(
+      `https://good-grades-server.herokuapp.com/api/events/addStudentToEvent`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...appointmentData,
+          student_id: this.props.user.unique_id
+        })
+      }
+    )
+      .then(response => response.json())
+      .then(data =>
+        console.log("Complete")
+      )
+      .catch(() => this.setState({ loading: false }));
+  }
+
+  header = withStyles(style, { name: 'Header' })(({
+    children, appointmentData, classes, ...restProps
+  }) => (
+    <AppointmentTooltip.Header
+      {...restProps}
+      appointmentData={appointmentData}
+    >
+      <IconButton
+        /* eslint-disable-next-line no-alert */
+        onClick={() => alert(JSON.stringify(appointmentData))}
+        className={classes.commandButton}
+      >
+        <MoreIcon />
+      </IconButton>
+      <Button onClick={() => this.bookSession(appointmentData)} className={classes.commandButton}>
+        Book Session
+      </Button>
+    </AppointmentTooltip.Header>
+  ));
+  
+  content = withStyles(style, { name: 'Content' })(({
+    children, appointmentData, classes, ...restProps
+  }) => (
+    <AppointmentTooltip.Content {...restProps} appointmentData={appointmentData}>
+      <Grid container alignItems="center">
+        <Grid item xs={2} className={classes.textCenter}>
+          <Room className={classes.icon} />
+        </Grid>
+        <Grid item xs={10}>
+          <span>{appointmentData.location}</span>
+        </Grid>
+      </Grid>
+    </AppointmentTooltip.Content>
+  ));
+  
+  commandButton = withStyles(style, { name: 'CommandButton' })(({
+    classes, ...restProps
+  }) => (
+    <AppointmentTooltip.CommandButton {...restProps} className={classes.commandButton} />
+  ));
+
   render() {
     const {
       currentDate,
@@ -304,16 +399,13 @@ export default class SchedulerView extends React.Component {
       <div>
         <div className='App'>
           <header className='App-header'>
-            <ExternalViewSwitcher
-              currentViewName={currentViewName}
-              onChange={this.currentViewNameChange}
-            />
             <Paper>
               <Scheduler data={data} height={700}>
                 <ViewState
                   currentDate={currentDate}
                   currentViewName={currentViewName}
                   onCurrentDateChange={this.currentDateChange}
+                  onCurrentViewNameChange = {this.currentViewNameChange}
                 />
                 <EditingState
                   onCommitChanges={this.commitChanges}
@@ -324,17 +416,26 @@ export default class SchedulerView extends React.Component {
                   editingAppointmentId={editingAppointmentId}
                   onEditingAppointmentIdChange={this.changeEditingAppointmentId}
                 />
+                
                 <WeekView startDayHour={5} endDayHour={23} />
                 <DayView startDayHour={0} endDayHour={23} />
                 <AllDayPanel />
                 <Toolbar
                   {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
                 />
+                <ViewSwitcher />
                 {this.props.user.type === 'tutor' ? (
                   <EditRecurrenceMenu />
                 ) : null}
                 <Appointments />
-                <AppointmentTooltip showOpenButton showDeleteButton />
+                <AppointmentTooltip 
+                  headerComponent={this.header}
+                  contentComponent={this.content}
+                  commandButtonComponent={this.commandButton}
+                  showOpenButton
+                  showDeleteButton
+                  showCloseButton
+                />
                 {this.props.user.type === 'tutor' ? <AppointmentForm /> : null}
                 {this.props.user.type === 'tutor' ? (
                   <ConfirmationDialog ignoreDelete />
