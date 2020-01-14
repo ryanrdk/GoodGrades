@@ -69,6 +69,7 @@ class Login extends React.Component {
       'https://good-grades-server.herokuapp.com/api/users/' +
       profileObj.unique_id;
     console.log(profileObj);
+    this.setState({loading: true})
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {
@@ -76,12 +77,14 @@ class Login extends React.Component {
           //continue to login
           fakeAuth.authenticate(() => {
             this.setState(() => ({
-              redirectToReferrer: true
+              loading: false,
+              redirectToReferrer: true,
             }));
           });
           this.props.handleSetUser({ ...profileObj, type: data.type });
         } else {
           this.setState(() => ({
+            loading: false,
             profileObj: profileObj,
             redirectToUserType: true,
             user: {
@@ -150,7 +153,8 @@ class Login extends React.Component {
         <div>
           <div className='App'>
             <header className='App-header'>
-              <ReactLoading height={'20%'} width={'20%'} />
+              {/* <ReactLoading height={'20%'} width={'20%'} /> */}
+              <ReactLoading type={"spinningBubbles"}  height={'10%'} width={'10%'} />
             </header>
           </div>
         </div>
@@ -224,7 +228,7 @@ class Login extends React.Component {
               appId='473647886861679'
               autoLoad={false}
               fields="name,email,picture"
-              callback={this.login} 
+              callback={this.login}
             />
           </header>
         </div>
