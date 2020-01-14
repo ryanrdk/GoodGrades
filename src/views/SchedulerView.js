@@ -146,7 +146,7 @@ export default class SchedulerView extends React.Component {
   loadData() {
     console.log('fetchin frahm api');
     fetch(
-      'https://good-grades-server.herokuapp.com/api/events/byTutor/3325863450774184',
+      'https://good-grades-server.herokuapp.com/api/events/byTutor/' + this.props.user.unique_id,
       {
         method: 'GET',
         headers: {
