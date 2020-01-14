@@ -24,6 +24,7 @@ export const HomeView = props => {
         .then(blob => blob.json())
         .then(data => {
           setRoom(data);
+          props.user.room_code = data.room_code
           return data;
         })
         .catch(e => {
