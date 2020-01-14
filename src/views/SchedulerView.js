@@ -18,7 +18,10 @@ import {
   EditRecurrenceMenu,
   Scheduler,
   Toolbar,
-  WeekView
+  WeekView,
+  DayView,
+  ViewSwitcher,
+  TodayButton,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import classNames from 'clsx';
 
@@ -145,6 +148,10 @@ export default class SchedulerView extends React.Component {
     this.loadData();
   }
 
+  // componentDidUpdate() {
+  //   this.loadData();
+  // }
+
   loadData() {
     console.log('fetchin frahm api');
     fetch(
@@ -189,6 +196,7 @@ export default class SchedulerView extends React.Component {
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
           let newAppointment = { id: startingAddedId, ...added, tutor: this.props.user.unique_id, old_start_time: added.startDate, start_time: added.startDate, end_time: added.endDate};
           data = [...data, newAppointment];
+          let test = 
           fetch(
             'https://good-grades-server.herokuapp.com/api/events/createEvent',
             {
@@ -202,10 +210,11 @@ export default class SchedulerView extends React.Component {
             }
           )
             .then(response => response.json())
-            .then(data => console.log(data)
+            .then(data => data
               // setTimeout(() => {}, 2200)
             )
             .catch(() => console.log("Error"));
+          console.log({test})
       }
       if (changed) {
         console.log(changed)
@@ -239,6 +248,24 @@ export default class SchedulerView extends React.Component {
         );
       }
       if (deleted !== undefined) {
+        fetch(
+          'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
+          {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body:JSON.stringify({
+              ...data[deleted]
+            })
+          }
+        )
+          .then(response => response.json())
+          .then(data => console.log(data)
+            // setTimeout(() => {}, 2200)
+          )
+          .catch(() => console.log("Error"));
+        console.log(data[deleted])
         data = data.filter(appointment => {console.log(appointment, deleted); return appointment.id !== deleted});
       }
       return { data };
@@ -265,6 +292,10 @@ export default class SchedulerView extends React.Component {
                   currentDate={currentDate}
                   onCurrentDateChange={this.currentDateChange}
                 />
+                {/* <DayView
+                  startDayHour={5}
+                  endDayHour={23}
+                /> */}
                 <EditingState
                   onCommitChanges={this.commitChanges}
                   addedAppointment={addedAppointment}
@@ -286,6 +317,7 @@ export default class SchedulerView extends React.Component {
                 <ConfirmationDialog />
                 <DragDropProvider />
                 <DateNavigator />
+                <TodayButton />
                 <CurrentTimeIndicator
                   indicatorComponent={TimeIndicator}
                   shadePreviousCells
