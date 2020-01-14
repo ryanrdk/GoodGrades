@@ -10,22 +10,22 @@ import { tsConstructorType } from '@babel/types';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
-const useStyles = makeStyles({
-  card: {
-    minWidth: 275,
-  },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
-  },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
-  },
-});
+// const useStyles = makeStyles({
+//   card: {
+//     minWidth: 275,
+//   },
+//   bullet: {
+//     display: 'inline-block',
+//     margin: '0 2px',
+//     transform: 'scale(0.8)',
+//   },
+//   title: {
+//     fontSize: 14,
+//   },
+//   pos: {
+//     marginBottom: 12,
+//   },
+// });
 
 const checkIfHourBeforeSession = (start_time) => {
   let curDate = new Date();
@@ -40,7 +40,7 @@ export const BookingsView = props => {
   const [booked, setBooked] = useState(null);
   const [redirect, setRedirect] = React.useState(false);
 
-  const classes = useStyles();
+  // const classes = useStyles();
   // const bull = <span className={classes.bullet}>•</span>;
   console.log("propers", props)
 
@@ -52,7 +52,7 @@ export const BookingsView = props => {
   useEffect(() => {
     if (!booked) {
       var targetUrl =
-        'http://localhost:5000/api/events/byTutor/' + props.user.unique_id + '/booked';
+        'https://good-grades-server.herokuapp.com/api/events/byTutor/' + props.user.unique_id + '/booked';
       fetch(targetUrl)
         .then(blob => blob.json())
         .then(data => {
