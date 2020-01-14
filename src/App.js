@@ -12,7 +12,6 @@ import SwipeableRoutes from 'react-swipeable-routes';
 
 function App() {
   const [user, setUser] = useState({});
-  const [room, setRoom] = useState({});
 
   const handleSetUser = data => {
     setUser(data);
@@ -31,7 +30,7 @@ function App() {
             <Route
               exact
               path='/bookings'
-              render={props => <BookingsView {...props} user={user} room={room}/>}
+              render={props => <BookingsView {...props} user={user} />}
             />
             <Route
               exact
