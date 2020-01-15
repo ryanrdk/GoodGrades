@@ -25,11 +25,14 @@ import {
   WeekView,
   ViewSwitcher,
   TodayButton,
+  Resources
 } from '@devexpress/dx-react-scheduler-material-ui';
 import classNames from 'clsx';
 import { IconButton, Grid, Button } from '@material-ui/core';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Room from '@material-ui/icons/Room';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 const useStyles = makeStyles(theme => ({
@@ -166,6 +169,51 @@ const mapAppointmentData = (dataToMap, index) => ({
   ...dataToMap,
 });
 
+const styles2 = theme => ({
+  container: {
+    display: 'flex',
+    marginBottom: theme.spacing(2),
+    justifyContent: 'flex-end',
+  },
+  text: {
+    ...theme.typography.h6,
+    marginRight: theme.spacing(2),
+  },
+});
+
+
+const ResourceSwitcher = withStyles(styles2, { name: 'ResourceSwitcher' })(
+  ({
+    mainResourceName, onChange, classes, resources,
+  }) => (
+    <div className={classes.container}>
+      <div className={classes.text}>
+        Main resource name:
+      </div>
+      <Select
+        value={mainResourceName}
+        onChange={e => onChange(e.target.value)}
+      >
+        {resources.map(resource => (
+          <MenuItem key={resource.fieldName} value={resource.fieldName}>
+            {resource.title}
+          </MenuItem>
+        ))}
+      </Select>
+    </div>
+  ),
+)
+
+const mapTutorData = (dataToMap, index) => (
+  {
+  tutor : {
+    fieldName: dataToMap.unique_id,
+    title: dataToMap.username,
+    instances: [],
+  },
+  events : (dataToMap.events.length > 0) ? dataToMap.events.map(mapAppointmentData) : []
+});
+
 export default class SchedulerView extends React.Component {
   constructor(props) {
     super(props);
@@ -176,7 +224,13 @@ export default class SchedulerView extends React.Component {
       currentViewName: 'Week',
       addedAppointment: {},
       appointmentChanges: {},
-      editingAppointmentId: undefined
+      editingAppointmentId: undefined,
+      mainResourceName: 'selectTutor',
+      resources: [ {
+        fieldName: 'selectTutor',
+        title: 'Select Tutor',
+        instances: []
+      } ]
     };
 
     this.loadData = this.loadData.bind(this);
@@ -192,10 +246,31 @@ export default class SchedulerView extends React.Component {
     this.currentViewNameChange = currentViewName => {
       this.setState({ currentViewName });
     };
+    this.changeMainResource = this.changeMainResource.bind(this);
+  }
+
+  changeMainResource(mainResourceName) {
+    let excludedEvents = []
+    if (this.state.allEvents) {
+      const newEvents = this.state.allEvents.filter(elem => elem.tutor == mainResourceName)
+      newEvents.map(elem => {
+        const ans = this.state.initialData.filter(elem2 => {  // filtering what data is already showing for tutor initially and removing from currently selected data
+          return (elem2.tutor == elem.tutor && elem2.startDate == elem.startDate)
+        })
+        if (ans.length == 0) { excludedEvents.push(elem) } // if no matching event found in initial data, it is added to excludedEvents array
+      })
+
+      console.log("Changed", this.state, newEvents, mainResourceName, excludedEvents)
+    }
+    this.setState({ 
+      mainResourceName,
+      data: [...this.state.initialData, ...excludedEvents]
+    });
   }
 
   componentDidMount() {
     this.loadData();
+    this.loadAllTutorsData();
   }
 
   // componentDidUpdate() {
@@ -218,8 +293,48 @@ export default class SchedulerView extends React.Component {
         setTimeout(() => {
           this.setState({
             data: data ? data.map(mapAppointmentData) : [],
+            initialData : data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
             loading: false
           });
+          console.log("Appoint", this.state.data)
+        }, 2200)
+      )
+      .catch(() => this.setState({ loading: false }));
+  }
+
+  loadAllTutorsData() {
+    console.log('fetching all tutors and their events');
+    fetch(
+      `https://good-grades-server.herokuapp.com/api/users/tutor/getAllTutors/events`,
+      {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
+        }
+      }
+    )
+      .then(response => response.json())
+      .then(data =>
+        setTimeout(() => {
+          // console.log("Before", data)
+          const toMapTutor = data ? data.map(mapTutorData) : [];
+          let onlyEvents = [];
+          let onlyTutors = toMapTutor.map(element => {
+            element.events.map(element2 => {
+              onlyEvents.push(element2);
+            });
+            element = element.tutor
+            return element;
+          });
+          onlyTutors.unshift(...this.state.resources)
+          // console.log("DOne", toMapTutor, onlyTutors, onlyEvents)
+          this.setState({
+            resources: onlyTutors,
+            allEvents: onlyEvents,
+            // data: onlyEvents,
+            loading: false
+          });
+          console.log("Mapped", this.state)
         }, 2200)
       )
       .catch(() => this.setState({ loading: false }));
@@ -389,16 +504,24 @@ export default class SchedulerView extends React.Component {
       currentDate,
       currentViewName,
       data,
+      initialData, //using to store tutors initial events and compare to selected tutor's events
       loading,
       addedAppointment,
       appointmentChanges,
-      editingAppointmentId
+      editingAppointmentId,
+      resources,
+      mainResourceName
     } = this.state;
 
     return (
       <div>
         <div className='App'>
           <header className='App-header'>
+            <ResourceSwitcher
+              resources={resources}
+              mainResourceName={mainResourceName}
+              onChange={this.changeMainResource}
+            />
             <Paper>
               <Scheduler data={data} height={700}>
                 <ViewState
@@ -420,9 +543,17 @@ export default class SchedulerView extends React.Component {
                 <WeekView startDayHour={5} endDayHour={23} />
                 <DayView startDayHour={0} endDayHour={23} />
                 <AllDayPanel />
-                <Toolbar
+                {/* <Toolbar
                   {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
-                />
+                  
+                /> */}
+                <Toolbar {...(loading ? { rootComponent: ToolbarWithLoading } : null)}>
+                  {/* <ResourceSwitcher
+                    resources={resources}
+                    mainResourceName={mainResourceName}
+                    onChange={this.changeMainResource}
+                  /> */}
+                </Toolbar>
                 <ViewSwitcher />
                 {this.props.user.type === 'tutor' ? (
                   <EditRecurrenceMenu />
@@ -435,6 +566,10 @@ export default class SchedulerView extends React.Component {
                   showOpenButton
                   showDeleteButton
                   showCloseButton
+                />
+                <Resources
+                  data={resources}
+                  mainResourceName={mainResourceName}
                 />
                 {this.props.user.type === 'tutor' ? <AppointmentForm /> : null}
                 {this.props.user.type === 'tutor' ? (
