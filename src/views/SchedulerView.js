@@ -30,8 +30,7 @@ import classNames from 'clsx';
 import { IconButton, Grid, Button } from '@material-ui/core';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import Room from '@material-ui/icons/Room';
-import { connectProps } from '@devexpress/dx-react-core';
-import SchedulerToolBar from '../components/SchedulerToolBar';
+import SchedulerToolBar from '../components/SchedulerToolBar'
 
 
 const useStyles = makeStyles(theme => ({
@@ -126,21 +125,6 @@ const style = ({ palette }) => ({
   },
 });
 
-
-
-
-// const ExternalViewSwitcher = ({ currentViewName, onChange }) => (
-//   <RadioGroup
-//     aria-label='Views'
-//     style={{ flexDirection: 'row', paddingLeft: 16 }}
-//     name='views'
-//     value={currentViewName}
-//     onChange={onChange}>
-//     <FormControlLabel value='Week' control={<Radio />} label='Week' />
-//     <FormControlLabel value='Day' control={<Radio />} label='Day' />
-//   </RadioGroup>
-// );
-
 const TimeIndicator = ({ top, ...restProps }) => {
   const classes = useStyles({ top });
   return (
@@ -154,9 +138,8 @@ const TimeIndicator = ({ top, ...restProps }) => {
 const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
   ({ children, classes, ...restProps }) => (
     <div className={classes.toolbarRoot}>
-      <Toolbar.Root {...restProps} flexibleSpaceComponent={this.flexibleSpace}>{children}</Toolbar.Root>
+      <Toolbar.Root {...restProps}>{children}</Toolbar.Root>
       <LinearProgress className={classes.progress} />
-      
     </div>
   )
 );
@@ -169,7 +152,6 @@ const mapAppointmentData = (dataToMap, index) => ({
   ...dataToMap,
 });
 
-
 export default class SchedulerView extends React.Component {
   constructor(props) {
     super(props);
@@ -180,39 +162,30 @@ export default class SchedulerView extends React.Component {
       currentViewName: 'Week',
       addedAppointment: {},
       appointmentChanges: {},
-      editingAppointmentId: undefined,
-      currentPriority: 0,
+      editingAppointmentId: undefined
     };
 
     this.loadData = this.loadData.bind(this);
     this.commitChanges = this.commitChanges.bind(this);
     this.changeAddedAppointment = this.changeAddedAppointment.bind(this);
     this.changeAppointmentChanges = this.changeAppointmentChanges.bind(this);
-    this.changeEditingAppointmentId = this.changeEditingAppointmentId.bind(
-      this
-    );
+    this.changeEditingAppointmentId = this.changeEditingAppointmentId.bind(this);
     this.currentDateChange = currentDate => {
       this.setState({ currentDate });
     };
     this.currentViewNameChange = currentViewName => {
       this.setState({ currentViewName });
     };
-
   }
 
   componentDidMount() {
     this.loadData();
   }
 
-  componentDidUpdate() {
-    // this.flexibleSpace.update();
-  }
-
   loadData() {
     console.log('fetchin frahm api');
-    let url = `https://good-grades-server.herokuapp.com/api/events/byTutor/${this.props.user.unique_id}`
     fetch(
-      url,
+      `https://good-grades-server.herokuapp.com/api/events/byTutor/${this.props.user.unique_id}`,
       {
         method: 'GET',
         headers: {
@@ -220,16 +193,14 @@ export default class SchedulerView extends React.Component {
         }
       }
     )
-      .then(response => response.json())
-      .then(data =>
-        setTimeout(() => {
-          this.setState({
-            data: data ? data.map(mapAppointmentData) : [],
-            loading: false
-          });
-        }, 2200)
-      )
-      .catch(() => this.setState({ loading: false }));
+    .then(response => response.json())
+    .then(data =>
+        this.setState({
+          data: data ? data.map(mapAppointmentData) : [],
+          loading: false
+        })
+    )
+    .catch(() => this.setState({ loading: false }));
   }
 
   changeAddedAppointment(addedAppointment) {
@@ -266,9 +237,7 @@ export default class SchedulerView extends React.Component {
             }
           )
             .then(response => response.json())
-            .then(data => data
-              // setTimeout(() => {}, 2200)
-            )
+            .then(data => data)
             .catch(() => console.log("Error"));
           console.log({test})
       }
@@ -290,9 +259,7 @@ export default class SchedulerView extends React.Component {
               }
             )
               .then(response => response.json())
-              .then(data => console.log(data)
-                // setTimeout(() => {}, 2200)
-              )
+              .then(data => data)
               .catch(() => console.log("Error"));
             changedAppointment.old_start_time = changedAppointment.new_start_time;
             return changedAppointment
@@ -317,12 +284,10 @@ export default class SchedulerView extends React.Component {
           }
         )
           .then(response => response.json())
-          .then(data => console.log(data)
-            // setTimeout(() => {}, 2200)
-          )
+          .then(data => data)
           .catch(() => console.log("Error"));
         console.log(data[deleted])
-        data = data.filter(appointment => {console.log(appointment, deleted); return appointment.id !== deleted});
+        data = data.filter(appointment => {return appointment.id !== deleted});
       }
       return { data };
     });
@@ -349,9 +314,6 @@ export default class SchedulerView extends React.Component {
       )
       .catch(() => this.setState({ loading: false }));
   }
-  setLoading(bool){
-    this.setState({loading: bool||!this.state.loading})
-  }
 
   header = withStyles(style, { name: 'Header' })(({
     children, appointmentData, classes, ...restProps
@@ -367,9 +329,9 @@ export default class SchedulerView extends React.Component {
       >
         <MoreIcon />
       </IconButton>
-      <Button onClick={() => this.bookSession(appointmentData)} className={classes.commandButton}>
+      {/* <Button onClick={() => this.bookSession(appointmentData)} className={classes.commandButton}>
         Book Session
-      </Button>
+      </Button> */}
     </AppointmentTooltip.Header>
   ));
   
@@ -393,8 +355,6 @@ export default class SchedulerView extends React.Component {
   }) => (
     <AppointmentTooltip.CommandButton {...restProps} className={classes.commandButton} />
   ));
-
-  
 
   render() {
     const {
@@ -432,7 +392,9 @@ export default class SchedulerView extends React.Component {
                 <WeekView startDayHour={5} endDayHour={23} />
                 <DayView startDayHour={0} endDayHour={23} />
                 <AllDayPanel />
-                <SchedulerToolBar setLoading={this.setLoading} loading={loading}/>
+                <Toolbar
+                  {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
+                />
                 <ViewSwitcher />
                 {this.props.user.type === 'tutor' ? (
                   <EditRecurrenceMenu />
@@ -460,6 +422,7 @@ export default class SchedulerView extends React.Component {
                 />
               </Scheduler>
             </Paper>
+            <SchedulerToolBar user={this.props.user} refreshBookings={this.props.refreshBookings}/>
           </header>
         </div>
       </div>

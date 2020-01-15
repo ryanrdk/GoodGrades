@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import 'typeface-roboto';
 import './App.css';
@@ -12,17 +12,36 @@ import SwipeableRoutes from 'react-swipeable-routes';
 
 function App() {
   const [user, setUser] = useState({});
+  const [booked, setBooked] = useState(null);
 
-  const handleSetUser = data => {
-    setUser(data);
-  };
+  const getBookings = () => {
+    var targetUrl =
+    'https://good-grades-server.herokuapp.com/api/events/byTutor/' + user.unique_id + '/booked';
+    fetch(targetUrl)
+      .then(blob => blob.json())
+      .then(data => {
+        console.log({data})
+        setBooked(data);
+        return data;
+      })
+      .catch(e => {
+        console.log(e);
+        return e;
+      });
+  }
+
+  useEffect(()=>{
+    if (!booked && user.unique_id) {
+      getBookings()
+    }
+  })
 
   return (
     <BrowserRouter>
       <div>
         <Route
           path='/login'
-          render={props => <Login {...props} handleSetUser={handleSetUser} />}
+          render={props => <Login {...props} handleSetUser={setUser} />}
         />
         <PrivateRoute>
           <TopNavigation />
@@ -30,7 +49,7 @@ function App() {
             <Route
               exact
               path='/bookings'
-              render={props => <BookingsView {...props} user={user} />}
+              render={props => <BookingsView {...props} user={user} booked={booked} refreshBookings={getBookings}/>}
             />
             <Route
               exact
@@ -40,7 +59,7 @@ function App() {
             <Route
               exact
               path='/scheduler'
-              render={props => <SchedulerView {...props} user={user} />}
+              render={props => <SchedulerView {...props} user={user} refreshBookings={getBookings}/>}
             />
           </SwipeableRoutes>
         </PrivateRoute>

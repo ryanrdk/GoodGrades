@@ -8,58 +8,23 @@ import Typography from '@material-ui/core/Typography';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
-// const useStyles = makeStyles({
-//   card: {
-//     minWidth: 275,
-//   },
-//   bullet: {
-//     display: 'inline-block',
-//     margin: '0 2px',
-//     transform: 'scale(0.8)',
-//   },
-//   title: {
-//     fontSize: 14,
-//   },
-//   pos: {
-//     marginBottom: 12,
-//   },
-// });
 
 const checkIfHourBeforeSession = (start_time) => {
   let curDate = new Date();
   let curStart = moment(start_time);
-  // console.log("Starting ", curStart.date(), curStart.hour(), curStart.month());
-  // console.log("New Date", curDate.getDate(), curDate.getHours(), curDate.getMonth());
-  // console.log("DIff", curStart - curDate, "\nHOURS", ONE_HOUR);
   return (curStart - curDate <= ONE_HOUR) ? true : false; //eveny start time - date.now()
 }
 
 export const BookingsView = props => {
-  const [booked, setBooked] = useState(null);
   const [redirect, setRedirect] = React.useState(false);
-
-  // const classes = useStyles();
-  // const bull = <span className={classes.bullet}>•</span>;
 
   const handleRedirect = () => {
     setRedirect(!redirect);
   };
 
   useEffect(() => {
-    if (!booked) {
-      var targetUrl =
-        'https://good-grades-server.herokuapp.com/api/events/byTutor/' + props.user.unique_id + '/booked';
-      fetch(targetUrl)
-        .then(blob => blob.json())
-        .then(data => {
-          console.table("booked", data);
-          setBooked(data);
-          return data;
-        })
-        .catch(e => {
-          console.log(e);
-          return e;
-        });
+    if (!props.booked){
+      props.refreshBookings();
     }
     if (redirect) {
       // do something meaningful, Promises, if/else, whatever, and then
@@ -81,7 +46,7 @@ export const BookingsView = props => {
             : 'tutor bookings'}
           <br></br><br></br>
           {
-            booked ? booked.map(elem => {
+            props.booked ? props.booked.map(elem => {
               return (
                 <div>
                   <Card>
