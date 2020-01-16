@@ -227,7 +227,7 @@ export default class TutorSchedulerView extends React.Component {
   commitChanges({ added, changed, deleted }) {
     this.setState(state => {
       let { data } = state;
-      if (added && (Date(added.startDate) < Date.now())) {
+      if (added && (added.startDate > Date.now())) {
         const startingAddedId =
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
           let newAppointment = { id: startingAddedId, ...added, tutor: this.props.user.unique_id, old_start_time: added.startDate, start_time: added.startDate, end_time: added.endDate};
