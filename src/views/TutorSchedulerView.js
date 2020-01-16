@@ -253,7 +253,7 @@ export default class TutorSchedulerView extends React.Component {
       if (changed) {
         console.log(changed)
         data = data.map(appointment => {
-          if (changed[appointment.id]){
+          if (changed[appointment.id] && (changed[appointment.id].startDate > Date.now())){
             let changedAppointment = { ...appointment, ...changed[appointment.id], new_start_time: changed[appointment.id].startDate, new_end_time: changed[appointment.id].endDate};
             fetch(
               'https://good-grades-server.herokuapp.com/api/events/updateEvent',
@@ -329,7 +329,7 @@ export default class TutorSchedulerView extends React.Component {
           <PeopleAltIcon className={classes.icon} />
         </Grid>
         <Grid item xs={10}>
-          <span>{appointmentData.students.length > 0 ? appointmentData.students[0].username : 'Not Booked'}</span>
+          <span>{appointmentData.students && appointmentData.students.length > 0 ? appointmentData.students[0].username : 'Not Booked'}</span>
         </Grid>
       </Grid>
     </AppointmentTooltip.Content>
