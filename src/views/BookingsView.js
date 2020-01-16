@@ -8,101 +8,72 @@ import Typography from '@material-ui/core/Typography';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
-// const useStyles = makeStyles({
-//   card: {
-//     minWidth: 275,
-//   },
-//   bullet: {
-//     display: 'inline-block',
-//     margin: '0 2px',
-//     transform: 'scale(0.8)',
-//   },
-//   title: {
-//     fontSize: 14,
-//   },
-//   pos: {
-//     marginBottom: 12,
-//   },
-// });
 
 const checkIfHourBeforeSession = (start_time) => {
   let curDate = new Date();
   let curStart = moment(start_time);
-  // console.log("Starting ", curStart.date(), curStart.hour(), curStart.month());
-  // console.log("New Date", curDate.getDate(), curDate.getHours(), curDate.getMonth());
-  // console.log("DIff", curStart - curDate, "\nHOURS", ONE_HOUR);
   return (curStart - curDate <= ONE_HOUR) ? true : false; //eveny start time - date.now()
 }
 
 export const BookingsView = props => {
-  const [booked, setBooked] = useState(null);
-  const [redirect, setRedirect] = React.useState(false);
+  const [redirect, setRedirect] = useState(false);
+  const [roomCode, setRoomCode] = useState(false);
 
-  // const classes = useStyles();
-  // const bull = <span className={classes.bullet}>•</span>;
-  console.log("propers", props)
-
-  const handleRedirect = () => {
-    console.log({ redirect });
+  const handleRedirect = (roomCode) => {
     setRedirect(!redirect);
+    setRoomCode(roomCode);
   };
 
   useEffect(() => {
-    if (!booked) {
-      var targetUrl =
-        'https://good-grades-server.herokuapp.com/api/events/byTutor/' + props.user.unique_id + '/booked';
-      fetch(targetUrl)
-        .then(blob => blob.json())
-        .then(data => {
-          console.table("booked", data);
-          setBooked(data);
-          return data;
-        })
-        .catch(e => {
-          console.log(e);
-          return e;
-        });
+    if (!props.booked){
+      props.refreshBookings();
     }
-    if (redirect) {
+    if (redirect && roomCode) {
       // do something meaningful, Promises, if/else, whatever, and then
       // console.log("room.sh/go/" + roomCode)
-      window.location.assign('//room.sh/go/' + props.user.room_code);
+      window.location.assign('//room.sh/go/' + roomCode);
     }
   });
-
-  
 
   return (
     <div>
       <div className='App'>
         <header className='App-header'>
-          <h1>Bookings</h1>
-          <br></br>
-          {props.user.type === 'student'
+          <h3>Bookings</h3>
+          {/* {props.user.type === 'student'
             ? 'student bookings'
             : 'tutor bookings'}
-          <br></br><br></br>
-          {
-            booked ? booked.map(elem => {
-              return (
+          <br></br><br></br> */}
+          {props.booked && props.booked.length > 0 ? 
                 <div>
+                <h4>Upcoming Bookings</h4> 
+                <br></br></div> : <div>
+                    <h4>No Bookings</h4>
+                    {props.user.type === 'tutor' ? <h5>Go to the Scheduler to put up appointments</h5> : <h5>Go to the Scheduler to book appointments</h5>}
+                </div>}
+          {
+            props.booked ? props.booked.map((elem, index) => {
+              return (
+                <div key={index}>
                   <Card>
                     <CardContent>
                       <Typography>
+                        Tutor : {elem.tutor_username} <br></br>
                         Student : { elem.students[0].username } <br></br>
                         Date : { moment(elem.start_time).format("dddd, MMM DD") } <br></br>
-                        Session : { moment(elem.start_time).format("hh:mm a") } - { moment(elem.end_time).format("hh:mm a") } <br></br>
+                        Time : { moment(elem.start_time).format("hh:mm a") } - { moment(elem.end_time).format("hh:mm a") } <br></br>
                       </Typography>
                     </CardContent>
                       { checkIfHourBeforeSession(elem.start_time) ? 
                       <CardActions>
-                        <Button size="small" onClick={handleRedirect}>Go To Room</Button>
+                        <Button size="small" onClick={()=>handleRedirect(elem.room_code)}>Go To Room</Button>
                       </CardActions> : null }
                   </Card> 
                   <br></br>
                 </div>
               )
-            }) : console.log("empteee")
+            }) : <div>
+                </div>
           }
         </header>
       </div>

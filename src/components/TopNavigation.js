@@ -18,9 +18,9 @@ export default function CenteredTabs() {
   return (
     <Paper className={classes.root}>
       <Tabs textColor='primary' centered>
-        <Tab label='Bookings' component={Link} to='/bookings' />
-        <Tab label='Home' component={Link} to='/' />
-        <Tab label='Scheduler' component={Link} to='/scheduler' />
+        <Tab value='bookings' label='Bookings' component={Link} to='/bookings' />
+        <Tab value='home' label='Home' component={Link} to='/' />
+        <Tab value='scheduler' label='Scheduler' component={Link} to='/scheduler' />
       </Tabs>
     </Paper>
   );
