@@ -16,7 +16,7 @@ const checkIfHourBeforeSession = (start_time) => {
 }
 
 export const BookingsView = props => {
-  const [redirect, setRedirect] = React.useState(false);
+  const [redirect, setRedirect] = useState(false);
 
   const handleRedirect = () => {
     setRedirect(!redirect);

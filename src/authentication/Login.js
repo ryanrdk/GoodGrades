@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Redirect } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import { TiSocialFacebookCircular } from 'react-icons/ti';
 import ReactLoading from 'react-loading';
 import {
@@ -34,7 +34,7 @@ const fakeAuth = {
 
 export const PrivateRoute = props => (
   <Fragment>
-    {fakeAuth.isAuthenticated ? (
+    {fakeAuth.isAuthenticated || (props.user && props.user.unique_id) ? (
       props.children
     ) : (
       <Redirect to={{ pathname: '/login' }} />
@@ -229,6 +229,31 @@ class Login extends React.Component {
               autoLoad={false}
               fields="name,email,picture"
               callback={this.login}
+              render={renderProps => (
+                <button style ={{
+                  backgroundColor: '#4c69ba',
+                  display: 'inline-flex',
+                  color: '#fff',
+                  boxShadow: "rgba(0, 0, 0, 0.24) 0px 2px 2px 0px, rgba(0, 0, 0, 0.24) 0px 0px 1px 0px",
+                  padding: '0px',
+                  borderRadius: '2px',
+                  border: "1px solid transparent",
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  fontFamily: 'Roboto, sans-serif',
+                }}onClick={renderProps.onClick}>
+                  <div style={{
+                    marginRight: '10px',
+                    padding: '10px',
+                    borderRadius: '2px'}}>
+                  <TiSocialFacebookCircular style={{width:'18', height:'18'}}/>
+                </div>
+                <span style={{
+                  padding: "10px 10px 10px 0px",
+                  fontWeight: 500}}>Login with facebook</span>
+                
+                </button>
+              )}
             />
           </header>
         </div>
