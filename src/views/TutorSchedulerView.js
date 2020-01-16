@@ -25,7 +25,7 @@ import {
 } from '@devexpress/dx-react-scheduler-material-ui';
 import classNames from 'clsx';
 import { Grid } from '@material-ui/core';
-import Room from '@material-ui/icons/Room';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 
 const useStyles = makeStyles(theme => ({
@@ -227,7 +227,7 @@ export default class TutorSchedulerView extends React.Component {
   commitChanges({ added, changed, deleted }) {
     this.setState(state => {
       let { data } = state;
-      if (added) {
+      if (added && (Date(added.startDate) < Date.now())) {
         const startingAddedId =
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
           let newAppointment = { id: startingAddedId, ...added, tutor: this.props.user.unique_id, old_start_time: added.startDate, start_time: added.startDate, end_time: added.endDate};
@@ -326,10 +326,10 @@ export default class TutorSchedulerView extends React.Component {
     <AppointmentTooltip.Content {...restProps} appointmentData={appointmentData}>
       <Grid container alignItems="center">
         <Grid item xs={2} className={classes.textCenter}>
-          <Room className={classes.icon} />
+          <PeopleAltIcon className={classes.icon} />
         </Grid>
         <Grid item xs={10}>
-          <span>{appointmentData.location}</span>
+          <span>{appointmentData.students.length > 0 ? appointmentData.students[0].username : 'Not Booked'}</span>
         </Grid>
       </Grid>
     </AppointmentTooltip.Content>

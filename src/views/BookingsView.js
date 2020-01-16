@@ -17,23 +17,23 @@ const checkIfHourBeforeSession = (start_time) => {
 
 export const BookingsView = props => {
   const [redirect, setRedirect] = useState(false);
+  const [roomCode, setRoomCode] = useState(false);
 
-  const handleRedirect = () => {
+  const handleRedirect = (roomCode) => {
     setRedirect(!redirect);
+    setRoomCode(roomCode);
   };
 
   useEffect(() => {
     if (!props.booked){
       props.refreshBookings();
     }
-    if (redirect) {
+    if (redirect && roomCode) {
       // do something meaningful, Promises, if/else, whatever, and then
       // console.log("room.sh/go/" + roomCode)
-      window.location.assign('//room.sh/go/' + props.user.room_code);
+      window.location.assign('//room.sh/go/' + roomCode);
     }
   });
-
-  
 
   return (
     <div>
@@ -66,7 +66,7 @@ export const BookingsView = props => {
                     </CardContent>
                       { checkIfHourBeforeSession(elem.start_time) ? 
                       <CardActions>
-                        <Button size="small" onClick={handleRedirect}>Go To Room</Button>
+                        <Button size="small" onClick={()=>handleRedirect(elem.room_code)}>Go To Room</Button>
                       </CardActions> : null }
                   </Card> 
                   <br></br>

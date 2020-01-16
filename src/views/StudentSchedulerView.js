@@ -22,9 +22,9 @@ import {
 } from '@devexpress/dx-react-scheduler-material-ui';
 import classNames from 'clsx';
 import { Grid, Button } from '@material-ui/core';
-import Room from '@material-ui/icons/Room';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 
 const useStyles = makeStyles(theme => ({
@@ -354,15 +354,14 @@ export default class StudentSchedulerView extends React.Component {
     <AppointmentTooltip.Content {...restProps} appointmentData={appointmentData}>
       <Grid container alignItems="center">
         <Grid item xs={2} className={classes.textCenter}>
-          <Room className={classes.icon} />
+          <PeopleAltIcon className={classes.icon} />
         </Grid>
         <Grid item xs={10}>
-          <span>{appointmentData.location}</span>
+          <span>{appointmentData.students.length > 0 ? appointmentData.students[0].username : 'Not Booked'}</span>
         </Grid>
       </Grid>
     </AppointmentTooltip.Content>
   ));
-  
   ToolTipCommandButton = withStyles(style, { name: 'CommandButton' })(({
     classes, ...restProps
   }) => (
