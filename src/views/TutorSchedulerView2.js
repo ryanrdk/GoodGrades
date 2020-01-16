@@ -6,6 +6,7 @@ import { ViewState, EditingState } from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
   Toolbar,
+  MonthView,
   WeekView,
   ViewSwitcher,
   Appointments,
@@ -35,8 +36,12 @@ import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
+import TextField from '@material-ui/core/TextField';
+import LocationOn from '@material-ui/icons/LocationOn';
+import Notes from '@material-ui/icons/Notes';
 import Close from '@material-ui/icons/Close';
 import CalendarToday from '@material-ui/icons/CalendarToday';
+import Create from '@material-ui/icons/Create';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import classNames from 'clsx';
 
@@ -160,6 +165,15 @@ class AppointmentFormContainerBasic extends React.PureComponent {
       ? () => this.commitAppointment('added')
       : () => this.commitAppointment('changed');
 
+    const textEditorProps = field => ({
+      variant: 'outlined',
+      onChange: ({ target: change }) => this.changeAppointment({
+        field: [field], changes: change.value,
+      }),
+      value: displayAppointmentData[field] || '',
+      label: field[0].toUpperCase() + field.slice(1),
+      className: classes.textField,
+    });
 
     const pickerEditorProps = field => ({
       className: classes.picker,
@@ -410,8 +424,8 @@ class TutorSchedulerView2 extends React.PureComponent {
       editingAppointment: undefined,
       previousAppointment: undefined,
       addedAppointment: {},
-      startDayHour: 5,
-      endDayHour: 20,
+      startDayHour: 0,
+      endDayHour: 23,
       isNewAppointment: false,
       appointmentChanges: {},
       editingAppointmentId: undefined,
@@ -604,7 +618,7 @@ class TutorSchedulerView2 extends React.PureComponent {
         }
         )
         .then(response => response.json())
-        .then(() => {
+        .then(data => {
             this.setDeletedAppointmentId(deleted);
             this.toggleConfirmationVisible();
         })
@@ -667,6 +681,7 @@ class TutorSchedulerView2 extends React.PureComponent {
       appointmentChanges,
       loading,
     } = this.state;
+    const { classes } = this.props;
 
     return (
       <Paper>
@@ -744,9 +759,10 @@ class TutorSchedulerView2 extends React.PureComponent {
 
         <Fab
           color="secondary"
-          style={{
-                  bottom:  '100px',
-                    right: '-150px',
+          styles={{
+                    position: 'absolute',
+                    bottom:  3,
+                    right: 4,
                 }}
           onClick={() => {
             this.setState({ editingFormVisible: true });

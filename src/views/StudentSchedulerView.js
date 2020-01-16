@@ -205,7 +205,9 @@ export default class StudentSchedulerView extends React.Component {
         fieldName: 'selectTutor',
         title: 'Select Tutor',
         instances: []
-      } ]
+      } ],
+      startDayHour: 5,
+      endDayHour: 20,
     };
 
     this.loadAllTutorsData = this.loadAllTutorsData.bind(this);
@@ -375,7 +377,9 @@ export default class StudentSchedulerView extends React.Component {
       data,
       loading,
       resources,
-      mainResourceName
+      mainResourceName,
+      startDayHour,
+      endDayHour,
     } = this.state;
 
     return (
@@ -395,8 +399,8 @@ export default class StudentSchedulerView extends React.Component {
                   onCurrentDateChange={this.currentDateChange}
                   onCurrentViewNameChange = {this.currentViewNameChange}
                 />
-                <WeekView startDayHour={0} endDayHour={23} />
-                <DayView startDayHour={5} endDayHour={23} />
+                <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
+                <DayView startDayHour={startDayHour} endDayHour={endDayHour} />
                 <AllDayPanel />
                 <Toolbar {...(loading ? { rootComponent: ToolbarWithLoading } : null)}>
                 </Toolbar>
