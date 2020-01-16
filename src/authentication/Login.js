@@ -216,45 +216,45 @@ class Login extends React.Component {
       <div>
         <div className='App'>
           <header className='App-header'>
-            <LoginCard />
-            <GoogleLogin
-              clientId='198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com'
-              buttonText='Login with Google'
-              onSuccess={this.login}
-              onFailure={responseGoogle}
-              cookiePolicy={'single_host_origin'}
-            />
-            <FacebookLogin
-              appId='473647886861679'
-              autoLoad={false}
-              fields="name,email,picture"
-              callback={this.login}
-              render={renderProps => (
-                <button style ={{
-                  backgroundColor: '#4c69ba',
-                  display: 'inline-flex',
-                  color: '#fff',
-                  boxShadow: "rgba(0, 0, 0, 0.24) 0px 2px 2px 0px, rgba(0, 0, 0, 0.24) 0px 0px 1px 0px",
-                  padding: '0px',
-                  borderRadius: '2px',
-                  border: "1px solid transparent",
-                  fontSize: '14px',
-                  fontWeight: 500,
-                  fontFamily: 'Roboto, sans-serif',
-                }}onClick={renderProps.onClick}>
-                  <div style={{
-                    marginRight: '10px',
-                    padding: '10px',
-                    borderRadius: '2px'}}>
-                  <TiSocialFacebookCircular style={{width:'18', height:'18'}}/>
-                </div>
-                <span style={{
-                  padding: "10px 10px 10px 0px",
-                  fontWeight: 500}}>Login with facebook</span>
-                
-                </button>
-              )}
-            />
+              <LoginCard />
+              <GoogleLogin
+                clientId='198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com'
+                buttonText='Login with Google'
+                onSuccess={this.login}
+                onFailure={responseGoogle}
+                cookiePolicy={'single_host_origin'}
+              />
+              <FacebookLogin
+                appId='473647886861679'
+                autoLoad={false}
+                fields="name,email,picture"
+                callback={this.login}
+                render={renderProps => (
+                  <button style ={{
+                    backgroundColor: '#4c69ba',
+                    display: 'inline-flex',
+                    color: '#fff',
+                    boxShadow: "rgba(0, 0, 0, 0.24) 0px 2px 2px 0px, rgba(0, 0, 0, 0.24) 0px 0px 1px 0px",
+                    padding: '0px',
+                    borderRadius: '2px',
+                    border: "1px solid transparent",
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    fontFamily: 'Roboto, sans-serif',
+                  }}onClick={renderProps.onClick}>
+                    <div style={{
+                      marginRight: '10px',
+                      padding: '10px',
+                      borderRadius: '2px'}}>
+                    <TiSocialFacebookCircular style={{width:'18', height:'18'}}/>
+                  </div>
+                  <span style={{
+                    padding: "10px 10px 10px 0px",
+                    fontWeight: 500}}>Login with facebook</span>
+                  
+                  </button>
+                )}
+              />
           </header>
         </div>
       </div>

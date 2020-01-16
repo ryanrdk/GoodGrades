@@ -303,6 +303,7 @@ export default class StudentSchedulerView extends React.Component {
             // data: onlyEvents,
             loading: false
           });
+          this.changeMainResource(this.state.mainResourceName);
           console.log("Mapped", this.state)
         }, 2200)
       )

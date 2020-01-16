@@ -39,22 +39,29 @@ export const BookingsView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
-          <h1>Bookings</h1>
-          <br></br>
-          {props.user.type === 'student'
+          <h3>Bookings</h3>
+          {/* {props.user.type === 'student'
             ? 'student bookings'
             : 'tutor bookings'}
-          <br></br><br></br>
-          {
-            props.booked ? props.booked.map(elem => {
-              return (
+          <br></br><br></br> */}
+          {props.booked && props.booked.length > 0 ? 
                 <div>
+                <h4>Upcoming Bookings</h4> 
+                <br></br></div> : <div>
+                    <h4>No Bookings</h4>
+                    {props.user.type === 'tutor' ? <h5>Go to the Scheduler to put up appointments</h5> : <h5>Go to the Scheduler to book appointments</h5>}
+                </div>}
+          {
+            props.booked ? props.booked.map((elem, index) => {
+              return (
+                <div key={index}>
                   <Card>
                     <CardContent>
                       <Typography>
+                        Tutor : {elem.tutor_username} <br></br>
                         Student : { elem.students[0].username } <br></br>
                         Date : { moment(elem.start_time).format("dddd, MMM DD") } <br></br>
-                        Session : { moment(elem.start_time).format("hh:mm a") } - { moment(elem.end_time).format("hh:mm a") } <br></br>
+                        Time : { moment(elem.start_time).format("hh:mm a") } - { moment(elem.end_time).format("hh:mm a") } <br></br>
                       </Typography>
                     </CardContent>
                       { checkIfHourBeforeSession(elem.start_time) ? 
@@ -65,7 +72,8 @@ export const BookingsView = props => {
                   <br></br>
                 </div>
               )
-            }) : console.log("empteee")
+            }) : <div>
+                </div>
           }
         </header>
       </div>

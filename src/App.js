@@ -15,8 +15,10 @@ function App() {
   const [booked, setBooked] = useState(null);
 
   const getBookings = () => {
-    var targetUrl =
-    'https://good-grades-server.herokuapp.com/api/events/byTutor/' + user.unique_id + '/booked';
+    var targetUrl = user.type === "tutor" ?
+    'https://good-grades-server.herokuapp.com/api/events/byTutor/' + user.unique_id + '/booked'
+    :
+    'https://good-grades-server.herokuapp.com/api/events/byStudent/' + user.unique_id
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {

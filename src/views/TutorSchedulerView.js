@@ -139,6 +139,20 @@ const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
   )
 );
 
+const Appointment = withStyles(styles, { name: 'Appointment' })(
+  ({ classes, data, ...restProps }) => {
+    let style = data.booked ? {background: '#ff8a65', hover:'#f4511e'} : {background: '#4fc3f7', hover:'#039be5'}
+    return (
+      <Appointments.Appointment
+        {...restProps}
+        data={data}
+        style={style}
+      />
+    );
+  },
+);
+
+
 const mapAppointmentData = (dataToMap, index) => ({
   id: index,
   startDate: dataToMap.start_time,
@@ -325,6 +339,11 @@ export default class TutorSchedulerView extends React.Component {
     <AppointmentTooltip.CommandButton {...restProps} className={classes.commandButton} />
   ));
 
+getEventById = eventId => this.state.data.find(({ id }) => id === eventId);
+
+
+
+
   render() {
     const {
       currentDate,
@@ -363,7 +382,7 @@ export default class TutorSchedulerView extends React.Component {
         />
         <ViewSwitcher />
         <EditRecurrenceMenu />
-        <Appointments />
+        <Appointments appointmentComponent={Appointment} />
         <AppointmentTooltip 
             headerComponent={this.ToolTipHeader}
             contentComponent={this.ToolTipContent}
