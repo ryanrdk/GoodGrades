@@ -229,6 +229,7 @@ class Login extends React.Component {
                 autoLoad={false}
                 fields="name,email,picture"
                 callback={this.login}
+                redirectUri ={window.location.href}
                 render={renderProps => (
                   <button style ={{
                     backgroundColor: '#4c69ba',
