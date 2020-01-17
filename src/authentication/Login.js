@@ -229,6 +229,7 @@ class Login extends React.Component {
                 autoLoad={false}
                 fields="name,email,picture"
                 callback={this.login}
+                disableMobileRedirect={true}
                 redirectUri ={window.location.href}
                 render={renderProps => (
                   <button style ={{
