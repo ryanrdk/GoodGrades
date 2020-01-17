@@ -417,7 +417,7 @@ export default class StudentSchedulerView extends React.Component {
               onChange={this.changeMainResource}
             />
             <Paper>
-              <Scheduler data={data} height={680}>
+              <Scheduler data={data} height={`${isMobile ? window.screen.height * .75 : 680}`}>
                 <ViewState
                   currentDate={currentDate}
                   currentViewName={currentViewName}
