@@ -9,12 +9,14 @@ import {
   Divider,
   Typography
 } from '@material-ui/core';
+import { isMobile } from 'react-device-detect';
 
 const useStyles = makeStyles({
   card: {
     maxWidth: 440,
     marginBottom: 32
   },
+  cardMobile: { maxWidth: '90%', marginBottom: 32 },
   media: {
     height: 210,
     margin: 32,
@@ -26,7 +28,7 @@ export default function MediaCard() {
   const classes = useStyles();
 
   return (
-    <Card className={classes.card}>
+    <Card className={isMobile ? classes.cardMobile : classes.card}>
       <CardActionArea>
         <CardMedia
           className={classes.media}
