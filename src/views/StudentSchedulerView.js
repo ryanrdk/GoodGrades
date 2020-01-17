@@ -151,6 +151,19 @@ const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
   )
 );
 
+const Appointment = withStyles(styles, { name: 'Appointment' })(
+  ({ classes, data, ...restProps }) => {
+    let style = data.booked ? {background: '#ff8a65', hover:'#f4511e'} : {background: '#4fc3f7', hover:'#039be5'}
+    return (
+      <Appointments.Appointment
+        {...restProps}
+        data={data}
+        style={style}
+      />
+    );
+  },
+);
+
 const mapAppointmentData = (dataToMap, index) => ({
   id: index,
   startDate: dataToMap.start_time,
@@ -205,7 +218,9 @@ export default class StudentSchedulerView extends React.Component {
         fieldName: 'selectTutor',
         title: 'Select Tutor',
         instances: []
-      } ]
+      } ],
+      startDayHour: 5,
+      endDayHour: 20,
     };
 
     this.loadAllTutorsData = this.loadAllTutorsData.bind(this);
@@ -227,7 +242,7 @@ export default class StudentSchedulerView extends React.Component {
         const ans = this.state.initialData.filter(elem2 => {  // filtering what data is already showing for tutor initially and removing from currently selected data
           return (elem2.tutor === elem.tutor && elem2.startDate === elem.startDate)
         })
-        if (ans.length === 0) { excludedEvents.push(elem) } // if no matching event found in initial data, it is added to excludedEvents array
+        if (ans.length === 0 && (new Date(elem.startDate) > Date.now())) { excludedEvents.push(elem) } // if no matching event found in initial data, it is added to excludedEvents array
       })
 
       console.log("Changed", this.state, newEvents, mainResourceName, excludedEvents)
@@ -247,7 +262,7 @@ export default class StudentSchedulerView extends React.Component {
   loadData() {
     console.log('fetchin frahm api');
     fetch(
-      `https://good-grades-server.herokuapp.com/api/events/byTutor/${this.props.user.unique_id}`,
+      `https://good-grades-server.herokuapp.com/api/events/byStudent/${this.props.user.unique_id}`,
       {
         method: 'GET',
         headers: {
@@ -260,7 +275,7 @@ export default class StudentSchedulerView extends React.Component {
         setTimeout(() => {
           this.setState({
             data: data ? data.map(mapAppointmentData) : [],
-            initialData : [], //using to store tutors initial events and compare to selected tutor's events
+            initialData : data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
             loading: false
           });
           console.log("Appoint", this.state.data)
@@ -326,8 +341,8 @@ export default class StudentSchedulerView extends React.Component {
       }
     )
       .then(response => response.json())
-      .then(() =>{
-            this.setState({loading: true});
+      .then((data) =>{
+            data ? this.setState({loading: true, initialData: [...this.state.initialData, mapAppointmentData(data)]}) : this.setState({loading: true });
             this.loadAllTutorsData();
             this.props.refreshBookings();
         }
@@ -342,9 +357,9 @@ export default class StudentSchedulerView extends React.Component {
       {...restProps}
       appointmentData={appointmentData}
     >
-      <Button onClick={() => this.bookSession(appointmentData)} className={classes.commandButton}>
+      { appointmentData.booked === false ? <Button onClick={() => this.bookSession(appointmentData)} className={classes.commandButton}>
         Book Session
-      </Button>
+      </Button> : null}
     </AppointmentTooltip.Header>
   ));
   
@@ -375,7 +390,9 @@ export default class StudentSchedulerView extends React.Component {
       data,
       loading,
       resources,
-      mainResourceName
+      mainResourceName,
+      startDayHour,
+      endDayHour,
     } = this.state;
 
     return (
@@ -395,14 +412,14 @@ export default class StudentSchedulerView extends React.Component {
                   onCurrentDateChange={this.currentDateChange}
                   onCurrentViewNameChange = {this.currentViewNameChange}
                 />
-                <WeekView startDayHour={0} endDayHour={23} />
-                <DayView startDayHour={5} endDayHour={23} />
+                <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
+                <DayView startDayHour={startDayHour} endDayHour={endDayHour} />
                 <AllDayPanel />
                 <Toolbar {...(loading ? { rootComponent: ToolbarWithLoading } : null)}>
                 </Toolbar>
                 <ViewSwitcher />
 
-                <Appointments />
+                <Appointments appointmentComponent={Appointment} />
                 <AppointmentTooltip 
                   headerComponent={this.ToolTipHeader}
                   contentComponent={this.ToolTipContent}
