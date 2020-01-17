@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Redirect } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import { TiSocialFacebookCircular } from 'react-icons/ti';
 import ReactLoading from 'react-loading';
 import {
@@ -20,7 +20,6 @@ import './FacebookButton.css';
 const responseGoogle = response => {
   console.log(response);
 };
-
 
 const fakeAuth = {
   isAuthenticated: false,
@@ -54,11 +53,13 @@ class Login extends React.Component {
   };
 
   login = response => {
-    console.log(response);
     let { profileObj } = this.state;
     if (!response.profileObj) {
-      let names = response.name.split(' ');
-      console.log(names);
+      let names = response.name;
+      if (names === undefined) {
+        return 'error';
+      }
+      names = names.split(' ');
       profileObj.givenName = names[0];
       profileObj.familyName = names[names.length - 1];
       profileObj.unique_id = response.userID;
@@ -70,8 +71,7 @@ class Login extends React.Component {
     var targetUrl =
       'https://good-grades-server.herokuapp.com/api/users/' +
       profileObj.unique_id;
-    console.log(profileObj);
-    this.setState({loading: true})
+    this.setState({ loading: true });
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {
@@ -80,7 +80,7 @@ class Login extends React.Component {
           fakeAuth.authenticate(() => {
             this.setState(() => ({
               loading: false,
-              redirectToReferrer: true,
+              redirectToReferrer: true
             }));
           });
           this.props.handleSetUser({ ...profileObj, type: data.type });
@@ -95,9 +95,21 @@ class Login extends React.Component {
               username: profileObj.name
             }
           }));
+          console.log(`Proffesor Object: ${this.state.profileObj}`);
+          console.log(this.state.profileObj);
+          try {
+            let undf = this.state.profileObj;
+            if (undf) {
+              console.log('not undefined');
+            } else {
+              undf.split();
+            }
+          } catch (error) {
+            console.log(`HEYEEYEYE: ${error}`);
+            console.log(error);
+            return error;
+          }
         }
-
-        console.log(data);
         return data;
       })
       .catch(e => {
@@ -156,7 +168,11 @@ class Login extends React.Component {
           <div className='App'>
             <header className='App-header'>
               {/* <ReactLoading height={'20%'} width={'20%'} /> */}
-              <ReactLoading type={"spinningBubbles"}  height={'10%'} width={'10%'} />
+              <ReactLoading
+                type={'spinningBubbles'}
+                height={'10%'}
+                width={'10%'}
+              />
             </header>
           </div>
         </div>

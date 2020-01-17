@@ -17,10 +17,13 @@ import {
   DayView,
   DateNavigator,
   CurrentTimeIndicator,
-  TodayButton,
+  TodayButton
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { connectProps } from '@devexpress/dx-react-core';
-import { KeyboardDateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import {
+  KeyboardDateTimePicker,
+  MuiPickersUtilsProvider
+} from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
 import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
@@ -40,53 +43,52 @@ import CalendarToday from '@material-ui/icons/CalendarToday';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import classNames from 'clsx';
 
-
 import { LinearProgress, Grid } from '@material-ui/core';
 
 const containerStyles = theme => ({
   container: {
     width: theme.spacing(68),
     padding: 0,
-    paddingBottom: theme.spacing(2),
+    paddingBottom: theme.spacing(2)
   },
   content: {
     padding: theme.spacing(2),
-    paddingTop: 0,
+    paddingTop: 0
   },
   header: {
     overflow: 'hidden',
-    paddingTop: theme.spacing(0.5),
+    paddingTop: theme.spacing(0.5)
   },
   closeButton: {
-    float: 'right',
+    float: 'right'
   },
   buttonGroup: {
     display: 'flex',
     justifyContent: 'flex-end',
-    padding: theme.spacing(0, 2),
+    padding: theme.spacing(0, 2)
   },
   button: {
-    marginLeft: theme.spacing(2),
+    marginLeft: theme.spacing(2)
   },
   picker: {
     marginRight: theme.spacing(2),
     '&:last-child': {
-      marginRight: 0,
+      marginRight: 0
     },
-    width: '50%',
+    width: '50%'
   },
   wrapper: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: theme.spacing(1, 0),
+    padding: theme.spacing(1, 0)
   },
   icon: {
     margin: theme.spacing(2, 0),
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(2)
   },
   textField: {
-    width: '100%',
-  },
+    width: '100%'
+  }
 });
 
 class AppointmentFormContainerBasic extends React.PureComponent {
@@ -94,7 +96,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
     super(props);
 
     this.state = {
-      appointmentChanges: {},
+      appointmentChanges: {}
     };
 
     this.getAppointmentData = () => {
@@ -113,10 +115,10 @@ class AppointmentFormContainerBasic extends React.PureComponent {
   changeAppointment({ field, changes }) {
     const nextChanges = {
       ...this.getAppointmentChanges(),
-      [field]: changes,
+      [field]: changes
     };
     this.setState({
-      appointmentChanges: nextChanges,
+      appointmentChanges: nextChanges
     });
   }
 
@@ -124,7 +126,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
     const { commitChanges } = this.props;
     const appointment = {
       ...this.getAppointmentData(),
-      ...this.getAppointmentChanges(),
+      ...this.getAppointmentChanges()
     };
     if (type === 'deleted') {
       commitChanges({ [type]: appointment.id });
@@ -134,7 +136,7 @@ class AppointmentFormContainerBasic extends React.PureComponent {
       commitChanges({ [type]: appointment });
     }
     this.setState({
-      appointmentChanges: {},
+      appointmentChanges: {}
     });
   }
 
@@ -146,13 +148,13 @@ class AppointmentFormContainerBasic extends React.PureComponent {
       appointmentData,
       cancelAppointment,
       target,
-      onHide,
+      onHide
     } = this.props;
     const { appointmentChanges } = this.state;
 
     const displayAppointmentData = {
       ...appointmentData,
-      ...appointmentChanges,
+      ...appointmentChanges
     };
 
     const isNewAppointment = appointmentData.id === undefined;
@@ -160,23 +162,26 @@ class AppointmentFormContainerBasic extends React.PureComponent {
       ? () => this.commitAppointment('added')
       : () => this.commitAppointment('changed');
 
-
     const pickerEditorProps = field => ({
       className: classes.picker,
       // keyboard: true,
       ampm: false,
       value: displayAppointmentData[field],
-      onChange: date => this.changeAppointment({
-        field: [field], changes: date ? date.toDate() : new Date(displayAppointmentData[field]),
-      }),
+      onChange: date =>
+        this.changeAppointment({
+          field: [field],
+          changes: date
+            ? date.toDate()
+            : new Date(displayAppointmentData[field])
+        }),
       inputVariant: 'outlined',
       format: 'DD/MM/YYYY HH:mm',
-      onError: () => null,
+      onError: () => null
     });
 
     const cancelChanges = () => {
       this.setState({
-        appointmentChanges: {},
+        appointmentChanges: {}
       });
       visibleChange();
       cancelAppointment();
@@ -187,15 +192,11 @@ class AppointmentFormContainerBasic extends React.PureComponent {
         visible={visible}
         target={target}
         fullSize
-        onHide={onHide}
-      >
+        onHide={onHide}>
         <div>
           <div className={classes.header}>
-            <IconButton
-              className={classes.closeButton}
-              onClick={cancelChanges}
-            >
-              <Close color="action" />
+            <IconButton className={classes.closeButton} onClick={cancelChanges}>
+              <Close color='action' />
             </IconButton>
           </div>
           <div className={classes.content}>
@@ -206,14 +207,14 @@ class AppointmentFormContainerBasic extends React.PureComponent {
               />
             </div> */}
             <div className={classes.wrapper}>
-              <CalendarToday className={classes.icon} color="action" />
+              <CalendarToday className={classes.icon} color='action' />
               <MuiPickersUtilsProvider utils={MomentUtils}>
                 <KeyboardDateTimePicker
-                  label="Start Date"
+                  label='Start Date'
                   {...pickerEditorProps('startDate')}
                 />
                 <KeyboardDateTimePicker
-                  label="End Date"
+                  label='End Date'
                   {...pickerEditorProps('endDate')}
                 />
               </MuiPickersUtilsProvider>
@@ -236,26 +237,24 @@ class AppointmentFormContainerBasic extends React.PureComponent {
           <div className={classes.buttonGroup}>
             {!isNewAppointment && (
               <Button
-                variant="outlined"
-                color="secondary"
+                variant='outlined'
+                color='secondary'
                 className={classes.button}
                 onClick={() => {
                   visibleChange();
                   this.commitAppointment('deleted');
-                }}
-              >
+                }}>
                 Delete
               </Button>
             )}
             <Button
-              variant="outlined"
-              color="primary"
+              variant='outlined'
+              color='primary'
               className={classes.button}
               onClick={() => {
                 visibleChange();
                 applyChanges();
-              }}
-            >
+              }}>
               {isNewAppointment ? 'Create' : 'Save'}
             </Button>
           </div>
@@ -265,136 +264,126 @@ class AppointmentFormContainerBasic extends React.PureComponent {
   }
 }
 
-const AppointmentFormContainer = withStyles(containerStyles, { name: 'AppointmentFormContainer' })(AppointmentFormContainerBasic);
+const AppointmentFormContainer = withStyles(containerStyles, {
+  name: 'AppointmentFormContainer'
+})(AppointmentFormContainerBasic);
 
 const mapAppointmentData = (dataToMap, index) => ({
-    id: index,
-    startDate: dataToMap.start_time,
-    endDate: dataToMap.end_time,
-    old_start_time: dataToMap.start_time,
-    ...dataToMap,
-  });
+  id: index,
+  startDate: dataToMap.start_time,
+  endDate: dataToMap.end_time,
+  old_start_time: dataToMap.start_time,
+  ...dataToMap
+});
 
-  const useStyles = makeStyles(theme => ({
-    line: {
-      height: '2px',
-      borderTop: `2px ${theme.palette.primary.main} dotted`,
-      width: '100%',
-      transform: 'translate(0, -1px)'
+const useStyles = makeStyles(theme => ({
+  line: {
+    height: '2px',
+    borderTop: `2px ${theme.palette.primary.main} dotted`,
+    width: '100%',
+    transform: 'translate(0, -1px)'
+  },
+  circle: {
+    width: theme.spacing(1.5),
+    height: theme.spacing(1.5),
+    borderRadius: '50%',
+    transform: 'translate(-50%, -50%)',
+    background: theme.palette.primary.main
+  },
+  nowIndicator: {
+    position: 'absolute',
+    zIndex: 1,
+    left: 0,
+    top: ({ top }) => top
+  },
+  shadedCell: {
+    backgroundColor: fade(theme.palette.primary.main, 0.08),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.primary.main, 0.12)
     },
-    circle: {
-      width: theme.spacing(1.5),
-      height: theme.spacing(1.5),
-      borderRadius: '50%',
-      transform: 'translate(-50%, -50%)',
-      background: theme.palette.primary.main
-    },
-    nowIndicator: {
-      position: 'absolute',
-      zIndex: 1,
-      left: 0,
-      top: ({ top }) => top
-    },
-    shadedCell: {
-      backgroundColor: fade(theme.palette.primary.main, 0.08),
-      '&:hover': {
-        backgroundColor: fade(theme.palette.primary.main, 0.12)
-      },
-      '&:focus': {
-        backgroundColor: fade(theme.palette.primary.main, 0.2),
-        outline: 0
-      }
-    },
-    shadedPart: {
-      backgroundColor: fade(theme.palette.primary.main, 0.08),
-      position: 'absolute',
-      height: ({ shadedHeight }) => shadedHeight,
-      width: '100%',
-      left: 0,
-      top: 0,
-      'td:focus &': {
-        backgroundColor: fade(theme.palette.primary.main, 0.12)
-      }
-    },
-    appointment: {
-      backgroundColor: teal[300],
-      '&:hover': {
-        backgroundColor: teal[400]
-      }
-    },
-    shadedAppointment: {
-      backgroundColor: teal[200],
-      '&:hover': {
-        backgroundColor: teal[300]
-      }
+    '&:focus': {
+      backgroundColor: fade(theme.palette.primary.main, 0.2),
+      outline: 0
     }
-  }));
+  },
+  shadedPart: {
+    backgroundColor: fade(theme.palette.primary.main, 0.08),
+    position: 'absolute',
+    height: ({ shadedHeight }) => shadedHeight,
+    width: '100%',
+    left: 0,
+    top: 0,
+    'td:focus &': {
+      backgroundColor: fade(theme.palette.primary.main, 0.12)
+    }
+  },
+  appointment: {
+    backgroundColor: teal[300],
+    '&:hover': {
+      backgroundColor: teal[400]
+    }
+  },
+  shadedAppointment: {
+    backgroundColor: teal[200],
+    '&:hover': {
+      backgroundColor: teal[300]
+    }
+  }
+}));
 
 const styles = theme => ({
   addButton: {
     position: 'absolute',
     bottom: theme.spacing(1) * 3,
-    right: theme.spacing(1) * 4,
-  },
+    right: theme.spacing(1) * 4
+  }
 });
 
 const style = ({ palette }) => ({
-    icon: {
-      color: palette.action.active,
-    },
-    textCenter: {
-      textAlign: 'center',
-    },
-    firstRoom: {
-      background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/Lobby-4.jpg)',
-    },
-    secondRoom: {
-      background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/MeetingRoom-4.jpg)',
-    },
-    thirdRoom: {
-      background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/MeetingRoom-0.jpg)',
-    },
-    header: {
-      height: '260px',
-      backgroundSize: 'cover',
-    },
-    commandButton: {
-      backgroundColor: 'rgba(255,255,255,0.65)',
-    },
-  });
-
+  icon: {
+    color: palette.action.active
+  },
+  textCenter: {
+    textAlign: 'center'
+  },
+  header: {
+    height: '260px',
+    backgroundSize: 'cover'
+  },
+  commandButton: {
+    backgroundColor: 'rgba(255,255,255,0.65)'
+  }
+});
 
 const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
-    ({ children, classes, ...restProps }) => (
-      <div className={classes.toolbarRoot}>
-        <Toolbar.Root {...restProps}>{children}</Toolbar.Root>
-        <LinearProgress className={classes.progress} />
-      </div>
-    )
-  );
+  ({ children, classes, ...restProps }) => (
+    <div className={classes.toolbarRoot}>
+      <Toolbar.Root {...restProps}>{children}</Toolbar.Root>
+      <LinearProgress className={classes.progress} />
+    </div>
+  )
+);
 
 const Appointment = withStyles(styles, { name: 'Appointment' })(
-({ classes, data, ...restProps }) => {
-    let style = data.booked ? {background: '#ff8a65', hover:'#f4511e'} : {background: '#4fc3f7', hover:'#039be5'}
+  ({ classes, data, ...restProps }) => {
+    let style = data.booked
+      ? { background: '#ff8a65', hover: '#f4511e' }
+      : { background: '#4fc3f7', hover: '#039be5' };
     return (
-    <Appointments.Appointment
-        {...restProps}
-        data={data}
-        style={style}
-    />
+      <Appointments.Appointment {...restProps} data={data} style={style} />
     );
-},
+  }
 );
 
 const TimeIndicator = ({ top, ...restProps }) => {
-    const classes = useStyles({ top });
-    return (
-      <div {...restProps}>
-        <div className={classNames(classes.nowIndicator, classes.circle)} />
-        <div className={classNames(classes.nowIndicator, classes.line)} />
-      </div>
-    );
-  };
+  const classes = useStyles({ top });
+  return (
+    <div {...restProps}>
+      <div className={classNames(classes.nowIndicator, classes.circle)} />
+      <div className={classNames(classes.nowIndicator, classes.line)} />
+    </div>
+  );
+};
 
 /* eslint-disable-next-line react/no-multi-comp */
 class TutorSchedulerView2 extends React.PureComponent {
@@ -415,15 +404,19 @@ class TutorSchedulerView2 extends React.PureComponent {
       isNewAppointment: false,
       appointmentChanges: {},
       editingAppointmentId: undefined,
-      currentViewName: 'Week',
+      currentViewName: 'Week'
     };
 
     this.getAppointments = this.getAppointments.bind(this);
     this.toggleConfirmationVisible = this.toggleConfirmationVisible.bind(this);
     this.commitDeletedAppointment = this.commitDeletedAppointment.bind(this);
-    this.toggleEditingFormVisibility = this.toggleEditingFormVisibility.bind(this);
+    this.toggleEditingFormVisibility = this.toggleEditingFormVisibility.bind(
+      this
+    );
     this.commitChanges = this.commitChanges.bind(this);
-    this.onEditingAppointmentChange = this.onEditingAppointmentChange.bind(this);
+    this.onEditingAppointmentChange = this.onEditingAppointmentChange.bind(
+      this
+    );
     this.onAddedAppointmentChange = this.onAddedAppointmentChange.bind(this);
     this.changeAppointmentChanges = this.changeAppointmentChanges.bind(this);
     this.appointmentForm = connectProps(AppointmentFormContainer, () => {
@@ -433,17 +426,19 @@ class TutorSchedulerView2 extends React.PureComponent {
         data,
         addedAppointment,
         isNewAppointment,
-        previousAppointment,
+        previousAppointment
       } = this.state;
 
-      const currentAppointment = data
-        .filter(appointment => editingAppointment && appointment.id === editingAppointment.id)[0]
-        || addedAppointment;
+      const currentAppointment =
+        data.filter(
+          appointment =>
+            editingAppointment && appointment.id === editingAppointment.id
+        )[0] || addedAppointment;
       const cancelAppointment = () => {
         if (isNewAppointment) {
           this.setState({
             editingAppointment: previousAppointment,
-            isNewAppointment: false,
+            isNewAppointment: false
           });
         }
       };
@@ -454,15 +449,15 @@ class TutorSchedulerView2 extends React.PureComponent {
         commitChanges: this.commitChanges,
         visibleChange: this.toggleEditingFormVisibility,
         onEditingAppointmentChange: this.onEditingAppointmentChange,
-        cancelAppointment,
+        cancelAppointment
       };
     });
 
     this.currentDateChange = currentDate => {
-        this.setState({ currentDate });
-      };
+      this.setState({ currentDate });
+    };
     this.currentViewNameChange = currentViewName => {
-        this.setState({ currentViewName });
+      this.setState({ currentViewName });
     };
   }
 
@@ -470,29 +465,30 @@ class TutorSchedulerView2 extends React.PureComponent {
     this.appointmentForm.update();
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.getAppointments(this.props.user.unique_id);
   }
-  
-  getAppointments = (unique_id) => {
+
+  getAppointments = unique_id => {
     fetch(
-        `https://good-grades-server.herokuapp.com/api/events/byTutor/${unique_id}`,
-        {
-          method: 'GET',
-          headers: {
-            'content-type': 'application/json'
-          }
+      `https://good-grades-server.herokuapp.com/api/events/byTutor/${unique_id}`,
+      {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json'
         }
-      )
+      }
+    )
       .then(response => response.json())
       .then(data => {
-            //   appointments = data ? data.map(mapAppointmentData) : [];
-            this.setState({data: data ? data.map(mapAppointmentData) : [], 
-                            loading: false})
-          }
-      )
+        //   appointments = data ? data.map(mapAppointmentData) : [];
+        this.setState({
+          data: data ? data.map(mapAppointmentData) : [],
+          loading: false
+        });
+      })
       .catch(() => this.setState({ loading: false }));
-  }
+  };
 
   onEditingAppointmentChange(editingAppointment) {
     this.setState({ editingAppointment });
@@ -503,7 +499,7 @@ class TutorSchedulerView2 extends React.PureComponent {
     const { editingAppointment } = this.state;
     if (editingAppointment !== undefined) {
       this.setState({
-        previousAppointment: editingAppointment,
+        previousAppointment: editingAppointment
       });
     }
     this.setState({ editingAppointment: undefined, isNewAppointment: true });
@@ -516,7 +512,7 @@ class TutorSchedulerView2 extends React.PureComponent {
   toggleEditingFormVisibility() {
     const { editingFormVisible } = this.state;
     this.setState({
-      editingFormVisible: !editingFormVisible,
+      editingFormVisible: !editingFormVisible
     });
   }
 
@@ -526,9 +522,11 @@ class TutorSchedulerView2 extends React.PureComponent {
   }
 
   commitDeletedAppointment() {
-    this.setState((state) => {
+    this.setState(state => {
       const { data, deletedAppointmentId } = state;
-      const nextData = data.filter(appointment => appointment.id !== deletedAppointmentId);
+      const nextData = data.filter(
+        appointment => appointment.id !== deletedAppointmentId
+      );
 
       return { data: nextData, deletedAppointmentId: null };
     });
@@ -536,36 +534,50 @@ class TutorSchedulerView2 extends React.PureComponent {
   }
 
   commitChanges({ added, changed, deleted }) {
-    this.setState((state) => {
+    this.setState(state => {
       let { data } = state;
-      if (added && (added.startDate > Date.now())) {
+      if (added && added.startDate > Date.now()) {
         const startingAddedId =
           data.length > 0 ? data[data.length - 1].id + 1 : 0;
-          let newAppointment = { id: startingAddedId, ...added, tutor: this.props.user.unique_id, old_start_time: added.startDate, start_time: added.startDate, end_time: added.endDate};
-          data = [...data, newAppointment];
-          let test = 
-          fetch(
-            'https://good-grades-server.herokuapp.com/api/events/createEvent',
-            {
-              method: 'POST',
-              headers: {
-                'content-type': 'application/json'
-              },
-              body:JSON.stringify({
-                ...newAppointment
-              })
-            }
-          )
-            .then(response => response.json())
-            .then(data => data)
-            .catch(() => console.log("Error"));
-          console.log({test})
+        let newAppointment = {
+          id: startingAddedId,
+          ...added,
+          tutor: this.props.user.unique_id,
+          old_start_time: added.startDate,
+          start_time: added.startDate,
+          end_time: added.endDate
+        };
+        data = [...data, newAppointment];
+        let test = fetch(
+          'https://good-grades-server.herokuapp.com/api/events/createEvent',
+          {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              ...newAppointment
+            })
+          }
+        )
+          .then(response => response.json())
+          .then(data => data)
+          .catch(() => console.log('Error'));
+        console.log({ test });
       }
       if (changed) {
-        console.log(changed)
+        console.log(changed);
         data = data.map(appointment => {
-          if (changed[appointment.id] && changed[appointment.id].startDate > Date.now()){
-            let changedAppointment = { ...appointment, ...changed[appointment.id], new_start_time: changed[appointment.id].startDate, new_end_time: changed[appointment.id].endDate};
+          if (
+            changed[appointment.id] &&
+            changed[appointment.id].startDate > Date.now()
+          ) {
+            let changedAppointment = {
+              ...appointment,
+              ...changed[appointment.id],
+              new_start_time: changed[appointment.id].startDate,
+              new_end_time: changed[appointment.id].endDate
+            };
             fetch(
               'https://good-grades-server.herokuapp.com/api/events/updateEvent',
               {
@@ -573,43 +585,41 @@ class TutorSchedulerView2 extends React.PureComponent {
                 headers: {
                   'content-type': 'application/json'
                 },
-                body:JSON.stringify({
+                body: JSON.stringify({
                   ...changedAppointment
                 })
               }
             )
               .then(response => response.json())
               .then(data => data)
-              .catch(() => console.log("Error"));
-            changedAppointment.old_start_time = changedAppointment.new_start_time;
-            return changedAppointment
-          }
-          else{
+              .catch(() => console.log('Error'));
+            changedAppointment.old_start_time =
+              changedAppointment.new_start_time;
+            return changedAppointment;
+          } else {
             return appointment;
           }
-        }
-        );
+        });
       }
       if (deleted !== undefined) {
         fetch(
-        'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
-        {
+          'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
+          {
             method: 'POST',
             headers: {
-            'content-type': 'application/json'
+              'content-type': 'application/json'
             },
-            body:JSON.stringify({
-            ...data[deleted]
+            body: JSON.stringify({
+              ...data[deleted]
             })
-        }
+          }
         )
-        .then(response => response.json())
-        .then(() => {
+          .then(response => response.json())
+          .then(() => {
             this.setDeletedAppointmentId(deleted);
             this.toggleConfirmationVisible();
-        })
-        .catch(() => console.log("Error"));
-
+          })
+          .catch(() => console.log('Error'));
       }
       return { data, addedAppointment: {} };
     });
@@ -623,35 +633,43 @@ class TutorSchedulerView2 extends React.PureComponent {
     this.setState({ editingAppointmentId });
   }
 
-  ToolTipHeader = withStyles(style, { name: 'Header' })(({
-    children, appointmentData, classes, ...restProps
-  }) => (
-    <AppointmentTooltip.Header
-      {...restProps}
-      appointmentData={appointmentData}
-    >
-    </AppointmentTooltip.Header>
-  ));
-  
-  ToolTipContent = withStyles(style, { name: 'Content' })(({
-    children, appointmentData, classes, ...restProps
-  }) => (
-    <AppointmentTooltip.Content {...restProps} appointmentData={appointmentData}>
-      <Grid container alignItems="center">
-        <Grid item xs={2} className={classes.textCenter}>
-          <PeopleAltIcon className={classes.icon} />
-        </Grid>
-        <Grid item xs={10}>
-          <span>{appointmentData.students && appointmentData.students.length > 0 ? appointmentData.students[0].username : 'Not Booked'}</span>
-        </Grid>
-      </Grid>
-    </AppointmentTooltip.Content>
-  ));
-  
-  ToolTipCommandButton = withStyles(style, { name: 'CommandButton' })(({classes, ...restProps}) => (
-    <AppointmentTooltip.CommandButton {...restProps} className={classes.commandButton} />
-  ));
+  ToolTipHeader = withStyles(style, { name: 'Header' })(
+    ({ children, appointmentData, classes, ...restProps }) => (
+      <AppointmentTooltip.Header
+        {...restProps}
+        appointmentData={appointmentData}></AppointmentTooltip.Header>
+    )
+  );
 
+  ToolTipContent = withStyles(style, { name: 'Content' })(
+    ({ children, appointmentData, classes, ...restProps }) => (
+      <AppointmentTooltip.Content
+        {...restProps}
+        appointmentData={appointmentData}>
+        <Grid container alignItems='center'>
+          <Grid item xs={2} className={classes.textCenter}>
+            <PeopleAltIcon className={classes.icon} />
+          </Grid>
+          <Grid item xs={10}>
+            <span>
+              {appointmentData.students && appointmentData.students.length > 0
+                ? appointmentData.students[0].username
+                : 'Not Booked'}
+            </span>
+          </Grid>
+        </Grid>
+      </AppointmentTooltip.Content>
+    )
+  );
+
+  ToolTipCommandButton = withStyles(style, { name: 'CommandButton' })(
+    ({ classes, ...restProps }) => (
+      <AppointmentTooltip.CommandButton
+        {...restProps}
+        className={classes.commandButton}
+      />
+    )
+  );
 
   render() {
     const {
@@ -665,17 +683,17 @@ class TutorSchedulerView2 extends React.PureComponent {
       editingAppointmentId,
       addedAppointment,
       appointmentChanges,
-      loading,
+      loading
     } = this.state;
 
     return (
       <Paper>
-        <Scheduler data={data} height={700}>
+        <Scheduler data={data} height={680}>
           <ViewState
             currentDate={currentDate}
             currentViewName={currentViewName}
             onCurrentDateChange={this.currentDateChange}
-            onCurrentViewNameChange = {this.currentViewNameChange}
+            onCurrentViewNameChange={this.currentViewNameChange}
           />
           <EditingState
             onCommitChanges={this.commitChanges}
@@ -695,7 +713,7 @@ class TutorSchedulerView2 extends React.PureComponent {
           />
           <ViewSwitcher />
           <EditRecurrenceMenu />
-          <Appointments appointmentComponent={Appointment}/>
+          <Appointments appointmentComponent={Appointment} />
           <AppointmentTooltip
             headerComponent={this.ToolTipHeader}
             contentComponent={this.ToolTipContent}
@@ -711,52 +729,52 @@ class TutorSchedulerView2 extends React.PureComponent {
           />
           <DragDropProvider />
           <DateNavigator />
-          <TodayButton/>
+          <TodayButton />
           <CurrentTimeIndicator
             indicatorComponent={TimeIndicator}
             shadePreviousCells
             shadePreviousAppointments
-        />
-
+          />
         </Scheduler>
 
-        <Dialog
-          open={confirmationVisible}
-          onClose={this.cancelDelete}
-        >
-          <DialogTitle>
-            Delete Appointment
-          </DialogTitle>
+        <Dialog open={confirmationVisible} onClose={this.cancelDelete}>
+          <DialogTitle>Delete Appointment</DialogTitle>
           <DialogContent>
             <DialogContentText>
               Are you sure you want to delete this appointment?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.toggleConfirmationVisible} color="primary" variant="outlined">
+            <Button
+              onClick={this.toggleConfirmationVisible}
+              color='primary'
+              variant='outlined'>
               Cancel
             </Button>
-            <Button onClick={this.commitDeletedAppointment} color="secondary" variant="outlined">
+            <Button
+              onClick={this.commitDeletedAppointment}
+              color='secondary'
+              variant='outlined'>
               Delete
             </Button>
           </DialogActions>
         </Dialog>
 
         <Fab
-          color="secondary"
+          color='secondary'
           style={{
-                  bottom:  '100px',
-                    right: '-150px',
-                }}
+            right: '32px',
+            bottom: '24px'
+            //position: 'absolute'
+          }}
           onClick={() => {
             this.setState({ editingFormVisible: true });
             this.onEditingAppointmentChange(undefined);
             this.onAddedAppointmentChange({
               startDate: new Date(currentDate).setHours(startDayHour),
-              endDate: new Date(currentDate).setHours(startDayHour + 1),
+              endDate: new Date(currentDate).setHours(startDayHour + 1)
             });
-          }}
-        >
+          }}>
           <AddIcon />
         </Fab>
       </Paper>
@@ -764,4 +782,6 @@ class TutorSchedulerView2 extends React.PureComponent {
   }
 }
 
-export default withStyles(styles, { name: 'TutorSchedulerView2' })(TutorSchedulerView2);
+export default withStyles(styles, { name: 'TutorSchedulerView2' })(
+  TutorSchedulerView2
+);
