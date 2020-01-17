@@ -42,6 +42,7 @@ import Close from '@material-ui/icons/Close';
 import CalendarToday from '@material-ui/icons/CalendarToday';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import classNames from 'clsx';
+import { isMobile } from 'react-device-detect';
 
 import { LinearProgress, Grid } from '@material-ui/core';
 
@@ -468,6 +469,8 @@ class TutorSchedulerView2 extends React.PureComponent {
   }
 
   componentDidMount() {
+    let view = isMobile ? 'Day' : 'Week';
+    this.setState({ currentViewName: view });
     this.getAppointments(this.props.user.unique_id);
     // console.log("Device", window.screen.availHeight, window.screen.availWidth, window.screen.height, window.screen.width)
   }
@@ -738,6 +741,23 @@ class TutorSchedulerView2 extends React.PureComponent {
             shadePreviousCells
             shadePreviousAppointments
           />
+          <Fab
+            color='secondary'
+            style={{
+              right: '32px',
+              bottom: '24px',
+              position: 'absolute'
+            }}
+            onClick={() => {
+              this.setState({ editingFormVisible: true });
+              this.onEditingAppointmentChange(undefined);
+              this.onAddedAppointmentChange({
+                startDate: new Date(currentDate).setHours(startDayHour),
+                endDate: new Date(currentDate).setHours(startDayHour + 1)
+              });
+            }}>
+            <AddIcon />
+          </Fab>
         </Scheduler>
 
         <Dialog open={confirmationVisible} onClose={this.cancelDelete}>
@@ -762,7 +782,6 @@ class TutorSchedulerView2 extends React.PureComponent {
             </Button>
           </DialogActions>
         </Dialog>
-
         <Fab
           color='secondary'
           style={isMobile ? {
