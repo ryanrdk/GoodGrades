@@ -106,7 +106,8 @@ const style = ({ palette }) => ({
     backgroundSize: 'cover'
   },
   commandButton: {
-    backgroundColor: 'rgba(255,255,255,0.65)'
+    backgroundColor: 'rgba(255,255,255,0.65)',
+    height: '48px'
   }
 });
 
@@ -417,7 +418,9 @@ export default class StudentSchedulerView extends React.Component {
               onChange={this.changeMainResource}
             />
             <Paper>
-              <Scheduler data={data} height={`${isMobile ? window.screen.height * .75 : 680}`}>
+              <Scheduler
+                data={data}
+                height={`${isMobile ? window.screen.height * 0.75 : 680}`}>
                 <ViewState
                   currentDate={currentDate}
                   currentViewName={currentViewName}

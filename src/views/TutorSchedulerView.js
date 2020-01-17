@@ -46,8 +46,6 @@ import { isMobile } from 'react-device-detect';
 
 import { LinearProgress, Grid } from '@material-ui/core';
 
-import { isMobile } from 'react-device-detect';
-
 const containerStyles = theme => ({
   container: {
     width: theme.spacing(68),
@@ -694,7 +692,9 @@ class TutorSchedulerView2 extends React.PureComponent {
 
     return (
       <Paper>
-        <Scheduler data={data} height={`${isMobile ? window.screen.height * .75 : 680}`}>
+        <Scheduler
+          data={data}
+          height={`${isMobile ? window.screen.height * 0.75 : 680}`}>
           <ViewState
             currentDate={currentDate}
             currentViewName={currentViewName}
@@ -784,15 +784,19 @@ class TutorSchedulerView2 extends React.PureComponent {
         </Dialog>
         <Fab
           color='secondary'
-          style={isMobile ? {
-            position: 'relative',
-            float: 'right',
-            bottom: `${Math.round(window.screen.height * 0.08)}px`,
-            right: `${Math.round(window.screen.width * 0.13)}px`
-          } : {
-            margin: '10px',
-            float: 'right'
-          }}
+          style={
+            isMobile
+              ? {
+                  position: 'relative',
+                  float: 'right',
+                  bottom: `${Math.round(window.screen.height * 0.08)}px`,
+                  right: `${Math.round(window.screen.width * 0.13)}px`
+                }
+              : {
+                  margin: '10px',
+                  float: 'right'
+                }
+          }
           onClick={() => {
             this.setState({ editingFormVisible: true });
             this.onEditingAppointmentChange(undefined);
