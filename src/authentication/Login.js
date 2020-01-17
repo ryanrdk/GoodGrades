@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Redirect } from 'react-router-dom';
 import { GoogleLogin } from 'react-google-login';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import { TiSocialFacebookCircular } from 'react-icons/ti';
 import ReactLoading from 'react-loading';
 import {
@@ -18,7 +18,6 @@ import LoginCard from '../components/LoginCard';
 const responseGoogle = response => {
   console.log(response);
 };
-
 
 const fakeAuth = {
   isAuthenticated: false,
@@ -52,11 +51,13 @@ class Login extends React.Component {
   };
 
   login = response => {
-    console.log(response);
     let { profileObj } = this.state;
     if (!response.profileObj) {
-      let names = response.name.split(' ');
-      console.log(names);
+      let names = response.name;
+      if (names === undefined) {
+        return 'error';
+      }
+      names = names.split(' ');
       profileObj.givenName = names[0];
       profileObj.familyName = names[names.length - 1];
       profileObj.unique_id = response.userID;
@@ -68,8 +69,7 @@ class Login extends React.Component {
     var targetUrl =
       'https://good-grades-server.herokuapp.com/api/users/' +
       profileObj.unique_id;
-    console.log(profileObj);
-    this.setState({loading: true})
+    this.setState({ loading: true });
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {
@@ -78,7 +78,7 @@ class Login extends React.Component {
           fakeAuth.authenticate(() => {
             this.setState(() => ({
               loading: false,
-              redirectToReferrer: true,
+              redirectToReferrer: true
             }));
           });
           this.props.handleSetUser({ ...profileObj, type: data.type });
@@ -93,9 +93,21 @@ class Login extends React.Component {
               username: profileObj.name
             }
           }));
+          console.log(`Proffesor Object: ${this.state.profileObj}`);
+          console.log(this.state.profileObj);
+          try {
+            let undf = this.state.profileObj;
+            if (undf) {
+              console.log('not undefined');
+            } else {
+              undf.split();
+            }
+          } catch (error) {
+            console.log(`HEYEEYEYE: ${error}`);
+            console.log(error);
+            return error;
+          }
         }
-
-        console.log(data);
         return data;
       })
       .catch(e => {
@@ -154,7 +166,11 @@ class Login extends React.Component {
           <div className='App'>
             <header className='App-header'>
               {/* <ReactLoading height={'20%'} width={'20%'} /> */}
-              <ReactLoading type={"spinningBubbles"}  height={'10%'} width={'10%'} />
+              <ReactLoading
+                type={'spinningBubbles'}
+                height={'10%'}
+                width={'10%'}
+              />
             </header>
           </div>
         </div>
@@ -216,47 +232,57 @@ class Login extends React.Component {
       <div>
         <div className='App'>
           <header className='App-header'>
-              <LoginCard />
-              <GoogleLogin
-                clientId='198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com'
-                buttonText='Login with Google'
-                onSuccess={this.login}
-                onFailure={responseGoogle}
-                cookiePolicy={'single_host_origin'}
-              />
-              <FacebookLogin
-                appId='473647886861679'
-                autoLoad={false}
-                fields="name,email,picture"
-                callback={this.login}
-                disableMobileRedirect={true}
-                redirectUri ={window.location.href}
-                render={renderProps => (
-                  <button style ={{
+            <LoginCard />
+            <GoogleLogin
+              clientId='198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com'
+              buttonText='Login with Google'
+              onSuccess={this.login}
+              onFailure={responseGoogle}
+              cookiePolicy={'single_host_origin'}
+            />
+            <FacebookLogin
+              appId='473647886861679'
+              autoLoad={false}
+              fields='name,email,picture'
+              callback={this.login}
+              disableMobileRedirect={true}
+              redirectUri={window.location.href}
+              render={renderProps => (
+                <button
+                  style={{
                     backgroundColor: '#4c69ba',
                     display: 'inline-flex',
                     color: '#fff',
-                    boxShadow: "rgba(0, 0, 0, 0.24) 0px 2px 2px 0px, rgba(0, 0, 0, 0.24) 0px 0px 1px 0px",
+                    boxShadow:
+                      'rgba(0, 0, 0, 0.24) 0px 2px 2px 0px, rgba(0, 0, 0, 0.24) 0px 0px 1px 0px',
                     padding: '0px',
                     borderRadius: '2px',
-                    border: "1px solid transparent",
+                    border: '1px solid transparent',
                     fontSize: '14px',
                     fontWeight: 500,
-                    fontFamily: 'Roboto, sans-serif',
-                  }}onClick={renderProps.onClick}>
-                    <div style={{
+                    fontFamily: 'Roboto, sans-serif'
+                  }}
+                  onClick={renderProps.onClick}>
+                  <div
+                    style={{
                       marginRight: '10px',
                       padding: '10px',
-                      borderRadius: '2px'}}>
-                    <TiSocialFacebookCircular style={{width:'18', height:'18'}}/>
+                      borderRadius: '2px'
+                    }}>
+                    <TiSocialFacebookCircular
+                      style={{ width: '18', height: '18' }}
+                    />
                   </div>
-                  <span style={{
-                    padding: "10px 10px 10px 0px",
-                    fontWeight: 500}}>Login with facebook</span>
-                  
-                  </button>
-                )}
-              />
+                  <span
+                    style={{
+                      padding: '10px 10px 10px 0px',
+                      fontWeight: 500
+                    }}>
+                    Login with facebook
+                  </span>
+                </button>
+              )}
+            />
           </header>
         </div>
       </div>
