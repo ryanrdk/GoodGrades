@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { withStyles } from '@material-ui/core/styles';
 import teal from '@material-ui/core/colors/teal';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { ViewState } from '../components/dx-react-scheduler';
+import { ViewState } from '@devexpress/dx-react-scheduler';
 import {
   AllDayPanel,
   Appointments,
@@ -13,19 +13,19 @@ import {
   CurrentTimeIndicator,
   DateNavigator,
   DayView,
+  Resources,
   Scheduler,
-  Toolbar,
-  WeekView,
-  ViewSwitcher,
   TodayButton,
-  Resources
+  Toolbar,
+  ViewSwitcher,
+  WeekView
 } from '@devexpress/dx-react-scheduler-material-ui';
 import classNames from 'clsx';
 import { Grid, Button } from '@material-ui/core';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
-
+import { isMobile } from 'react-device-detect';
 
 const useStyles = makeStyles(theme => ({
   line: {
@@ -96,41 +96,32 @@ const styles = {
 
 const style = ({ palette }) => ({
   icon: {
-    color: palette.action.active,
+    color: palette.action.active
   },
   textCenter: {
-    textAlign: 'center',
-  },
-  firstRoom: {
-    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/Lobby-4.jpg)',
-  },
-  secondRoom: {
-    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/MeetingRoom-4.jpg)',
-  },
-  thirdRoom: {
-    background: 'url(https://js.devexpress.com/Demos/DXHotels/Content/Pictures/MeetingRoom-0.jpg)',
+    textAlign: 'center'
   },
   header: {
     height: '260px',
-    backgroundSize: 'cover',
+    backgroundSize: 'cover'
   },
   commandButton: {
     backgroundColor: 'rgba(255,255,255,0.65)',
-  },
+    height: '48px'
+  }
 });
 
 const styles2 = theme => ({
-    container: {
-      display: 'flex',
-      marginBottom: theme.spacing(2),
-      justifyContent: 'flex-end',
-    },
-    text: {
-      ...theme.typography.h6,
-      marginRight: theme.spacing(2),
-    },
+  container: {
+    display: 'flex',
+    marginBottom: theme.spacing(2),
+    justifyContent: 'flex-end'
+  },
+  text: {
+    ...theme.typography.h6,
+    marginRight: theme.spacing(2)
+  }
 });
-
 
 const TimeIndicator = ({ top, ...restProps }) => {
   const classes = useStyles({ top });
@@ -153,15 +144,13 @@ const ToolbarWithLoading = withStyles(styles, { name: 'Toolbar' })(
 
 const Appointment = withStyles(styles, { name: 'Appointment' })(
   ({ classes, data, ...restProps }) => {
-    let style = data.booked ? {background: '#ff8a65', hover:'#f4511e'} : {background: '#4fc3f7', hover:'#039be5'}
+    let style = data.booked
+      ? { background: '#ff8a65', hover: '#f4511e' }
+      : { background: '#4fc3f7', hover: '#039be5' };
     return (
-      <Appointments.Appointment
-        {...restProps}
-        data={data}
-        style={style}
-      />
+      <Appointments.Appointment {...restProps} data={data} style={style} />
     );
-  },
+  }
 );
 
 const mapAppointmentData = (dataToMap, index) => ({
@@ -169,22 +158,14 @@ const mapAppointmentData = (dataToMap, index) => ({
   startDate: dataToMap.start_time,
   endDate: dataToMap.end_time,
   old_start_time: dataToMap.start_time,
-  ...dataToMap,
+  ...dataToMap
 });
 
-
 const ResourceSwitcher = withStyles(styles2, { name: 'ResourceSwitcher' })(
-  ({
-    mainResourceName, onChange, classes, resources,
-  }) => (
+  ({ mainResourceName, onChange, classes, resources }) => (
     <div className={classes.container}>
-      <div className={classes.text}>
-        Tutor:
-      </div>
-      <Select
-        value={mainResourceName}
-        onChange={e => onChange(e.target.value)}
-      >
+      <div className={classes.text}>Tutor:</div>
+      <Select value={mainResourceName} onChange={e => onChange(e.target.value)}>
         {resources.map(resource => (
           <MenuItem key={resource.fieldName} value={resource.fieldName}>
             {resource.title}
@@ -192,17 +173,17 @@ const ResourceSwitcher = withStyles(styles2, { name: 'ResourceSwitcher' })(
         ))}
       </Select>
     </div>
-  ),
-)
+  )
+);
 
-const mapTutorData = (dataToMap) => (
-  {
-  tutor : {
+const mapTutorData = dataToMap => ({
+  tutor: {
     fieldName: dataToMap.unique_id,
     title: dataToMap.username,
-    instances: [],
+    instances: []
   },
-  events : (dataToMap.events.length > 0) ? dataToMap.events.map(mapAppointmentData) : []
+  events:
+    dataToMap.events.length > 0 ? dataToMap.events.map(mapAppointmentData) : []
 });
 
 export default class StudentSchedulerView extends React.Component {
@@ -213,14 +194,17 @@ export default class StudentSchedulerView extends React.Component {
       loading: true,
       currentDate: Date.now(),
       currentViewName: 'Week',
+      initialData: [],
       mainResourceName: 'selectTutor',
-      resources: [ {
-        fieldName: 'selectTutor',
-        title: 'Select Tutor',
-        instances: []
-      } ],
+      resources: [
+        {
+          fieldName: 'selectTutor',
+          title: 'Select Tutor',
+          instances: []
+        }
+      ],
       startDayHour: 5,
-      endDayHour: 20,
+      endDayHour: 20
     };
 
     this.loadAllTutorsData = this.loadAllTutorsData.bind(this);
@@ -235,28 +219,42 @@ export default class StudentSchedulerView extends React.Component {
   }
 
   changeMainResource(mainResourceName) {
-    let excludedEvents = []
+    let excludedEvents = [];
     if (this.state.allEvents) {
-      const newEvents = this.state.allEvents.filter(elem => elem.tutor === mainResourceName)
+      const newEvents = this.state.allEvents.filter(
+        elem => elem.tutor === mainResourceName
+      );
       newEvents.map(elem => {
-        const ans = this.state.initialData.filter(elem2 => {  // filtering what data is already showing for tutor initially and removing from currently selected data
-          return (elem2.tutor === elem.tutor && elem2.startDate === elem.startDate)
-        })
-        if (ans.length === 0 && (new Date(elem.startDate) > Date.now())) { excludedEvents.push(elem) } // if no matching event found in initial data, it is added to excludedEvents array
-      })
+        const ans = this.state.initialData.filter(elem2 => {
+          // filtering what data is already showing for tutor initially and removing from currently selected data
+          return (
+            elem2.tutor === elem.tutor && elem2.startDate === elem.startDate
+          );
+        });
+        if (ans.length === 0 && new Date(elem.startDate) > Date.now()) {
+          excludedEvents.push(elem);
+        } // if no matching event found in initial data, it is added to excludedEvents array
+      });
 
-      console.log("Changed", this.state, newEvents, mainResourceName, excludedEvents)
+      console.log(
+        'Changed',
+        this.state,
+        newEvents,
+        mainResourceName,
+        excludedEvents
+      );
     }
-    this.setState({ 
+    this.setState({
       mainResourceName,
       data: [...this.state.initialData, ...excludedEvents]
     });
   }
 
   componentDidMount() {
+    let view = isMobile ? 'Day' : 'Week';
+    this.setState({ currentViewName: view });
     this.loadData();
     this.loadAllTutorsData();
-
   }
 
   loadData() {
@@ -275,10 +273,10 @@ export default class StudentSchedulerView extends React.Component {
         setTimeout(() => {
           this.setState({
             data: data ? data.map(mapAppointmentData) : [],
-            initialData : data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
+            initialData: data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
             loading: false
           });
-          console.log("Appoint", this.state.data)
+          console.log('Appoint', this.state.data);
         }, 2200)
       )
       .catch(() => this.setState({ loading: false }));
@@ -303,14 +301,13 @@ export default class StudentSchedulerView extends React.Component {
           let onlyEvents = [];
           let onlyTutors = toMapTutor.map(element => {
             element.events.map(element2 => {
-              if (element2.booked === false)
-                onlyEvents.push(element2);
+              if (element2.booked === false) onlyEvents.push(element2);
             });
-            element = element.tutor
+            element = element.tutor;
             return element;
           });
-        //   onlyTutors.unshift(...this.state.resources)
-          onlyTutors.unshift(this.state.resources[0])
+          //   onlyTutors.unshift(...this.state.resources)
+          onlyTutors.unshift(this.state.resources[0]);
           // console.log("DOne", toMapTutor, onlyTutors, onlyEvents)
           this.setState({
             resources: onlyTutors,
@@ -319,14 +316,14 @@ export default class StudentSchedulerView extends React.Component {
             loading: false
           });
           this.changeMainResource(this.state.mainResourceName);
-          console.log("Mapped", this.state)
+          console.log('Mapped', this.state);
         }, 2200)
       )
       .catch(() => this.setState({ loading: false }));
   }
 
-  bookSession(appointmentData){
-    console.log({appointmentData})
+  bookSession(appointmentData) {
+    console.log({ appointmentData });
     fetch(
       `https://good-grades-server.herokuapp.com/api/events/addStudentToEvent`,
       {
@@ -341,47 +338,63 @@ export default class StudentSchedulerView extends React.Component {
       }
     )
       .then(response => response.json())
-      .then((data) =>{
-            data ? this.setState({loading: true, initialData: [...this.state.initialData, mapAppointmentData(data)]}) : this.setState({loading: true });
-            this.loadAllTutorsData();
-            this.props.refreshBookings();
-        }
-      )
+      .then(data => {
+        data
+          ? this.setState({
+              loading: true,
+              initialData: [...this.state.initialData, mapAppointmentData(data)]
+            })
+          : this.setState({ loading: true });
+        this.loadAllTutorsData();
+        this.props.refreshBookings();
+      })
       .catch(() => this.setState({ loading: false }));
   }
 
-  ToolTipHeader = withStyles(style, { name: 'Header' })(({
-    children, appointmentData, classes, ...restProps
-  }) => (
-    <AppointmentTooltip.Header
-      {...restProps}
-      appointmentData={appointmentData}
-    >
-      { appointmentData.booked === false ? <Button onClick={() => this.bookSession(appointmentData)} className={classes.commandButton}>
-        Book Session
-      </Button> : null}
-    </AppointmentTooltip.Header>
-  ));
-  
-  ToolTipContent = withStyles(style, { name: 'Content' })(({
-    children, appointmentData, classes, ...restProps
-  }) => (
-    <AppointmentTooltip.Content {...restProps} appointmentData={appointmentData}>
-      <Grid container alignItems="center">
-        <Grid item xs={2} className={classes.textCenter}>
-          <PeopleAltIcon className={classes.icon} />
+  ToolTipHeader = withStyles(style, { name: 'Header' })(
+    ({ children, appointmentData, classes, ...restProps }) => (
+      <AppointmentTooltip.Header
+        {...restProps}
+        appointmentData={appointmentData}>
+        {appointmentData.booked === false ? (
+          <Button
+            onClick={() => this.bookSession(appointmentData)}
+            className={classes.commandButton}>
+            Book Session
+          </Button>
+        ) : null}
+      </AppointmentTooltip.Header>
+    )
+  );
+
+  ToolTipContent = withStyles(style, { name: 'Content' })(
+    ({ children, appointmentData, classes, ...restProps }) => (
+      <AppointmentTooltip.Content
+        {...restProps}
+        appointmentData={appointmentData}>
+        <Grid container alignItems='center'>
+          <Grid item xs={2} className={classes.textCenter}>
+            <PeopleAltIcon className={classes.icon} />
+          </Grid>
+          <Grid item xs={10}>
+            <span>
+              {appointmentData.students.length > 0
+                ? appointmentData.students[0].username
+                : 'Not Booked'}
+            </span>
+          </Grid>
         </Grid>
-        <Grid item xs={10}>
-          <span>{appointmentData.students.length > 0 ? appointmentData.students[0].username : 'Not Booked'}</span>
-        </Grid>
-      </Grid>
-    </AppointmentTooltip.Content>
-  ));
-  ToolTipCommandButton = withStyles(style, { name: 'CommandButton' })(({
-    classes, ...restProps
-  }) => (
-    <AppointmentTooltip.CommandButton {...restProps} className={classes.commandButton} />
-  ));
+      </AppointmentTooltip.Content>
+    )
+  );
+  ToolTipCommandButton = withStyles(style, { name: 'CommandButton' })(
+    ({ classes, ...restProps }) => (
+      <AppointmentTooltip.CommandButton
+        {...restProps}
+        className={classes.commandButton}
+      />
+    )
+  );
 
   render() {
     const {
@@ -392,7 +405,7 @@ export default class StudentSchedulerView extends React.Component {
       resources,
       mainResourceName,
       startDayHour,
-      endDayHour,
+      endDayHour
     } = this.state;
 
     return (
@@ -405,22 +418,26 @@ export default class StudentSchedulerView extends React.Component {
               onChange={this.changeMainResource}
             />
             <Paper>
-              <Scheduler data={data} height={700}>
+              <Scheduler
+                data={data}
+                height={`${isMobile ? window.screen.height * 0.75 : 680}`}>
                 <ViewState
                   currentDate={currentDate}
                   currentViewName={currentViewName}
                   onCurrentDateChange={this.currentDateChange}
-                  onCurrentViewNameChange = {this.currentViewNameChange}
+                  onCurrentViewNameChange={this.currentViewNameChange}
                 />
                 <WeekView startDayHour={startDayHour} endDayHour={endDayHour} />
                 <DayView startDayHour={startDayHour} endDayHour={endDayHour} />
                 <AllDayPanel />
-                <Toolbar {...(loading ? { rootComponent: ToolbarWithLoading } : null)}>
-                </Toolbar>
+                <Toolbar
+                  {...(loading
+                    ? { rootComponent: ToolbarWithLoading }
+                    : null)}></Toolbar>
                 <ViewSwitcher />
 
                 <Appointments appointmentComponent={Appointment} />
-                <AppointmentTooltip 
+                <AppointmentTooltip
                   headerComponent={this.ToolTipHeader}
                   contentComponent={this.ToolTipContent}
                   commandButtonComponent={this.ToolTipCommandButton}
