@@ -1,0 +1,22 @@
+{
+  "short_name": "Good Grades",
+  "name": "Good Grades",
+  "description": "Good Grades is a communications platform for students to connect to tutors and receive assistance with problematic subject matter.",
+  "start_url": "/login",
+  "icons": [
+    {
+      "src": "/img/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/img/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "background_color": "#99e4ee",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#99e4ee"
+}
