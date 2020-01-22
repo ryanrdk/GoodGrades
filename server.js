@@ -12,24 +12,9 @@ app.use(express.static(path.join(__dirname, 'build')));
 app.get('/*', function(req, res) {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
-app.use(sslRedirect());
-// app.use((environments, status) => {
-//   environments = environments || ['production'];
-//   status = status || 302;
-//   console.log('https://' + req.hostname + req.originalUrl + '/login');
-//   return function(req, res, next) {
-//     if (environments.indexOf(process.env.NODE_ENV) >= 0) {
-//       if (req.headers['x-forwarded-proto'] != 'https') {
-//         res.redirect(
-//           status,
-//           'https://' + req.hostname + req.originalUrl + '/login'
-//         );
-//       } else {
-//         next();
-//       }
-//     } else {
-//       next();
-//     }
-//   };
-// });
+app.use(function(req, res, next) {
+  if (req.headers['x-forwarded-proto'] != 'https')
+    res.redirect(['https://', req.get('Host'), req.url].join(''));
+  else next();
+});
 app.listen(port);
