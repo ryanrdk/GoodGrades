@@ -474,6 +474,7 @@ class TutorSchedulerView2 extends React.PureComponent {
     const interval = setInterval(() => { // Fetch data every 5 sec
       this.getAppointments(this.props.user.unique_id);
       console.log("Fetching appoints", this.data);
+      this.props.refreshBookings();
       }, 5000);
       return () => clearInterval(interval);
   }

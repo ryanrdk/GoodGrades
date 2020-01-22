@@ -236,6 +236,9 @@ export default class StudentSchedulerView extends React.Component {
         if (new Date(elem.startDate) > Date.now()) {
           excludedEvents.push(elem);
         } // if no matching event found in initial data, it is added to excludedEvents array
+        else if (elem.booked === true && elem.students[0].unique_id === this.props.user.unique_id && new Date(elem.endDate) >= Date.now()) {
+          excludedEvents.push(elem);
+        }
       });
       studentEvents = this.state.allEvents.filter((elem, indx, arr) => {
         // elem => console.log("Student 2", elem)
@@ -265,6 +268,7 @@ export default class StudentSchedulerView extends React.Component {
       mainResourceName,
       data: [...studentEvents, ...excludedEvents] //[...this.state.initialData, ...excludedEvents]
     });
+    this.props.refreshBookings();
   }
 
   componentDidMount() {
@@ -382,7 +386,7 @@ export default class StudentSchedulerView extends React.Component {
         data
           ? this.setState({
               loading: true,
-              initialData:[mapAppointmentData(data)] //[...this.state.initialData, mapAppointmentData(data)]
+              data:[mapAppointmentData(data)] //[...this.state.initialData, mapAppointmentData(data)]
             })
           : this.setState({ loading: true });
         // this.loadData();

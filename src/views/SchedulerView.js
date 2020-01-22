@@ -15,7 +15,7 @@ export default class SchedulerView extends React.Component {
         <div className='App'>
           <header className='App-header'>
             {user.type === "tutor" ? 
-              <TutorSchedulerView user={user}/>
+              <TutorSchedulerView user={user} refreshBookings={refreshBookings}/>
             : <StudentSchedulerView user={user} refreshBookings={refreshBookings}/>}
           </header>
         </div>
