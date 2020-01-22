@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from '../logo.png';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Card,
@@ -32,7 +31,7 @@ export default function MediaCard() {
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image={logo}
+          image='/img/logo.png'
           title='Good Grades Logo'
         />
         <Divider variant='middle' />

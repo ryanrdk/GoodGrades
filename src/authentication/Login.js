@@ -243,9 +243,9 @@ class Login extends React.Component {
               render={renderProps => (
                 <button
                   type='button'
-                  class='google-button'
+                  className='google-button'
                   onClick={renderProps.onClick}>
-                  <span class='google-button__icon'>
+                  <span className='google-button__icon'>
                     <svg
                       viewBox='0 0 366 372'
                       xmlns='http://www.w3.org/2000/svg'>
@@ -270,7 +270,9 @@ class Login extends React.Component {
                       />
                     </svg>
                   </span>
-                  <span class='google-button__text'>Sign in with Google</span>
+                  <span className='google-button__text'>
+                    Sign in with Google
+                  </span>
                 </button>
               )}
             />
@@ -282,9 +284,9 @@ class Login extends React.Component {
               disableMobileRedirect={true}
               redirectUri={window.location.href}
               render={renderProps => (
-                <button class='btn-fb' onClick={renderProps.onClick}>
-                  <div class='fb-content'>
-                    <div class='logo'>
+                <button className='btn-fb' onClick={renderProps.onClick}>
+                  <div className='fb-content'>
+                    <div className='logo'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='32'
