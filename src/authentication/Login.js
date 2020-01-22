@@ -34,10 +34,11 @@ const fakeAuth = {
 
 export const PrivateRoute = props => (
   <Fragment>
-    {fakeAuth.isAuthenticated || (props.user && props.user.unique_id)
-      ? props.children
-      : //<Redirect to={{ pathname: '/login' }} />
-        (window.location.href = 'https://good-grades.herokuapp.com/login')}
+    {fakeAuth.isAuthenticated || (props.user && props.user.unique_id) ? (
+      props.children
+    ) : (
+      <Redirect to={{ pathname: '/login' }} />
+    )}
   </Fragment>
 );
 
