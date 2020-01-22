@@ -469,8 +469,13 @@ class TutorSchedulerView2 extends React.PureComponent {
   componentDidMount() {
     let view = isMobile ? 'Day' : 'Week';
     this.setState({ currentViewName: view });
-    this.getAppointments(this.props.user.unique_id);
+    // this.getAppointments(this.props.user.unique_id);
     // console.log("Device", window.screen.availHeight, window.screen.availWidth, window.screen.height, window.screen.width)
+    const interval = setInterval(() => { // Fetch data every 5 sec
+      this.getAppointments(this.props.user.unique_id);
+      console.log("Fetching appoints", this.data);
+      }, 5000);
+      return () => clearInterval(interval);
   }
 
   getAppointments = unique_id => {

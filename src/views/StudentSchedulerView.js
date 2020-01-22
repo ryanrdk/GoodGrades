@@ -106,8 +106,7 @@ const style = ({ palette }) => ({
     backgroundSize: 'cover'
   },
   commandButton: {
-    backgroundColor: 'rgba(255,255,255,0.65)',
-    height: '48px'
+    backgroundColor: 'rgba(255,255,255,0.65)'
   }
 });
 
@@ -194,7 +193,7 @@ export default class StudentSchedulerView extends React.Component {
       loading: true,
       currentDate: Date.now(),
       currentViewName: 'Week',
-      initialData: [],
+      // initialData: [],
       mainResourceName: 'selectTutor',
       resources: [
         {
@@ -219,22 +218,40 @@ export default class StudentSchedulerView extends React.Component {
   }
 
   changeMainResource(mainResourceName) {
+    this.loadAllTutorsData();
     let excludedEvents = [];
+    let studentEvents = [];
+    console.log("Student", this.state.allEvents)
     if (this.state.allEvents) {
       const newEvents = this.state.allEvents.filter(
         elem => elem.tutor === mainResourceName
       );
       newEvents.map(elem => {
-        const ans = this.state.initialData.filter(elem2 => {
-          // filtering what data is already showing for tutor initially and removing from currently selected data
-          return (
-            elem2.tutor === elem.tutor && elem2.startDate === elem.startDate
-          );
-        });
-        if (ans.length === 0 && new Date(elem.startDate) > Date.now()) {
+        // const ans = this.state.initialData.filter(elem2 => {
+        //   // filtering what data is already showing for tutor initially and removing from currently selected data
+        //   return (
+        //     elem2.tutor === elem.tutor && elem2.startDate === elem.startDate
+        //   );
+        // });
+        if (new Date(elem.startDate) > Date.now()) {
           excludedEvents.push(elem);
         } // if no matching event found in initial data, it is added to excludedEvents array
       });
+      studentEvents = this.state.allEvents.filter((elem, indx, arr) => {
+        // elem => console.log("Student 2", elem)
+        const isDuplicate =excludedEvents.some(elem2 => {
+          return (elem.tutor === elem2.tutor && Date(elem2.startDate) === Date(elem.startDate))
+        })
+        if (isDuplicate) {
+          return false;
+        }
+          return (elem.booked === true && elem.students[0].unique_id === this.props.user.unique_id && arr.indexOf(elem.tutor && elem.startDate) !== indx)
+        }
+      );
+      //   const isInitialDataValid = onlyEvents.some(elem2 => {
+          //     console.log("Compared", elem.startDate, elem2.startDate)
+          //     return (Date(elem2.startDate) === Date(elem.startDate))
+          //   })
 
       console.log(
         'Changed',
@@ -246,7 +263,7 @@ export default class StudentSchedulerView extends React.Component {
     }
     this.setState({
       mainResourceName,
-      data: [...this.state.initialData, ...excludedEvents]
+      data: [...studentEvents, ...excludedEvents] //[...this.state.initialData, ...excludedEvents]
     });
   }
 
@@ -255,6 +272,11 @@ export default class StudentSchedulerView extends React.Component {
     this.setState({ currentViewName: view });
     this.loadData();
     this.loadAllTutorsData();
+    // const interval = setInterval(() => { //Fetch Tutor data every 5 sec
+    //   this.loadData();
+    //   console.log("Fetching appoints", this.data);
+    //   }, 5000);
+    //   return () => clearInterval(interval);
   }
 
   loadData() {
@@ -273,7 +295,7 @@ export default class StudentSchedulerView extends React.Component {
         setTimeout(() => {
           this.setState({
             data: data ? data.map(mapAppointmentData) : [],
-            initialData: data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
+            // initialData: data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
             loading: false
           });
           console.log('Appoint', this.state.data);
@@ -301,7 +323,7 @@ export default class StudentSchedulerView extends React.Component {
           let onlyEvents = [];
           let onlyTutors = toMapTutor.map(element => {
             element.events.map(element2 => {
-              if (element2.booked === false) onlyEvents.push(element2);
+              onlyEvents.push(element2);
             });
             element = element.tutor;
             return element;
@@ -317,6 +339,24 @@ export default class StudentSchedulerView extends React.Component {
           });
           this.changeMainResource(this.state.mainResourceName);
           console.log('Mapped', this.state);
+          // this.state.initialData.forEach((elem, indx, orgArr) => {
+          //   // let filteredOnlyEvents = onlyEvents.filter(elem2 => elem2.tutor === this.state.mainResourceName)
+          //   // let filteredOnlyEvents = onlyEvents.filter(elem2 => elem2.tutor === this.state.mainResourceName)
+          //   // console.log("Compared Filt", onlyEvents.filter(elem2 => elem2.tutor === this.state.mainResourceName))
+          //   // console.log("Compared Filt 2", onlyEvents.filter(elem2 => {
+          //   //   console.log("Compared Bio", elem, elem2)
+          //   //   return elem2.startDate === elem.startDate
+          //   // }))
+          //   const isInitialDataValid = onlyEvents.some(elem2 => {
+          //     console.log("Compared", elem.startDate, elem2.startDate)
+          //     return (Date(elem2.startDate) === Date(elem.startDate))
+          //   })
+          //   if (!isInitialDataValid) {
+          //     orgArr.splice(indx, 1);
+          //     console.log("Compared New Arr", orgArr)
+          //   }
+          //   console.log("Compared Res", isInitialDataValid)
+          // })
         }, 2200)
       )
       .catch(() => this.setState({ loading: false }));
@@ -342,9 +382,10 @@ export default class StudentSchedulerView extends React.Component {
         data
           ? this.setState({
               loading: true,
-              initialData: [...this.state.initialData, mapAppointmentData(data)]
+              initialData:[mapAppointmentData(data)] //[...this.state.initialData, mapAppointmentData(data)]
             })
           : this.setState({ loading: true });
+        // this.loadData();
         this.loadAllTutorsData();
         this.props.refreshBookings();
       })
@@ -418,9 +459,7 @@ export default class StudentSchedulerView extends React.Component {
               onChange={this.changeMainResource}
             />
             <Paper>
-              <Scheduler
-                data={data}
-                height={`${isMobile ? window.screen.height * 0.75 : 680}`}>
+              <Scheduler data={data} height={680}>
                 <ViewState
                   currentDate={currentDate}
                   currentViewName={currentViewName}
