@@ -9,9 +9,22 @@ import { BookingsView } from './views/BookingsView';
 import { HomeView } from './views/HomeView';
 import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
+import { Button } from '@material-ui/core';
+// import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
+
+const useStateWithLocalStorage = localStorageKey => {
+  const [value, setValue] = React.useState(
+      JSON.parse(localStorage.getItem(localStorageKey)) || {}
+  );
+  React.useEffect(() => {
+      localStorage.setItem(localStorageKey, JSON.stringify(value));
+  }, [value]);
+  return [value, setValue];
+};
+
 
 function App() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useStateWithLocalStorage('user');
   const [booked, setBooked] = useState(null);
 
   const getBookings = () => {
@@ -33,10 +46,17 @@ function App() {
   }
 
   useEffect(()=>{
+    // localStorage.removeItem('user');
+
     if (!booked && user.unique_id) {
       getBookings()
     }
   })
+
+  const logout = () => {
+    localStorage.removeItem('user');
+    setUser({})
+  }
 
   return (
     <BrowserRouter>
@@ -45,7 +65,8 @@ function App() {
           path='/login'
           render={props => <Login {...props} handleSetUser={setUser} />}
         />
-        <PrivateRoute>
+        <PrivateRoute user={user}>
+          <Button onClick={logout}>Logout</Button>
           <TopNavigation />
           <SwipeableRoutes>
             <Route
