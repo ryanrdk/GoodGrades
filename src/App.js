@@ -53,10 +53,12 @@ function App() {
   useEffect(()=>{
     // localStorage.removeItem('user');
     if (!socket && user && user.unique_id){
-      setSocket(socketIOClient(socketEndpoint), () => {
-        console.log('USER IS GOING TO CONENCT')
-        socket.emit(USER_CONNECTED, user)
+      setSocket(sok => {
+        sok = socketIOClient(socketEndpoint);
+        sok.emit(USER_CONNECTED, user);
+        return sok;
       });
+      console.log("USER IN YES", socket)
     }
     if (!booked && user.unique_id) {
       getBookings()
