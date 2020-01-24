@@ -10,6 +10,9 @@ import { HomeView } from './views/HomeView';
 import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
 import { Button } from '@material-ui/core';
+import socketIOClient from "socket.io-client";
+import CONNECT from './constants';
+
 // import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
 
 const useStateWithLocalStorage = localStorageKey => {
@@ -22,10 +25,12 @@ const useStateWithLocalStorage = localStorageKey => {
   return [value, setValue];
 };
 
+const socketEndpoint = 'http://localhost:5000';
 
 function App() {
   const [user, setUser] = useStateWithLocalStorage('user');
   const [booked, setBooked] = useState(null);
+  const [socket, setSocket] = useState(false);
 
   const getBookings = () => {
     var targetUrl = user.type === "tutor" ?
@@ -47,7 +52,12 @@ function App() {
 
   useEffect(()=>{
     // localStorage.removeItem('user');
-
+    if (!socket){
+      let test = socketIOClient(socketEndpoint)
+      // setSocket(socketIOClient(socketEndpoint))
+      console.log(test);
+      test.on("connection", data => this.setState({ response: data }));
+    }
     if (!booked && user.unique_id) {
       getBookings()
     }
