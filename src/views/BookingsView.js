@@ -5,6 +5,8 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import {NOTIFICATION} from '../socketEvents';
+
 
 const ONE_HOUR = 60 * 60 * 1000;
 
@@ -24,6 +26,30 @@ export const BookingsView = props => {
     setRoomCode(roomCode);
   };
 
+  const getQuickHelpResponse = (student) => {
+    let targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp/addTutorToQuickHelp'
+    fetch(
+      targetUrl,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          tutor_id: props.user.unique_id,
+          student_id: student.unique_id
+        })
+      }
+    )
+      .then(response => response.json())
+      .then(data => {
+        console.log("Rsponding to quickhelp", data)
+        props.socket.emit(NOTIFICATION, data, student);
+        return data
+      })
+      .catch(() => console.log('Error'));
+  }
+
   useEffect(() => {
     if (!props.booked){
       props.refreshBookings();
@@ -39,6 +65,28 @@ export const BookingsView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
+        {
+            props.quickHelp.length ? props.quickHelp.map((elem, index) => {
+              return (
+                <div key={index}>
+                  <Card>
+                    <CardContent>
+                      <Typography>
+                        Tutor : {elem.tutor_username} <br></br>
+                        Student : { elem.student_username } <br></br>
+                      </Typography>
+                    </CardContent>
+                    <CardActions>
+                      <Button size="small" onClick={()=>getQuickHelpResponse({username: elem.student_username, unique_id: elem.student_id})}>Help</Button>
+                    </CardActions>
+                  </Card> 
+                  <br></br>
+                </div>
+              )
+            }) : <div>
+                </div>
+          }
+
           <h3>Bookings</h3>
           {/* {props.user.type === 'student'
             ? 'student bookings'

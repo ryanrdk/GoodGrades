@@ -50,15 +50,14 @@ export const HomeView = props => {
           ) : null}
           <br></br>
           {props.user.type === 'student' ? (
-            <JoinModalButton />
-          ) : (
+              <JoinModalButton socket={props.socket} user={props.user}/>
+          ) :
             <Button
               variant='contained'
               color='primary'
               onClick={handleRedirect}>
               Join Room
-            </Button>
-          )}
+            </Button>}
         </header>
       </div>
     </div>

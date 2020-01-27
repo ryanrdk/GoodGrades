@@ -552,7 +552,7 @@ class TutorSchedulerView2 extends React.PureComponent {
           end_time: added.endDate
         };
         data = [...data, newAppointment];
-        let test = fetch(
+        fetch(
           'https://good-grades-server.herokuapp.com/api/events/createEvent',
           {
             method: 'POST',
@@ -567,7 +567,6 @@ class TutorSchedulerView2 extends React.PureComponent {
           .then(response => response.json())
           .then(data => data)
           .catch(() => console.log('Error'));
-        console.log({ test });
       }
       if (changed) {
         console.log(changed);
