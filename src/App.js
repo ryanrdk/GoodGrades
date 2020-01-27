@@ -94,14 +94,17 @@ function App() {
 
   useEffect(()=>{
     // localStorage.removeItem('user');
+    if (quickHelp.length > 0){
+      socket.on(RECEIVEQUICKHELP, data => {
+        // console.log(quickHelp, data)
+        setQuickHelp([...quickHelp, data])
+      });
+    }
     if (!socket && user && user.unique_id){
       setSocket(sok => {
         sok = socketIOClient(socketEndpoint);
         sok.emit(USER_CONNECTED, user);
         if (user.type === "tutor"){
-          sok.on(RECEIVEQUICKHELP, data => {
-            setQuickHelp([...quickHelp, data])
-          });
           getQuickHelp();
         }
         else {
