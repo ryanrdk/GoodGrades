@@ -11,7 +11,7 @@ import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
 import { Button } from '@material-ui/core';
 import socketIOClient from "socket.io-client";
-import {USER_CONNECTED, LOGOUT, QUICKHELP, QUICKHELPRESPONSE, NOTIFICATION} from './socketEvents';
+import {USER_CONNECTED, LOGOUT, RECEIVEQUICKHELP, QUICKHELPRESPONSE, NOTIFICATION} from './socketEvents';
 
 // import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
 
@@ -71,7 +71,7 @@ function App() {
         sok = socketIOClient(socketEndpoint);
         sok.emit(USER_CONNECTED, user);
         if (user.type === "tutor"){
-          sok.on(QUICKHELP, data => {
+          sok.on(RECEIVEQUICKHELP, data => {
             setQuickHelp([...quickHelp, data])
           });
           getQuickHelp();
@@ -83,7 +83,6 @@ function App() {
         }
         return sok;
       });
-      console.log("USER IN YES", socket)
     }
     if (!booked && user.unique_id) {
       getBookings()
