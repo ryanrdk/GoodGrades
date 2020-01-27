@@ -12,6 +12,10 @@ import SwipeableRoutes from 'react-swipeable-routes';
 import { Button } from '@material-ui/core';
 import socketIOClient from "socket.io-client";
 import {USER_CONNECTED, LOGOUT, QUICKHELP, QUICKHELPRESPONSE, NOTIFICATION} from './socketEvents';
+import moment from 'moment';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { isMobile } from 'react-device-detect';
 
 // import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
 
@@ -32,6 +36,7 @@ function App() {
   const [booked, setBooked] = useState(null);
   const [quickHelp, setQuickHelp] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [notifications] = useState([]);
 
   const getBookings = () => {
     var targetUrl = user.type === "tutor" ?
@@ -43,12 +48,35 @@ function App() {
       .then(data => {
         console.log({data})
         setBooked(data);
+        data.forEach(elem => {
+          let isDuplicateNotification = notifications.some(elem2 => {
+            return (elem.tutor === elem2.booking.tutor && elem.start_time === elem2.booking.start_time)
+          });
+          if (!isDuplicateNotification) {
+            notifications.push({ time_type: 1, booking: elem })
+          }
+        })
         return data;
       })
       .catch(e => {
         console.log(e);
         return e;
       });
+  }
+
+  const sendNotification = (elem, time_diff) => {
+    toast(<div>
+      {time_diff + 1} min till session starts<br/>
+      {user.type === "tutor" ? `Student : ${elem.booking.students[0].username}` : `Tutor : ${elem.booking.tutor_username}`}<br/>
+      {/* Tutor : {elem.booking.tutor_username}<br/> */}
+      {/* Student : { elem.booking.students[0].username }<br/> */}
+      {/* Date : { moment(elem.booking.start_time).format("dddd, MMM DD") }<br/> */}
+      Time : { moment(elem.booking.start_time).format("hh:mm a") } - { moment(elem.booking.end_time).format("hh:mm a") }<br/>
+      </div>
+      , {
+        autoClose: 10000,
+        type: toast.TYPE.INFO,
+      })
   }
 
   const getQuickHelp = () => {
@@ -88,6 +116,22 @@ function App() {
     if (!booked && user.unique_id) {
       getBookings()
     }
+    const interval = setInterval(() => {
+      notifications.forEach((elem, indx, arr) => {
+        let time_diff = moment(elem.booking.start_time).diff(Date.now(), 'minutes')
+        if (elem.time_type !== 2 && time_diff > 30 && time_diff < 60) {
+          sendNotification(elem, time_diff);
+          arr[indx].time_type = 2;
+        } else if (elem.time_type !== 3 && time_diff > 15 && time_diff < 30) {
+          sendNotification(elem, time_diff);
+          arr[indx].time_type = 3;
+        } else if (elem.time_type !== 4 && time_diff > 0 && time_diff < 15) {
+          sendNotification(elem, time_diff);
+          arr[indx].time_type = 4;
+        }
+      });
+      }, 5000);
+    return () => clearInterval(interval);
   })
 
   const logout = () => {
@@ -99,6 +143,7 @@ function App() {
 
   return (
     <BrowserRouter>
+     <ToastContainer position={isMobile ? "top-center" : "bottom-left"}/>
       <div>
         <Route
           path='/login'
