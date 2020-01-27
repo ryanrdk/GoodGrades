@@ -19,10 +19,11 @@ import { isMobile } from 'react-device-detect';
 
 // import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
 
-const useStateWithLocalStorage = localStorageKey => {
-  const [value, setValue] = React.useState(
-      JSON.parse(localStorage.getItem(localStorageKey)) || {}
-  );
+const useStateWithLocalStorage = (localStorageKey) => {
+  let data = localStorage.getItem(localStorageKey);
+  if (!(data instanceof Object))
+    data = JSON.parse(data)
+  const [value, setValue] = React.useState(data) || {};
   React.useEffect(() => {
       localStorage.setItem(localStorageKey, JSON.stringify(value));
   }, [value]);
@@ -32,7 +33,9 @@ const useStateWithLocalStorage = localStorageKey => {
 const socketEndpoint = 'http://localhost:5000';
 
 function App() {
-  const [user, setUser] = useStateWithLocalStorage('user');
+  const [user, setUser] =  
+  // useState(null);
+  useStateWithLocalStorage('user');
   const [booked, setBooked] = useState(null);
   const [quickHelp, setQuickHelp] = useState([]);
   const [socket, setSocket] = useState(null);
@@ -115,7 +118,7 @@ function App() {
         return sok;
       });
     }
-    if (!booked && user.unique_id) {
+    if (!booked && user && user.unique_id) {
       getBookings()
     }
     const interval = setInterval(() => {
