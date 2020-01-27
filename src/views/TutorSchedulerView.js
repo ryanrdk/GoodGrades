@@ -46,6 +46,8 @@ import { isMobile } from 'react-device-detect';
 
 import { LinearProgress, Grid } from '@material-ui/core';
 
+import {RELOAD_DATA} from '../socketEvents';
+
 const containerStyles = theme => ({
   container: {
     width: theme.spacing(68),
@@ -95,7 +97,6 @@ const containerStyles = theme => ({
 class AppointmentFormContainerBasic extends React.PureComponent {
   constructor(props) {
     super(props);
-
     this.state = {
       appointmentChanges: {}
     };
@@ -471,6 +472,19 @@ class TutorSchedulerView2 extends React.PureComponent {
     this.setState({ currentViewName: view });
     this.getAppointments(this.props.user.unique_id);
     // console.log("Device", window.screen.availHeight, window.screen.availWidth, window.screen.height, window.screen.width)
+    // console.log("Sick", this)
+    this.props.socket.on(RELOAD_DATA, () => {
+      console.log("Triggered reload due to booked session!!!")
+      this.getAppointments(this.props.user.unique_id);
+    });
+  }
+
+  componentWillMount() {
+    // socket.on(RELOAD_DATA, () => {
+    //   console.log("Triggered reload due to booked session!!!")
+    //   this.getAppointments(this.props.user.unique_id);
+    // });
+    // console.log("SOl", this)
   }
 
   getAppointments = unique_id => {
@@ -626,6 +640,7 @@ class TutorSchedulerView2 extends React.PureComponent {
       }
       return { data, addedAppointment: {} };
     });
+    this.props.socket.emit(RELOAD_DATA, "Tutor made changes, students need to update", "student");
   }
 
   changeAppointmentChanges(appointmentChanges) {

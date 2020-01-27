@@ -27,6 +27,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import { isMobile } from 'react-device-detect';
 
+import {RELOAD_DATA} from '../socketEvents';
+
 const useStyles = makeStyles(theme => ({
   line: {
     height: '2px',
@@ -194,7 +196,7 @@ export default class StudentSchedulerView extends React.Component {
       loading: true,
       currentDate: Date.now(),
       currentViewName: 'Week',
-      initialData: [],
+      // initialData: [],
       mainResourceName: 'selectTutor',
       resources: [
         {
@@ -225,7 +227,7 @@ export default class StudentSchedulerView extends React.Component {
         elem => elem.tutor === mainResourceName
       );
       newEvents.map(elem => {
-        const ans = this.state.initialData.filter(elem2 => {
+        const ans = this.state.data.filter(elem2 => {
           // filtering what data is already showing for tutor initially and removing from currently selected data
           return (
             elem2.tutor === elem.tutor && elem2.startDate === elem.startDate
@@ -246,7 +248,7 @@ export default class StudentSchedulerView extends React.Component {
     }
     this.setState({
       mainResourceName,
-      data: [...this.state.initialData, ...excludedEvents]
+      data: [...this.state.data, ...excludedEvents]
     });
   }
 
@@ -255,6 +257,10 @@ export default class StudentSchedulerView extends React.Component {
     this.setState({ currentViewName: view });
     this.loadData();
     this.loadAllTutorsData();
+    this.props.socket.on(RELOAD_DATA, () => {
+      console.log("Triggered reload!!!")
+      this.loadAllTutorsData();
+    })
   }
 
   loadData() {
@@ -273,7 +279,7 @@ export default class StudentSchedulerView extends React.Component {
         setTimeout(() => {
           this.setState({
             data: data ? data.map(mapAppointmentData) : [],
-            initialData: data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
+            // initialData: data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
             loading: false
           });
           console.log('Appoint', this.state.data);
@@ -342,11 +348,14 @@ export default class StudentSchedulerView extends React.Component {
         data
           ? this.setState({
               loading: true,
-              initialData: [...this.state.initialData, mapAppointmentData(data)]
+              // initialData: [...this.state.initialData, mapAppointmentData(data)]
+              // data: [...this.state.data, mapAppointmentData(data)]
             })
           : this.setState({ loading: true });
+        this.loadData();
         this.loadAllTutorsData();
         this.props.refreshBookings();
+        this.props.socket.emit(RELOAD_DATA, "Student has booked the session", "tutor")
       })
       .catch(() => this.setState({ loading: false }));
   }
