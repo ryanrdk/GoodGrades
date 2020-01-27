@@ -11,7 +11,7 @@ import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
 import { Button } from '@material-ui/core';
 import socketIOClient from "socket.io-client";
-import {USER_CONNECTED} from './socketEvents';
+import {USER_CONNECTED, LOGOUT} from './socketEvents';
 
 // import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
 
@@ -66,8 +66,10 @@ function App() {
   })
 
   const logout = () => {
+    socket.emit(LOGOUT);
+    setSocket(null)
     localStorage.removeItem('user');
-    setUser({})
+    setUser(null)
   }
 
   return (
@@ -84,7 +86,7 @@ function App() {
             <Route
               exact
               path='/bookings'
-              render={props => <BookingsView {...props} user={user} booked={booked} refreshBookings={getBookings}/>}
+              render={props => <BookingsView {...props} user={user} booked={booked} socket={socket} refreshBookings={getBookings}/>}
             />
             <Route
               exact
@@ -94,7 +96,7 @@ function App() {
             <Route
               exact
               path='/scheduler'
-              render={props => <SchedulerView {...props} user={user} refreshBookings={getBookings}/>}
+              render={props => <SchedulerView {...props} user={user} socket={socket} refreshBookings={getBookings}/>}
             />
           </SwipeableRoutes>
         </PrivateRoute>
