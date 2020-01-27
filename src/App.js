@@ -11,7 +11,7 @@ import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
 import { Button } from '@material-ui/core';
 import socketIOClient from "socket.io-client";
-import {USER_CONNECTED, LOGOUT} from './socketEvents';
+import {USER_CONNECTED, LOGOUT, QUICKHELP, QUICKHELPRESPONSE, NOTIFICATION} from './socketEvents';
 
 // import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
 
@@ -30,6 +30,7 @@ const socketEndpoint = 'http://localhost:5000';
 function App() {
   const [user, setUser] = useStateWithLocalStorage('user');
   const [booked, setBooked] = useState(null);
+  const [quickHelp, setQuickHelp] = useState([]);
   const [socket, setSocket] = useState(null);
 
   const getBookings = () => {
@@ -50,12 +51,36 @@ function App() {
       });
   }
 
+  const getQuickHelp = () => {
+    var targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp'
+    fetch(targetUrl)
+    .then(blob => blob.json())
+    .then(data => {
+      setQuickHelp(data);
+      return data;
+    })
+    .catch(e => {
+      return e;
+    });
+  }
+
   useEffect(()=>{
     // localStorage.removeItem('user');
     if (!socket && user && user.unique_id){
       setSocket(sok => {
         sok = socketIOClient(socketEndpoint);
         sok.emit(USER_CONNECTED, user);
+        if (user.type === "tutor"){
+          sok.on(QUICKHELP, data => {
+            setQuickHelp([...quickHelp, data])
+          });
+          getQuickHelp();
+        }
+        else {
+          sok.on(QUICKHELPRESPONSE, data => {
+            console.log(data)
+          })
+        }
         return sok;
       });
       console.log("USER IN YES", socket)
@@ -86,17 +111,17 @@ function App() {
             <Route
               exact
               path='/bookings'
-              render={props => <BookingsView {...props} user={user} booked={booked} socket={socket} refreshBookings={getBookings}/>}
+              render={props => <BookingsView {...props} user={user} booked={booked} socket={socket} refreshBookings={getBookings} quickHelp={quickHelp}/>}
             />
             <Route
               exact
               path='/'
-              render={props => <HomeView {...props} user={user} />}
+              render={props => <HomeView {...props} user={user} socket={socket}/>}
             />
             <Route
               exact
               path='/scheduler'
-              render={props => <SchedulerView {...props} user={user} socket={socket} refreshBookings={getBookings}/>}
+              render={props => <SchedulerView {...props} user={user} refreshBookings={getBookings}/>}
             />
           </SwipeableRoutes>
         </PrivateRoute>
