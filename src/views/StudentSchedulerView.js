@@ -297,6 +297,7 @@ export default class StudentSchedulerView extends React.Component {
             loading: false
           });
           console.log('Appoint', this.state.data);
+          this.props.refreshBookings();
           this.loadAllTutorsData();
         }, 2200)
       )
