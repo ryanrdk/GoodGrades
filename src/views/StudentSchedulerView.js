@@ -222,6 +222,12 @@ export default class StudentSchedulerView extends React.Component {
 
   changeMainResource(mainResourceName) {
     let excludedEvents = [];
+    let filteredInitial = [];
+    if (this.state.initialData) {
+      filteredInitial = this.state.initialData.filter(initData => {
+        return (new Date(initData.endDate) > Date.now())
+      })
+    }
     if (this.state.allEvents) {
       const newEvents = this.state.allEvents.filter(
         elem => elem.tutor === mainResourceName
@@ -243,12 +249,15 @@ export default class StudentSchedulerView extends React.Component {
         this.state,
         newEvents,
         mainResourceName,
-        excludedEvents
+        excludedEvents,
+        filteredInitial
       );
     }
     this.setState({
       mainResourceName,
-      data: [ ...this.state.initialData, ...excludedEvents]
+      // data: [ ...this.state.initialData, ...excludedEvents]
+      data: [ ...filteredInitial, ...excludedEvents],
+      initialData: filteredInitial
     });
   }
 
