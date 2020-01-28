@@ -196,7 +196,7 @@ export default class StudentSchedulerView extends React.Component {
       loading: true,
       currentDate: Date.now(),
       currentViewName: 'Week',
-      // initialData: [],
+      initialData: [],
       mainResourceName: 'selectTutor',
       resources: [
         {
@@ -226,8 +226,8 @@ export default class StudentSchedulerView extends React.Component {
       const newEvents = this.state.allEvents.filter(
         elem => elem.tutor === mainResourceName
       );
-      newEvents.map(elem => {
-        const ans = this.state.data.filter(elem2 => {
+      newEvents.forEach(elem => {
+        const ans = this.state.initialData.filter(elem2 => {
           // filtering what data is already showing for tutor initially and removing from currently selected data
           return (
             elem2.tutor === elem.tutor && elem2.startDate === elem.startDate
@@ -248,7 +248,7 @@ export default class StudentSchedulerView extends React.Component {
     }
     this.setState({
       mainResourceName,
-      data: [...this.state.data, ...excludedEvents]
+      data: [ ...this.state.initialData, ...excludedEvents]
     });
   }
 
@@ -256,10 +256,10 @@ export default class StudentSchedulerView extends React.Component {
     let view = isMobile ? 'Day' : 'Week';
     this.setState({ currentViewName: view });
     this.loadData();
-    this.loadAllTutorsData();
+    // this.loadAllTutorsData();
     this.props.socket.on(RELOAD_DATA, () => {
       console.log("Triggered reload!!!")
-      this.loadAllTutorsData();
+      this.loadData();
     })
   }
 
@@ -277,12 +277,27 @@ export default class StudentSchedulerView extends React.Component {
       .then(response => response.json())
       .then(data =>
         setTimeout(() => {
+          // let toAdd = [];
+          // data.forEach(elem => {
+          //   let isDuplicateSession = this.state.initialData.some(elem2 => {
+          //     return (elem.tutor === elem2.tutor && elem.start_time === elem2.start_time)
+          //   });
+          //   if (!isDuplicateSession) {
+          //     toAdd.push(elem)
+          //   }
+          //   console.log("DUPES", isDuplicateSession)
+          // })
+          // console.log("Appoint added", toAdd)
           this.setState({
-            data: data ? data.map(mapAppointmentData) : [],
+            data : this.state.data,
+            initialData : data.length > 0 ? data.map(mapAppointmentData) : [],
+            // data: toAdd.length > 0 ? [ ...this.state.data, ...toAdd.map(mapAppointmentData) ] : [ ...this.state.data ],
+            // initialData: toAdd.length > 0 ? [ ...this.state.initialData, ...toAdd.map(mapAppointmentData) ] : [ ...this.state.initialData ], // store student's current booked sessions
             // initialData: data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
             loading: false
           });
           console.log('Appoint', this.state.data);
+          this.loadAllTutorsData();
         }, 2200)
       )
       .catch(() => this.setState({ loading: false }));
@@ -302,25 +317,27 @@ export default class StudentSchedulerView extends React.Component {
       .then(response => response.json())
       .then(data =>
         setTimeout(() => {
-          // console.log("Before", data)
+          console.log("Appoint Before", this.state.data, data)
           const toMapTutor = data ? data.map(mapTutorData) : [];
           let onlyEvents = [];
           let onlyTutors = toMapTutor.map(element => {
-            element.events.map(element2 => {
+            element.events.forEach(element2 => {
               if (element2.booked === false) onlyEvents.push(element2);
             });
             element = element.tutor;
             return element;
           });
+          let toAdd = [...this.state.initialData, ...onlyEvents];
           //   onlyTutors.unshift(...this.state.resources)
           onlyTutors.unshift(this.state.resources[0]);
           // console.log("DOne", toMapTutor, onlyTutors, onlyEvents)
           this.setState({
             resources: onlyTutors,
-            allEvents: onlyEvents,
-            // data: onlyEvents,
+            allEvents: toAdd,
+            data: [...toAdd.map(mapAppointmentData)],
             loading: false
           });
+          console.log("Appoint change", this.state.data)
           this.changeMainResource(this.state.mainResourceName);
           console.log('Mapped', this.state);
         }, 2200)
@@ -348,12 +365,12 @@ export default class StudentSchedulerView extends React.Component {
         data
           ? this.setState({
               loading: true,
-              // initialData: [...this.state.initialData, mapAppointmentData(data)]
+              initialData: [...this.state.initialData, mapAppointmentData(data)],
               // data: [...this.state.data, mapAppointmentData(data)]
             })
           : this.setState({ loading: true });
         this.loadData();
-        this.loadAllTutorsData();
+        // this.loadAllTutorsData();
         this.props.refreshBookings();
         this.props.socket.emit(RELOAD_DATA, "Student has booked the session", "tutor")
       })
