@@ -50,6 +50,7 @@ export const BookingsView = props => {
         props.setQuickHelp(nQuickHelp)
         // console.log("Rsponding to quickhelp", data)
         props.socket.emit(NOTIFICATION, data, {...student, roomCode: props.user.room_code});
+        handleRedirect(props.user.room_code);
         return data
       })
       .catch(() => console.log('Error'));

@@ -114,7 +114,8 @@ function App() {
         socket.on(RECEIVEQUICKHELP, data => {
           setQuickHelp([...quickHelp, data])});
         socket.on(UPDATEQUICKHELP, (data) => {setQuickHelp(quickHelp.filter(elem => {
-          return (elem.tutor_id === "" || elem.tutor_id === user.unique_id) // Remove booked quickHelp from list except if it's booked by current tutor
+          console.log(elem, data)
+          return (elem.student_id !== data.student_id || elem.tutor_id === user.unique_id) // Remove booked quickHelp from list except if it's booked by current tutor
         }))}); 
     }
   }, [socket, user, quickHelp])
