@@ -36,7 +36,7 @@ const fakeAuth = {
 export const PrivateRoute = props => {
   
   let test = localStorage.getItem('user')
-  console.log(test)
+  // console.log(test)
   return(
   <Fragment>
     {(props.user && props.user.unique_id)  ? (
@@ -138,7 +138,7 @@ class Login extends React.Component {
         return blob.json();
       })
       .then(data => {
-        console.log(data);
+        // console.log(data);
         if (data.unique_id && data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
@@ -148,7 +148,7 @@ class Login extends React.Component {
               loading: false
             }));
           });
-          console.log({ data, response });
+          // console.log({ data, response });
           this.props.handleSetUser({
             ...this.state.profileObj,
             type: data.type
@@ -157,7 +157,7 @@ class Login extends React.Component {
         return data;
       })
       .catch(e => {
-        console.log(e);
+        // console.log(e);
         return e;
       });
   };

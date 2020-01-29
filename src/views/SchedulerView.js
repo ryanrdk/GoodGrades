@@ -14,10 +14,10 @@ export default class SchedulerView extends React.Component {
       <div>
         <div className='App'>
           <header className='App-header'>
-            {(this.props.socket) ?
+            {
             (user.type === "tutor" ? 
               <TutorSchedulerView user={user} socket={this.props.socket} refreshBookings={refreshBookings}/>
-            : <StudentSchedulerView user={user} socket={this.props.socket} refreshBookings={refreshBookings}/>) : console.log("Socket not ready") }
+            : <StudentSchedulerView user={user} socket={this.props.socket} refreshBookings={refreshBookings}/>)}
           </header>
         </div>
       </div>

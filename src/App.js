@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import 'typeface-roboto';
 import './App.css';
@@ -11,7 +11,7 @@ import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
 import { Button } from '@material-ui/core';
 import socketIOClient from "socket.io-client";
-import {USER_CONNECTED, LOGOUT, RECEIVEQUICKHELP, QUICKHELPRESPONSE, NOTIFICATION} from './socketEvents';
+import {USER_CONNECTED, LOGOUT, RECEIVEQUICKHELP, QUICKHELPRESPONSE, UPDATEQUICKHELP, NOTIFICATION} from './socketEvents';
 import moment from 'moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -25,7 +25,7 @@ const useStateWithLocalStorage = localStorageKey => {
   );
   React.useEffect(() => {
       localStorage.setItem(localStorageKey, JSON.stringify(value));
-  }, [value]);
+  }, [value, localStorageKey]);
   return [value, setValue];
 };
 
@@ -36,9 +36,10 @@ function App() {
   const [booked, setBooked] = useState(null);
   const [quickHelp, setQuickHelp] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [staticListeners, setStaticListeners] = useState(false);
   const [notifications] = useState([]);
 
-  const getBookings = () => {
+  const getBookings = useCallback(() => {
     var targetUrl = user.type === "tutor" ?
     'https://good-grades-server.herokuapp.com/api/events/byTutor/' + user.unique_id + '/booked'
     :
@@ -62,7 +63,7 @@ function App() {
         console.log(e);
         return e;
       });
-  }
+  }, [user, notifications])
 
   const sendNotification = (elem, time_diff) => {
     toast(<div>
@@ -79,6 +80,20 @@ function App() {
       })
   }
 
+  const displayQuickHelpResponse = elem => {
+    toast(<div>
+            {`Hi ${elem.student_username}, your Quick Help Request has been responded to you by ${elem.tutor_username}`}<br/>
+          </div>
+      , {
+        autoClose: false,
+        type: toast.TYPE.INFO,
+        onClick: () => {
+          // console.log( elem)
+          window.location.assign('//room.sh/go/' + elem.room_code);
+        }
+      })
+  }
+
   const getQuickHelp = () => {
     var targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp'
     fetch(targetUrl)
@@ -92,49 +107,63 @@ function App() {
     });
   }
 
-  useEffect(()=>{
-    // localStorage.removeItem('user');
-    if (quickHelp.length > 0){
-      socket.on(RECEIVEQUICKHELP, data => {
-        // console.log(quickHelp, data)
-        setQuickHelp([...quickHelp, data])
-      });
+  //SET TUTOR SOCKET LISTENERS
+  useEffect(() => {
+    if (socket && user && user.type === "tutor"){
+        console.log("SETTING TUTOR LISTENERS")
+        socket.on(RECEIVEQUICKHELP, data => {
+          setQuickHelp([...quickHelp, data])});
+        socket.on(UPDATEQUICKHELP, (data) => {setQuickHelp(quickHelp.filter(elem => {
+          return (elem.tutor_id === "" || elem.tutor_id === user.unique_id) // Remove booked quickHelp from list except if it's booked by current tutor
+        }))}); 
     }
+  }, [socket, user, quickHelp])
+
+  //SET STUDENT SOCKET LISTENERS
+  useEffect (() => {
+    if (socket && user && user.type === "student"){
+      console.log("SETTING STUDENT LISTENERS")
+      socket.on(QUICKHELPRESPONSE, data => {
+        console.log("Help", data)
+        displayQuickHelpResponse(data)
+      })
+    }
+  }, [socket, user, staticListeners])
+
+  const interval = setInterval(() => {
+    notifications.forEach((elem, indx, arr) => {
+      let time_diff = moment(elem.booking.start_time).diff(Date.now(), 'minutes')
+      if (elem.time_type !== 2 && time_diff > 30 && time_diff < 60) {
+        sendNotification(elem, time_diff);
+        arr[indx].time_type = 2;
+      } else if (elem.time_type !== 3 && time_diff > 15 && time_diff < 30) {
+        sendNotification(elem, time_diff);
+        arr[indx].time_type = 3;
+      } else if (elem.time_type !== 4 && time_diff > 0 && time_diff < 15) {
+        sendNotification(elem, time_diff);
+        arr[indx].time_type = 4;
+      }
+    });
+    }, 5000);
+
+  useEffect(()=>{
     if (!socket && user && user.unique_id){
       setSocket(sok => {
         sok = socketIOClient(socketEndpoint);
         sok.emit(USER_CONNECTED, user);
-        if (user.type === "tutor"){
-          getQuickHelp();
-        }
-        else {
-          sok.on(QUICKHELPRESPONSE, data => {
-            console.log(data)
-          })
-        }
+        if (user.type === "tutor")
+          getQuickHelp()
+        else
+          setStaticListeners(true)
         return sok;
       });
     }
     if (!booked && user.unique_id) {
       getBookings()
     }
-    const interval = setInterval(() => {
-      notifications.forEach((elem, indx, arr) => {
-        let time_diff = moment(elem.booking.start_time).diff(Date.now(), 'minutes')
-        if (elem.time_type !== 2 && time_diff > 30 && time_diff < 60) {
-          sendNotification(elem, time_diff);
-          arr[indx].time_type = 2;
-        } else if (elem.time_type !== 3 && time_diff > 15 && time_diff < 30) {
-          sendNotification(elem, time_diff);
-          arr[indx].time_type = 3;
-        } else if (elem.time_type !== 4 && time_diff > 0 && time_diff < 15) {
-          sendNotification(elem, time_diff);
-          arr[indx].time_type = 4;
-        }
-      });
-      }, 5000);
+    
     return () => clearInterval(interval);
-  })
+  }, [socket, user, booked, interval, getBookings])
 
   const logout = () => {
     socket.emit(LOGOUT);
@@ -158,7 +187,7 @@ function App() {
             <Route
               exact
               path='/bookings'
-              render={props => <BookingsView {...props} user={user} booked={booked} socket={socket} refreshBookings={getBookings} quickHelp={quickHelp}/>}
+              render={props => <BookingsView {...props} user={user} booked={booked} socket={socket} refreshBookings={getBookings} quickHelp={quickHelp} setQuickHelp={setQuickHelp}/>}
             />
             <Route
               exact
@@ -168,7 +197,7 @@ function App() {
             <Route
               exact
               path='/scheduler'
-              render={props => <SchedulerView {...props} user={user} socket={socket} refreshBookings={getBookings}/>}
+              render={props => <SchedulerView {...props} user={user} refreshBookings={getBookings}/>}
             />
           </SwipeableRoutes>
         </PrivateRoute>

@@ -26,7 +26,7 @@ export const BookingsView = props => {
     setRoomCode(roomCode);
   };
 
-  const getQuickHelpResponse = (student) => {
+  const getQuickHelpResponse = (elm, student, roomCode) => {
     let targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp/addTutorToQuickHelp'
     fetch(
       targetUrl,
@@ -43,8 +43,13 @@ export const BookingsView = props => {
     )
       .then(response => response.json())
       .then(data => {
-        console.log("Rsponding to quickhelp", data)
-        props.socket.emit(NOTIFICATION, data, student);
+        let nQuickHelp = props.quickHelp.filter(function( obj ) {
+          return obj['student_id'] !== elm.student_id;
+        })
+        nQuickHelp.push(data);
+        props.setQuickHelp(nQuickHelp)
+        // console.log("Rsponding to quickhelp", data)
+        props.socket.emit(NOTIFICATION, data, {...student, roomCode: props.user.room_code});
         return data
       })
       .catch(() => console.log('Error'));
@@ -66,8 +71,8 @@ export const BookingsView = props => {
       <div className='App'>
         <header className='App-header'>
         {
-            props.quickHelp.length ? props.quickHelp.map((elem, index) => {
-              return (
+            props.quickHelp && props.quickHelp.length ? props.quickHelp.map((elem, index) => {
+              return ( (elem.tutor_id.length > 0 && elem.tutor_id === props.user.unique_id) || elem.tutor_id === "" ?  
                 <div key={index}>
                   <Card>
                     <CardContent>
@@ -77,11 +82,13 @@ export const BookingsView = props => {
                       </Typography>
                     </CardContent>
                     <CardActions>
-                      <Button size="small" onClick={()=>getQuickHelpResponse({username: elem.student_username, unique_id: elem.student_id})}>Help</Button>
+                      <Button size="small" onClick={()=>getQuickHelpResponse(elem, {username: elem.student_username, unique_id: elem.student_id}, roomCode)}>Help</Button>
                     </CardActions>
                   </Card> 
                   <br></br>
                 </div>
+                :
+                <></>
               )
             }) : <div>
                 </div>

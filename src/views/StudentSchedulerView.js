@@ -244,14 +244,14 @@ export default class StudentSchedulerView extends React.Component {
         } // if no matching event found in initial data, it is added to excludedEvents array
       });
 
-      console.log(
-        'Changed',
-        this.state,
-        newEvents,
-        mainResourceName,
-        excludedEvents,
-        filteredInitial
-      );
+      // console.log(
+      //   'Changed',
+      //   this.state,
+      //   newEvents,
+      //   mainResourceName,
+      //   excludedEvents,
+      //   filteredInitial
+      // );
     }
     this.setState({
       mainResourceName,
@@ -266,14 +266,18 @@ export default class StudentSchedulerView extends React.Component {
     this.setState({ currentViewName: view });
     this.loadData();
     // this.loadAllTutorsData();
-    this.props.socket.on(RELOAD_DATA, () => {
-      console.log("Triggered reload!!!")
-      this.loadData();
-    })
+    if (this.props.socket)
+    {
+      this.props.socket.on(RELOAD_DATA, () => {
+        // console.log("Triggered reload!!!")
+        this.loadData();
+      })
+    }
+    
   }
 
   loadData() {
-    console.log('fetchin frahm api');
+    // console.log('fetchin frahm api');
     fetch(
       `https://good-grades-server.herokuapp.com/api/events/byStudent/${this.props.user.unique_id}`,
       {
@@ -284,8 +288,8 @@ export default class StudentSchedulerView extends React.Component {
       }
     )
       .then(response => response.json())
-      .then(data =>
-        setTimeout(() => {
+      .then(data =>{
+        // setTimeout(() => {
           // let toAdd = [];
           // data.forEach(elem => {
           //   let isDuplicateSession = this.state.initialData.some(elem2 => {
@@ -305,16 +309,16 @@ export default class StudentSchedulerView extends React.Component {
             // initialData: data ? data.map(mapAppointmentData) : [], //using to store tutors initial events and compare to selected tutor's events
             loading: false
           });
-          console.log('Appoint', this.state.data);
+          // console.log('Appoint', this.state.data);
           this.props.refreshBookings();
-          this.loadAllTutorsData();
-        }, 2200)
+          this.loadAllTutorsData();}
+        // }, 2200)
       )
       .catch(() => this.setState({ loading: false }));
   }
 
   loadAllTutorsData() {
-    console.log('fetching all tutors and their events');
+    // console.log('fetching all tutors and their events');
     fetch(
       `https://good-grades-server.herokuapp.com/api/users/tutor/getAllTutors/events`,
       {
@@ -326,8 +330,9 @@ export default class StudentSchedulerView extends React.Component {
     )
       .then(response => response.json())
       .then(data =>
-        setTimeout(() => {
-          console.log("Appoint Before", this.state.data, data)
+        // setTimeout(() => 
+        {
+          // console.log("Appoint Before", this.state.data, data)
           const toMapTutor = data ? data.map(mapTutorData) : [];
           let onlyEvents = [];
           let onlyTutors = toMapTutor.map(element => {
@@ -347,16 +352,17 @@ export default class StudentSchedulerView extends React.Component {
             data: [...toAdd.map(mapAppointmentData)],
             loading: false
           });
-          console.log("Appoint change", this.state.data)
+          // console.log("Appoint change", this.state.data)
           this.changeMainResource(this.state.mainResourceName);
-          console.log('Mapped', this.state);
-        }, 2200)
+          // console.log('Mapped', this.state);
+        }
+        // , 2200)
       )
       .catch(() => this.setState({ loading: false }));
   }
 
   bookSession(appointmentData) {
-    console.log({ appointmentData });
+    // console.log({ appointmentData });
     fetch(
       `https://good-grades-server.herokuapp.com/api/events/addStudentToEvent`,
       {

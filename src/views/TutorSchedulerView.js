@@ -473,10 +473,13 @@ class TutorSchedulerView2 extends React.PureComponent {
     this.getAppointments(this.props.user.unique_id);
     // console.log("Device", window.screen.availHeight, window.screen.availWidth, window.screen.height, window.screen.width)
     // console.log("Sick", this)
-    this.props.socket.on(RELOAD_DATA, () => {
-      console.log("Triggered reload due to booked session!!!")
-      this.getAppointments(this.props.user.unique_id);
-    });
+    if (this.props.socket){
+      this.props.socket.on(RELOAD_DATA, () => {
+        console.log("Triggered reload due to booked session!!!")
+        this.getAppointments(this.props.user.unique_id);
+      });
+    }
+    
   }
 
   componentWillMount() {

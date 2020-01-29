@@ -115,7 +115,8 @@ export default function SpringModal(props) {
       .then(response => response.json())
       .then(data => {
         // props.socket.emit(NOTIFICATION, {student_id: , student_username: , tutor_id: , tutor_username: , createAt: }, "tutors");
-        props.socket.emit(NOTIFICATION, data, "tutor");
+        if (data.student_id)
+          props.socket.emit(NOTIFICATION, data, "tutor");
         return data
       })
       .catch(() => console.log('Error'));
