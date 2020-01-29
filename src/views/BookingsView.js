@@ -73,7 +73,7 @@ export const BookingsView = props => {
         <header className='App-header'>
         {
             props.quickHelp && props.quickHelp.length ? props.quickHelp.map((elem, index) => {
-              return ( (elem.tutor_id.length > 0 && elem.tutor_id === props.user.unique_id) || elem.tutor_id === "" ?  
+              return ( (elem.tutor_id && elem.tutor_id.length > 0 && elem.tutor_id === props.user.unique_id) || elem.tutor_id === "" ?  
                 <div key={index}>
                   <Card>
                     <CardContent>

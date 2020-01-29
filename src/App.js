@@ -198,7 +198,7 @@ function App() {
             <Route
               exact
               path='/scheduler'
-              render={props => <SchedulerView {...props} user={user} refreshBookings={getBookings}/>}
+              render={props => <SchedulerView {...props} user={user} socket={socket} refreshBookings={getBookings}/>}
             />
           </SwipeableRoutes>
         </PrivateRoute>

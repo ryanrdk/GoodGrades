@@ -310,8 +310,9 @@ export default class StudentSchedulerView extends React.Component {
             loading: false
           });
           // console.log('Appoint', this.state.data);
+          this.loadAllTutorsData();
           this.props.refreshBookings();
-          this.loadAllTutorsData();}
+        }
         // }, 2200)
       )
       .catch(() => this.setState({ loading: false }));
@@ -492,7 +493,7 @@ export default class StudentSchedulerView extends React.Component {
                 <DateNavigator />
                 <TodayButton />
                 <CurrentTimeIndicator
-                  indicatorComponent={TimeIndicator}
+                  // indicatorComponent={TimeIndicator}
                   shadePreviousCells
                   shadePreviousAppointments
                 />
