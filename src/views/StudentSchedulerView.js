@@ -493,7 +493,7 @@ export default class StudentSchedulerView extends React.Component {
                 <DateNavigator />
                 <TodayButton />
                 <CurrentTimeIndicator
-                  // indicatorComponent={TimeIndicator}
+                  indicatorComponent={TimeIndicator}
                   shadePreviousCells
                   shadePreviousAppointments
                 />
