@@ -29,7 +29,7 @@ const useStateWithLocalStorage = localStorageKey => {
   return [value, setValue];
 };
 
-const socketEndpoint = 'http://localhost:5000';
+const socketEndpoint = 'https://good-grades-server.herokuapp.com';
 
 function App() {
   const [user, setUser] = useStateWithLocalStorage('user');
