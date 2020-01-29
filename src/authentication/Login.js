@@ -32,15 +32,20 @@ const fakeAuth = {
   }
 };
 
-export const PrivateRoute = props => (
+
+export const PrivateRoute = props => {
+  
+  let test = localStorage.getItem('user')
+  // console.log(test)
+  return(
   <Fragment>
-    {fakeAuth.isAuthenticated || (props.user && props.user.unique_id) ? (
+    {(props.user && props.user.unique_id)  ? (
       props.children
     ) : (
       <Redirect to={{ pathname: '/login' }} />
     )}
-  </Fragment>
-);
+  </Fragment>)
+}
 
 class Login extends React.Component {
   state = {
@@ -133,7 +138,7 @@ class Login extends React.Component {
         return blob.json();
       })
       .then(data => {
-        console.log(data);
+        // console.log(data);
         if (data.unique_id && data.type) {
           //continue to login
           fakeAuth.authenticate(() => {
@@ -143,7 +148,7 @@ class Login extends React.Component {
               loading: false
             }));
           });
-          console.log({ data, response });
+          // console.log({ data, response });
           this.props.handleSetUser({
             ...this.state.profileObj,
             type: data.type
@@ -152,7 +157,7 @@ class Login extends React.Component {
         return data;
       })
       .catch(e => {
-        console.log(e);
+        // console.log(e);
         return e;
       });
   };
@@ -243,9 +248,9 @@ class Login extends React.Component {
               render={renderProps => (
                 <button
                   type='button'
-                  class='google-button'
+                  className='google-button'
                   onClick={renderProps.onClick}>
-                  <span class='google-button__icon'>
+                  <span className='google-button__icon'>
                     <svg
                       viewBox='0 0 366 372'
                       xmlns='http://www.w3.org/2000/svg'>
@@ -270,7 +275,9 @@ class Login extends React.Component {
                       />
                     </svg>
                   </span>
-                  <span class='google-button__text'>Sign in with Google</span>
+                  <span className='google-button__text'>
+                    Sign in with Google
+                  </span>
                 </button>
               )}
             />
@@ -282,9 +289,9 @@ class Login extends React.Component {
               disableMobileRedirect={true}
               redirectUri={window.location.href}
               render={renderProps => (
-                <button class='btn-fb' onClick={renderProps.onClick}>
-                  <div class='fb-content'>
-                    <div class='logo'>
+                <button className='btn-fb' onClick={renderProps.onClick}>
+                  <div className='fb-content'>
+                    <div className='logo'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         width='32'

@@ -46,6 +46,8 @@ import { isMobile } from 'react-device-detect';
 
 import { LinearProgress, Grid } from '@material-ui/core';
 
+import {RELOAD_DATA} from '../socketEvents';
+
 const containerStyles = theme => ({
   container: {
     width: theme.spacing(68),
@@ -95,7 +97,6 @@ const containerStyles = theme => ({
 class AppointmentFormContainerBasic extends React.PureComponent {
   constructor(props) {
     super(props);
-
     this.state = {
       appointmentChanges: {}
     };
@@ -471,6 +472,22 @@ class TutorSchedulerView2 extends React.PureComponent {
     this.setState({ currentViewName: view });
     this.getAppointments(this.props.user.unique_id);
     // console.log("Device", window.screen.availHeight, window.screen.availWidth, window.screen.height, window.screen.width)
+    // console.log("Sick", this)
+    if (this.props.socket){
+      this.props.socket.on(RELOAD_DATA, () => {
+        console.log("Triggered reload due to booked session!!!")
+        this.getAppointments(this.props.user.unique_id);
+      });
+    }
+    
+  }
+
+  componentWillMount() {
+    // socket.on(RELOAD_DATA, () => {
+    //   console.log("Triggered reload due to booked session!!!")
+    //   this.getAppointments(this.props.user.unique_id);
+    // });
+    // console.log("SOl", this)
   }
 
   getAppointments = unique_id => {
@@ -490,6 +507,7 @@ class TutorSchedulerView2 extends React.PureComponent {
           data: data ? data.map(mapAppointmentData) : [],
           loading: false
         });
+        this.props.refreshBookings();
       })
       .catch(() => this.setState({ loading: false }));
   };
@@ -531,9 +549,27 @@ class TutorSchedulerView2 extends React.PureComponent {
       const nextData = data.filter(
         appointment => appointment.id !== deletedAppointmentId
       );
-
+      fetch(
+        'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            ...data[deletedAppointmentId]
+          })
+        }
+      )
+        .then(response => response.json())
+        // .then(() => {
+        //   this.setDeletedAppointmentId(deletedAppointmentId);
+        //   this.toggleConfirmationVisible();
+        // })
+        .catch(() => console.log('Error'));
       return { data: nextData, deletedAppointmentId: null };
     });
+    this.props.socket.emit(RELOAD_DATA, "Tutor deleted a session, students need to update", "student");
     this.toggleConfirmationVisible();
   }
 
@@ -552,7 +588,7 @@ class TutorSchedulerView2 extends React.PureComponent {
           end_time: added.endDate
         };
         data = [...data, newAppointment];
-        let test = fetch(
+        fetch(
           'https://good-grades-server.herokuapp.com/api/events/createEvent',
           {
             method: 'POST',
@@ -567,7 +603,7 @@ class TutorSchedulerView2 extends React.PureComponent {
           .then(response => response.json())
           .then(data => data)
           .catch(() => console.log('Error'));
-        console.log({ test });
+          this.props.socket.emit(RELOAD_DATA, "Tutor added a session, students need to update", "student");
       }
       if (changed) {
         console.log(changed);
@@ -604,29 +640,33 @@ class TutorSchedulerView2 extends React.PureComponent {
             return appointment;
           }
         });
+        this.props.socket.emit(RELOAD_DATA, "Tutor made changes to a session, students need to update", "student");
       }
       if (deleted !== undefined) {
-        fetch(
-          'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
-          {
-            method: 'POST',
-            headers: {
-              'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-              ...data[deleted]
-            })
-          }
-        )
-          .then(response => response.json())
-          .then(() => {
-            this.setDeletedAppointmentId(deleted);
-            this.toggleConfirmationVisible();
-          })
-          .catch(() => console.log('Error'));
+        // fetch(
+        //   'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
+        //   {
+        //     method: 'POST',
+        //     headers: {
+        //       'content-type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //       ...data[deleted]
+        //     })
+        //   }
+        // )
+        //   .then(response => response.json())
+        //   .then(() => {
+        //     this.setDeletedAppointmentId(deleted);
+        //     this.toggleConfirmationVisible();
+        //   })
+        //   .catch(() => console.log('Error'));
+        this.setDeletedAppointmentId(deleted);
+        this.toggleConfirmationVisible();
       }
       return { data, addedAppointment: {} };
     });
+    // this.props.socket.emit(RELOAD_DATA, "Tutor made changes, students need to update", "student");
   }
 
   changeAppointmentChanges(appointmentChanges) {
@@ -741,23 +781,6 @@ class TutorSchedulerView2 extends React.PureComponent {
             shadePreviousCells
             shadePreviousAppointments
           />
-          <Fab
-            color='secondary'
-            style={{
-              right: '32px',
-              bottom: '24px',
-              position: 'absolute'
-            }}
-            onClick={() => {
-              this.setState({ editingFormVisible: true });
-              this.onEditingAppointmentChange(undefined);
-              this.onAddedAppointmentChange({
-                startDate: new Date(currentDate).setHours(startDayHour),
-                endDate: new Date(currentDate).setHours(startDayHour + 1)
-              });
-            }}>
-            <AddIcon />
-          </Fab>
         </Scheduler>
 
         <Dialog open={confirmationVisible} onClose={this.cancelDelete}>

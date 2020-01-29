@@ -14,6 +14,7 @@ import {
 } from '@material-ui/core';
 import School from '@material-ui/icons/School';
 import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is required for IE 11 support
+import {NOTIFICATION} from '../socketEvents.js'
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -65,7 +66,7 @@ Fade.propTypes = {
   onExited: PropTypes.func
 };
 
-export default function SpringModal() {
+export default function SpringModal(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const [redirect, setRedirect] = React.useState(false);
@@ -97,10 +98,41 @@ export default function SpringModal() {
     setOpen(false);
   };
 
+  const notifyTutors = () => {
+    let targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp/createQuickHelp'
+    fetch(
+      targetUrl,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          student_id: props.user.unique_id
+        })
+      }
+    )
+      .then(response => response.json())
+      .then(data => {
+        // props.socket.emit(NOTIFICATION, {student_id: , student_username: , tutor_id: , tutor_username: , createAt: }, "tutors");
+        if (data.student_id)
+          props.socket.emit(NOTIFICATION, data, "tutor");
+        return data
+      })
+      .catch(() => console.log('Error'));
+  }
+
   return (
     <div>
-      <Button variant='contained' color='secondary' onClick={handleOpen}>
+      <Button variant='contained' color='primary' onClick={handleOpen}>
         Join Room
+      </Button>
+      <br/>
+      <Button
+        variant='contained'
+        color='primary'
+        onClick={notifyTutors}>
+        Quick Help
       </Button>
       <Modal
         aria-labelledby='spring-modal-title'
