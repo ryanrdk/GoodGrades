@@ -16,6 +16,9 @@ import moment from 'moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { isMobile } from 'react-device-detect';
+import { messaging } from "./pushNotifications/init-fcm.js";
+
+// import { initializeFireBase } from './initializeFirebase';
 
 // import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
 
@@ -38,6 +41,7 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [staticListeners, setStaticListeners] = useState(false);
   const [notifications] = useState([]);
+  const [pushNotifications, setPushNotifications] = useState(false);
 
   const getBookings = useCallback(() => {
     var targetUrl = user.type === "tutor" ?
@@ -107,6 +111,18 @@ function App() {
     });
   }
 
+  useEffect(() => {
+    messaging.requestPermission()
+    .then(async function() {
+			const token = await messaging.getToken();
+    })
+    .catch(function(err) {
+      console.log("Unable to get permission to notify.", err);
+    });
+    navigator.serviceWorker.addEventListener("message", (message) => console.log(message));
+
+  }, [pushNotifications])
+
   //SET TUTOR SOCKET LISTENERS
   useEffect(() => {
     if (socket && user && user.type === "tutor"){
@@ -149,6 +165,10 @@ function App() {
 
   useEffect(()=>{
     if (!socket && user && user.unique_id){
+      // console.log(isPushNotificationSupported());
+      // if (isPushNotificationSupported()){
+      //   console.log(askUserPermission())
+      // }
       setSocket(sok => {
         sok = socketIOClient(socketEndpoint);
         sok.emit(USER_CONNECTED, user);

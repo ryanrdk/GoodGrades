@@ -4,6 +4,8 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { initializeFireBase } from './pushNotifications/push-notifications';
+
 
 const theme = createMuiTheme({
   palette: {
