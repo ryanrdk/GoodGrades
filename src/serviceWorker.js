@@ -9,6 +9,7 @@
 
 // To learn more about the benefits of this model and instructions on how to
 // opt-in, read https://bit.ly/CRA-PWA
+console.log("I AM THE SERVICE WORKER")
 
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
@@ -19,6 +20,7 @@ const isLocalhost = Boolean(
       /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
     )
 );
+
 
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {

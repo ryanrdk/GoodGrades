@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import './index.css';
 import App from './App';
+import {initializeFireBase} from './pushNotifications/push-notifications.js'
 import * as serviceWorker from './serviceWorker';
-import { initializeFireBase } from './pushNotifications/push-notifications';
 
 
 const theme = createMuiTheme({
@@ -34,4 +34,5 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
+initializeFireBase();
 serviceWorker.register();
