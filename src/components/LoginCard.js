@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     maxWidth: 440,
     marginBottom: 32
   },
-  cardMobile: { maxWidth: '90%', marginBottom: 32 },
+  cardMobile: { maxWidth: '80%', marginBottom: 32 },
   media: {
     height: 210,
     margin: 32,

@@ -29,7 +29,10 @@ class TopNavigation extends React.Component {
     const { value } = this.state;
     return (
       <Paper className={classes.root}>
-        <Tabs value={value === null ? tab : value} textColor='primary' centered>
+        <Tabs
+          value={value === 'login' ? '' : value === null ? tab : value}
+          textColor='primary'
+          centered>
           <Tab
             value='bookings'
             label='Bookings'

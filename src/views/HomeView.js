@@ -60,7 +60,11 @@ export const HomeView = props => {
               Join Room
             </Button>
           )}
-          {/* <LogoutButton socket={props.socket} /> */}
+          <LogoutButton
+            socket={props.socket}
+            setUser={props.setUser}
+            setSocket={props.setSocket}
+          />
         </header>
       </div>
     </div>

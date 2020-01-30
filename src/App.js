@@ -13,15 +13,12 @@ import socketIOClient from 'socket.io-client';
 import {
   USER_CONNECTED,
   RECEIVEQUICKHELP,
-  QUICKHELPRESPONSE,
-  LOGOUT
+  QUICKHELPRESPONSE
 } from './socketEvents';
 import moment from 'moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { isMobile } from 'react-device-detect';
-
-import { Button } from '@material-ui/core';
 
 // import useStateWithLocalStorage from './components/UseStateWithLocalStorage.js';
 
@@ -31,7 +28,7 @@ const useStateWithLocalStorage = localStorageKey => {
   );
   React.useEffect(() => {
     localStorage.setItem(localStorageKey, JSON.stringify(value));
-  }, [value]);
+  }, [value, localStorageKey]);
   return [value, setValue];
 };
 
@@ -160,14 +157,16 @@ function App() {
       });
     }, 5000);
     return () => clearInterval(interval);
-  });
-
-  const logout = () => {
-    socket.emit(LOGOUT);
-    setSocket(null);
-    localStorage.removeItem('user');
-    setUser(null);
-  };
+  }, [
+    quickHelp,
+    socket,
+    user,
+    booked,
+    tab,
+    getBookings,
+    notifications,
+    sendNotification
+  ]);
 
   const getTabValue = () => {
     let urlPath = window.location.pathname;
@@ -185,13 +184,11 @@ function App() {
           render={props => <Login {...props} handleSetUser={setUser} />}
         />
         <PrivateRoute user={user}>
-          <Button onClick={logout}>Logout</Button>
           <TopNavigation tab={tab} refreshTabs={getTabValue} />
           <SwipeableRoutes onChangeIndex={getTabValue}>
             <Route
               exact
               path='/bookings'
-              //onChange={getTabValue}
               render={props => (
                 <BookingsView
                   {...props}
@@ -206,7 +203,6 @@ function App() {
             <Route
               exact
               path='/'
-              //onChange={getTabValue}
               render={props => (
                 <HomeView
                   {...props}
@@ -220,7 +216,6 @@ function App() {
             <Route
               exact
               path='/scheduler'
-              //onChange={getTabValue}
               render={props => (
                 <SchedulerView
                   {...props}

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Typography
+} from '@material-ui/core';
 import { NOTIFICATION } from '../socketEvents';
-import history from '../history';
 
 const ONE_HOUR = 60 * 60 * 1000;
 
@@ -19,6 +22,7 @@ const checkIfHourBeforeSession = start_time => {
 export const BookingsView = props => {
   const [redirect, setRedirect] = useState(false);
   const [roomCode, setRoomCode] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleRedirect = roomCode => {
     setRedirect(!redirect);
@@ -41,6 +45,7 @@ export const BookingsView = props => {
       .then(response => response.json())
       .then(data => {
         console.log('Rsponding to quickhelp', data);
+
         props.socket.emit(NOTIFICATION, data, student);
         return data;
       })
@@ -50,6 +55,8 @@ export const BookingsView = props => {
   useEffect(() => {
     if (!props.booked) {
       props.refreshBookings();
+    } else {
+      setLoading(false);
     }
     if (redirect && roomCode) {
       // do something meaningful, Promises, if/else, whatever, and then
@@ -95,22 +102,32 @@ export const BookingsView = props => {
           )}
 
           <h3>Bookings</h3>
-          {/* {props.user.type === 'student'
+          {loading ? (
+            <CircularProgress size={40} />
+          ) : (
+            <div>
+              {/* {props.user.type === 'student'
             ? 'student bookings'
             : 'tutor bookings'}
           <br></br><br></br> */}
-          {props.booked && props.booked.length > 0 ? (
-            <div>
-              <h4>Upcoming Bookings</h4>
-              <br></br>
-            </div>
-          ) : (
-            <div>
-              <h4>No Bookings</h4>
-              {props.user.type === 'tutor' ? (
-                <h5>Go to the Scheduler to put up appointments</h5>
+              {props.booked && props.booked.length > 0 ? (
+                <div>
+                  <h4>Upcoming Bookings</h4>
+                  <br></br>
+                </div>
               ) : (
-                <h5>Go to the Scheduler to book appointments</h5>
+                <div>
+                  <h4>No Bookings</h4>
+                  {props.user.type === 'tutor' ? (
+                    <Link to='/scheduler'>
+                      Go to the Scheduler to put up appointments
+                    </Link>
+                  ) : (
+                    <Link to='/scheduler'>
+                      Go to the Scheduler to book appointments
+                    </Link>
+                  )}
+                </div>
               )}
             </div>
           )}
