@@ -190,7 +190,7 @@ class Login extends React.Component {
       return (
         <div>
           <div className='App'>
-            <header className='App-header'>
+            <header className='Login-header'>
               <Card raised='true' style={{ width: 320 }}>
                 <CardContent>
                   <Typography
@@ -236,7 +236,7 @@ class Login extends React.Component {
     return (
       <div>
         <div className='App'>
-          <header className='App-header'>
+          <header className='Login-header'>
             <LoginCard />
             <GoogleLogin
               clientId='198987621325-9g2b66kr257qqep3dk5vn9ovmlg22q2m.apps.googleusercontent.com'
