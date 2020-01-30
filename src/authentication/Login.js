@@ -32,20 +32,19 @@ const fakeAuth = {
   }
 };
 
-
 export const PrivateRoute = props => {
-  
-  let test = localStorage.getItem('user')
-  console.log(test)
-  return(
-  <Fragment>
-    {(props.user && props.user.unique_id)  ? (
-      props.children
-    ) : (
-      <Redirect to={{ pathname: '/login' }} />
-    )}
-  </Fragment>)
-}
+  //let test = localStorage.getItem('user');
+  //console.log(test);
+  return (
+    <Fragment>
+      {props.user && props.user.unique_id ? (
+        props.children
+      ) : (
+        <Redirect to={{ pathname: '/login' }} />
+      )}
+    </Fragment>
+  );
+};
 
 class Login extends React.Component {
   state = {

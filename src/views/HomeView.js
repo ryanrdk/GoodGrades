@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import JoinModalButton from '../components/JoinModalButton';
 import IconTextField from '../components/IconTextField';
+import LogoutButton from '../components/LogoutButton';
 import { Button } from '@material-ui/core';
 
 //Makes API call to GoodGradesServer to create a new room object
@@ -24,7 +25,7 @@ export const HomeView = props => {
         .then(blob => blob.json())
         .then(data => {
           setRoom(data);
-          props.user.room_code = data.room_code
+          props.user.room_code = data.room_code;
           return data;
         })
         .catch(e => {
@@ -42,7 +43,7 @@ export const HomeView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
-          <h1>Welcome {props.user ? props.user.givenName : 'huest'}</h1>
+          <h1>Welcome {props.user ? props.user.givenName : 'Guest'}</h1>
           {room ? (
             <div>
               <IconTextField value={room.room_code}></IconTextField>
@@ -50,14 +51,16 @@ export const HomeView = props => {
           ) : null}
           <br></br>
           {props.user.type === 'student' ? (
-              <JoinModalButton socket={props.socket} user={props.user}/>
-          ) :
+            <JoinModalButton socket={props.socket} user={props.user} />
+          ) : (
             <Button
               variant='contained'
               color='primary'
               onClick={handleRedirect}>
               Join Room
-            </Button>}
+            </Button>
+          )}
+          {/* <LogoutButton socket={props.socket} /> */}
         </header>
       </div>
     </div>
