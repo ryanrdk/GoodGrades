@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-unused-state */
 import * as React from 'react';
-import Paper from '@material-ui/core/Paper';
 import { ViewState, EditingState } from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
@@ -19,32 +18,36 @@ import {
   CurrentTimeIndicator,
   TodayButton
 } from '@devexpress/dx-react-scheduler-material-ui';
+
 import { connectProps } from '@devexpress/dx-react-core';
+import MomentUtils from '@date-io/moment';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import teal from '@material-ui/core/colors/teal';
 import {
   KeyboardDateTimePicker,
   MuiPickersUtilsProvider
 } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
-import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/core/styles';
-import teal from '@material-ui/core/colors/teal';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/Add';
-import Close from '@material-ui/icons/Close';
-import CalendarToday from '@material-ui/icons/CalendarToday';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Fab,
+  Grid,
+  IconButton,
+  LinearProgress,
+  Paper
+} from '@material-ui/core';
+import { Add, Close, CalendarToday, PeopleAlt } from '@material-ui/icons';
+
 import classNames from 'clsx';
 import { isMobile } from 'react-device-detect';
 
-import { LinearProgress, Grid } from '@material-ui/core';
+
+import {RELOAD_DATA} from '../socketEvents';
 
 const containerStyles = theme => ({
   container: {
@@ -95,7 +98,6 @@ const containerStyles = theme => ({
 class AppointmentFormContainerBasic extends React.PureComponent {
   constructor(props) {
     super(props);
-
     this.state = {
       appointmentChanges: {}
     };
@@ -471,6 +473,22 @@ class TutorSchedulerView2 extends React.PureComponent {
     this.setState({ currentViewName: view });
     this.getAppointments(this.props.user.unique_id);
     // console.log("Device", window.screen.availHeight, window.screen.availWidth, window.screen.height, window.screen.width)
+    // console.log("Sick", this)
+    if (this.props.socket){
+      this.props.socket.on(RELOAD_DATA, () => {
+        console.log("Triggered reload due to booked session!!!")
+        this.getAppointments(this.props.user.unique_id);
+      });
+    }
+    
+  }
+
+  componentWillMount() {
+    // socket.on(RELOAD_DATA, () => {
+    //   console.log("Triggered reload due to booked session!!!")
+    //   this.getAppointments(this.props.user.unique_id);
+    // });
+    // console.log("SOl", this)
   }
 
   getAppointments = unique_id => {
@@ -490,6 +508,7 @@ class TutorSchedulerView2 extends React.PureComponent {
           data: data ? data.map(mapAppointmentData) : [],
           loading: false
         });
+        this.props.refreshBookings();
       })
       .catch(() => this.setState({ loading: false }));
   };
@@ -531,9 +550,27 @@ class TutorSchedulerView2 extends React.PureComponent {
       const nextData = data.filter(
         appointment => appointment.id !== deletedAppointmentId
       );
-
+      fetch(
+        'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            ...data[deletedAppointmentId]
+          })
+        }
+      )
+        .then(response => response.json())
+        // .then(() => {
+        //   this.setDeletedAppointmentId(deletedAppointmentId);
+        //   this.toggleConfirmationVisible();
+        // })
+        .catch(() => console.log('Error'));
       return { data: nextData, deletedAppointmentId: null };
     });
+    this.props.socket.emit(RELOAD_DATA, "Tutor deleted a session, students need to update", "student");
     this.toggleConfirmationVisible();
   }
 
@@ -567,6 +604,7 @@ class TutorSchedulerView2 extends React.PureComponent {
           .then(response => response.json())
           .then(data => data)
           .catch(() => console.log('Error'));
+          this.props.socket.emit(RELOAD_DATA, "Tutor added a session, students need to update", "student");
       }
       if (changed) {
         console.log(changed);
@@ -603,29 +641,33 @@ class TutorSchedulerView2 extends React.PureComponent {
             return appointment;
           }
         });
+        this.props.socket.emit(RELOAD_DATA, "Tutor made changes to a session, students need to update", "student");
       }
       if (deleted !== undefined) {
-        fetch(
-          'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
-          {
-            method: 'POST',
-            headers: {
-              'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-              ...data[deleted]
-            })
-          }
-        )
-          .then(response => response.json())
-          .then(() => {
-            this.setDeletedAppointmentId(deleted);
-            this.toggleConfirmationVisible();
-          })
-          .catch(() => console.log('Error'));
+        // fetch(
+        //   'https://good-grades-server.herokuapp.com/api/events/deleteEvent',
+        //   {
+        //     method: 'POST',
+        //     headers: {
+        //       'content-type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //       ...data[deleted]
+        //     })
+        //   }
+        // )
+        //   .then(response => response.json())
+        //   .then(() => {
+        //     this.setDeletedAppointmentId(deleted);
+        //     this.toggleConfirmationVisible();
+        //   })
+        //   .catch(() => console.log('Error'));
+        this.setDeletedAppointmentId(deleted);
+        this.toggleConfirmationVisible();
       }
       return { data, addedAppointment: {} };
     });
+    // this.props.socket.emit(RELOAD_DATA, "Tutor made changes, students need to update", "student");
   }
 
   changeAppointmentChanges(appointmentChanges) {
@@ -651,7 +693,7 @@ class TutorSchedulerView2 extends React.PureComponent {
         appointmentData={appointmentData}>
         <Grid container alignItems='center'>
           <Grid item xs={2} className={classes.textCenter}>
-            <PeopleAltIcon className={classes.icon} />
+            <PeopleAlt className={classes.icon} />
           </Grid>
           <Grid item xs={10}>
             <span>
@@ -787,7 +829,7 @@ class TutorSchedulerView2 extends React.PureComponent {
               endDate: new Date(currentDate).setHours(startDayHour + 1)
             });
           }}>
-          <AddIcon />
+          <Add />
         </Fab>
       </Paper>
     );
