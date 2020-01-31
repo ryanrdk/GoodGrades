@@ -32,31 +32,32 @@ export const BookingsView = props => {
   };
 
   const getQuickHelpResponse = (elm, student, roomCode) => {
-    let targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp/addTutorToQuickHelp'
-    fetch(
-      targetUrl,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-          tutor_id: props.user.unique_id,
-          student_id: student.unique_id
-        })
-      }
-    )
+    let targetUrl =
+      'https://good-grades-server.herokuapp.com/api/quickHelp/addTutorToQuickHelp';
+    fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        tutor_id: props.user.unique_id,
+        student_id: student.unique_id
+      })
+    })
       .then(response => response.json())
       .then(data => {
-        let nQuickHelp = props.quickHelp.filter(function( obj ) {
+        let nQuickHelp = props.quickHelp.filter(function(obj) {
           return obj['student_id'] !== elm.student_id;
-        })
+        });
         nQuickHelp.push(data);
-        props.setQuickHelp(nQuickHelp)
+        props.setQuickHelp(nQuickHelp);
         // console.log("Rsponding to quickhelp", data)
-        props.socket.emit(NOTIFICATION, data, {...student, roomCode: props.user.room_code});
+        props.socket.emit(NOTIFICATION, data, {
+          ...student,
+          roomCode: props.user.room_code
+        });
         handleRedirect(props.user.room_code);
-        return data
+        return data;
       })
       .catch(() => console.log('Error'));
   };
@@ -78,11 +79,18 @@ export const BookingsView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
-        {
-            props.quickHelp && props.quickHelp.length ? props.quickHelp.map((elem, index) => {
-              return ( (elem.tutor_id && elem.tutor_id.length > 0 && elem.tutor_id === props.user.unique_id) || elem.tutor_id === "" ?  
+          {props.quickHelp && props.quickHelp.length ? (
+            <h3>Quick Help</h3>
+          ) : (
+            <div />
+          )}
+          {props.quickHelp && props.quickHelp.length ? (
+            props.quickHelp.map((elem, index) => {
+              return (elem.tutor_id &&
+                elem.tutor_id.length > 0 &&
+                elem.tutor_id === props.user.unique_id) ||
+                elem.tutor_id === '' ? (
                 <div key={index}>
-                  <h3>Quick Help</h3>
                   <Card>
                     <CardHeader
                       style={{ textAlign: 'left' }}
@@ -90,19 +98,33 @@ export const BookingsView = props => {
                     />
                     <Divider variant='middle' />
                     <CardActions>
-                      <Button size='small'
+                      <Button
+                        size='small'
                         variant='contained'
-                        color='primary' onClick={()=>getQuickHelpResponse(elem, {username: elem.student_username, unique_id: elem.student_id}, roomCode)}>Help</Button>
+                        color='primary'
+                        onClick={() =>
+                          getQuickHelpResponse(
+                            elem,
+                            {
+                              username: elem.student_username,
+                              unique_id: elem.student_id
+                            },
+                            roomCode
+                          )
+                        }>
+                        Help
+                      </Button>
                     </CardActions>
                   </Card>
                   <br></br>
                 </div>
-                :
+              ) : (
                 <></>
-              )
-            }) : <div>
-                </div>
-          }
+              );
+            })
+          ) : (
+            <div></div>
+          )}
 
           {loading ? (
             <CircularProgress size={40} />
