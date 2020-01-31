@@ -65,17 +65,18 @@ export const BookingsView = props => {
       // console.log("room.sh/go/" + roomCode)
       window.location.assign('//room.sh/go/' + roomCode);
     }
-  });
+  }, [props, redirect, roomCode]);
 
   return (
     <div>
       <div className='App'>
         <header className='App-header'>
           {props.quickHelp.length ? (
-            props.quickHelp.map((elem, index) => { console.log(elem)
+            props.quickHelp.map((elem, index) => {
+              console.log(elem);
               return (
                 <div key={index}>
-                <h3>Quick Help</h3>
+                  <h3>Quick Help</h3>
                   <Card>
                     <CardHeader
                       style={{ textAlign: 'left' }}
@@ -86,7 +87,7 @@ export const BookingsView = props => {
                       <Button
                         size='small'
                         variant='contained'
-                        color="primary"
+                        color='primary'
                         onClick={() =>
                           getQuickHelpResponse({
                             username: elem.student_username,
@@ -161,7 +162,7 @@ export const BookingsView = props => {
                           size='small'
                           color='primary'
                           onClick={() => handleRedirect(elem.room_code)}>
-                          Go To Room
+                          Go To Class
                         </Button>
                       </CardActions>
                     ) : null}

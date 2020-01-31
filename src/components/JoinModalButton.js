@@ -15,15 +15,14 @@ import {
   Input,
   InputLabel,
   InputAdornment,
-  Modal,
-  Typography
+  Modal
 } from '@material-ui/core';
 import { School } from '@material-ui/icons';
 import { isMobile } from 'react-device-detect';
 import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is required for IE 11 support
 import { NOTIFICATION } from '../socketEvents.js';
 
-var colors = ['#f50057', '#00e676', '#00b0ff'];
+var colors = ['#f50057', '#1de9b6', '#00b0ff'];
 var random_color = colors[Math.floor(Math.random() * colors.length)];
 
 const useStyles = makeStyles(theme => ({
@@ -44,14 +43,14 @@ const useStyles = makeStyles(theme => ({
     minWidth: 180
   },
   cardStudent: {
-    maxWidth: 440,
+    maxWidth: 480,
     marginBottom: 32
   },
-  cardMobileStudent: { maxWidth: '80%', marginBottom: 32 },
+  cardMobileStudent: { maxWidth: '80vw', marginBottom: 32 },
   media: {
-    height: 210,
-    margin: 32,
-    marginTop: 40
+    height: '30vh !important',
+    maxWidth: '80vw',
+    backgroundSize: 'contain'
   },
   actions: {
     display: 'flex',
@@ -157,8 +156,8 @@ export default function SpringModal(props) {
         <CardHeader
           avatar={
             <Avatar
-              style={{ marginRight: 16 }}
-              aria-label='Recipe'
+              style={{ marginRight: 8 }}
+              aria-label='avatar'
               className={classes.avatar}>
               {props.user.givenName.charAt(0)}
             </Avatar>
@@ -173,25 +172,16 @@ export default function SpringModal(props) {
           title='Good Grades Logo'
         />
         <Divider variant='middle' />
-        <CardContent>
-          {/* <Typography
-            gutterBottom
-            variant='h4'
-            color='textSecondary'
-            component='p'>
-            Join a session with your tutor
-          </Typography> */}
-        </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
           <Button
-            style={{ margin: 32 }}
+            style={{ margin: 24 }}
             variant='contained'
             color='primary'
             onClick={handleOpen}>
             Join Room
           </Button>
           <Button
-            style={{ margin: 32, backgroundColor: '#f50057', color: '#fff' }}
+            style={{ margin: 24, backgroundColor: '#f50057', color: '#fff' }}
             variant='contained'
             onClick={notifyTutors}>
             Quick Help

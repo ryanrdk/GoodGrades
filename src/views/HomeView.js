@@ -43,13 +43,16 @@ export const HomeView = props => {
       <div className='App'>
         <header className='App-header'>
           {room ? (
-            <div>
+            <div style={{ textAlign: 'center' }}>
               <IconTextField value={room.room_code}></IconTextField>
             </div>
           ) : null}
-          <br></br>
           {props.user.type === 'student' ? (
-            <JoinModalButton socket={props.socket} user={props.user} />
+            <JoinModalButton
+              style={{ textAlign: 'center' }}
+              socket={props.socket}
+              user={props.user}
+            />
           ) : (
             <Button
               variant='contained'

@@ -3,9 +3,6 @@ import { LOGOUT } from '../socketEvents';
 import { Button } from '@material-ui/core';
 
 export default class LogoutButton extends Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     const logout = () => {
       this.props.socket.emit(LOGOUT);

@@ -7,7 +7,6 @@ import {
   Button,
   ClickAwayListener,
   Grow,
-  MenuItem,
   MenuList,
   Paper,
   Popper,
