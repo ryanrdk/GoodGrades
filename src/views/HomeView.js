@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import JoinModalButton from '../components/JoinModalButton';
 import IconTextField from '../components/IconTextField';
-import LogoutButton from '../components/LogoutButton';
-import { Button } from '@material-ui/core';
+import { Button, Paper } from '@material-ui/core';
 
 //Makes API call to GoodGradesServer to create a new room object
 
@@ -43,7 +42,6 @@ export const HomeView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
-          <h1>Welcome {props.user ? props.user.givenName : 'Guest'}</h1>
           {room ? (
             <div>
               <IconTextField value={room.room_code}></IconTextField>
@@ -60,11 +58,6 @@ export const HomeView = props => {
               Join Room
             </Button>
           )}
-          <LogoutButton
-            socket={props.socket}
-            setUser={props.setUser}
-            setSocket={props.setSocket}
-          />
         </header>
       </div>
     </div>

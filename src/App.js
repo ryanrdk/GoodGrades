@@ -5,6 +5,7 @@ import './App.css';
 import TopNavigation from './components/TopNavigation';
 import Login from './authentication/Login';
 import { PrivateRoute } from './authentication/Login';
+import Footer from './components/Footer';
 import { BookingsView } from './views/BookingsView';
 import { HomeView } from './views/HomeView';
 import SchedulerView from './views/SchedulerView';
@@ -171,6 +172,7 @@ function App() {
   const getTabValue = () => {
     let urlPath = window.location.pathname;
     let currentTab = urlPath.split('/').pop();
+    currentTab = currentTab === 'login' ? '' : currentTab;
     setTab(currentTab);
     return currentTab;
   };
@@ -184,7 +186,14 @@ function App() {
           render={props => <Login {...props} handleSetUser={setUser} />}
         />
         <PrivateRoute user={user}>
-          <TopNavigation tab={tab} refreshTabs={getTabValue} />
+          <TopNavigation
+            tab={tab}
+            refreshTabs={getTabValue}
+            user={user}
+            socket={socket}
+            setUser={setUser}
+            setSocket={setSocket}
+          />
           <SwipeableRoutes onChangeIndex={getTabValue}>
             <Route
               exact
@@ -226,6 +235,7 @@ function App() {
             />
           </SwipeableRoutes>
         </PrivateRoute>
+<Footer/>
       </div>
     </BrowserRouter>
   );

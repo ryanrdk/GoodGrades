@@ -2,19 +2,29 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {
+  Avatar,
   Button,
   Backdrop,
   Card,
+  CardActions,
   CardContent,
+  CardHeader,
+  CardMedia,
+  Divider,
   FormControl,
   Input,
   InputLabel,
   InputAdornment,
-  Modal
+  Modal,
+  Typography
 } from '@material-ui/core';
-import School from '@material-ui/icons/School';
+import { School } from '@material-ui/icons';
+import { isMobile } from 'react-device-detect';
 import { useSpring, animated } from 'react-spring/web.cjs'; // web.cjs is required for IE 11 support
-import {NOTIFICATION} from '../socketEvents.js'
+import { NOTIFICATION } from '../socketEvents.js';
+
+var colors = ['#f50057', '#00e676', '#00b0ff'];
+var random_color = colors[Math.floor(Math.random() * colors.length)];
 
 const useStyles = makeStyles(theme => ({
   modal: {
@@ -32,6 +42,27 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 180
+  },
+  cardStudent: {
+    maxWidth: 440,
+    marginBottom: 32
+  },
+  cardMobileStudent: { maxWidth: '80%', marginBottom: 32 },
+  media: {
+    height: 210,
+    margin: 32,
+    marginTop: 40
+  },
+  actions: {
+    display: 'flex',
+    justifyContent: 'center'
+  },
+  avatar: {
+    backgroundColor: random_color
+  },
+  title: {
+    fontVariant: 'h3',
+    textAlign: 'center'
   }
 }));
 
@@ -99,40 +130,70 @@ export default function SpringModal(props) {
   };
 
   const notifyTutors = () => {
-    let targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp/createQuickHelp'
-    fetch(
-      targetUrl,
-      {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-          student_id: props.user.unique_id
-        })
-      }
-    )
+    let targetUrl =
+      'https://good-grades-server.herokuapp.com/api/quickHelp/createQuickHelp';
+    fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        student_id: props.user.unique_id
+      })
+    })
       .then(response => response.json())
       .then(data => {
         // props.socket.emit(NOTIFICATION, {student_id: , student_username: , tutor_id: , tutor_username: , createAt: }, "tutors");
-        props.socket.emit(NOTIFICATION, data, "tutor");
-        return data
+        props.socket.emit(NOTIFICATION, data, 'tutor');
+        return data;
       })
       .catch(() => console.log('Error'));
-  }
+  };
 
   return (
     <div>
-      <Button variant='contained' color='primary' onClick={handleOpen}>
-        Join Room
-      </Button>
-      <br/>
-      <Button
-        variant='contained'
-        color='primary'
-        onClick={notifyTutors}>
-        Quick Help
-      </Button>
+      <Card
+        className={isMobile ? classes.cardMobileStudent : classes.cardStudent}>
+        <CardHeader
+          avatar={
+            <Avatar aria-label='Recipe' className={classes.avatar}>
+              {props.user.givenName.charAt(0)}
+            </Avatar>
+          }
+          title={`Welcome ${props.user ? props.user.givenName : 'Guest'}`}
+          titleTypographyProps={{ textAlign: 'left' }}
+        />
+        <CardMedia
+          className={classes.media}
+          image='/img/logo.png'
+          title='Good Grades Logo'
+        />
+        <Divider variant='middle' />
+        <CardContent>
+          <Typography
+            gutterBottom
+            variant='h4'
+            color='textSecondary'
+            component='p'>
+            Welcome to the next step in your academics
+          </Typography>
+        </CardContent>
+        <CardActions className={classes.actions} disableActionSpacing>
+          <Button
+            style={{ margin: 32 }}
+            variant='contained'
+            color='primary'
+            onClick={handleOpen}>
+            Join Room
+          </Button>
+          <Button
+            style={{ margin: 32, backgroundColor: '#f50057', color: '#fff' }}
+            variant='contained'
+            onClick={notifyTutors}>
+            Quick Help
+          </Button>
+        </CardActions>
+      </Card>
       <Modal
         aria-labelledby='spring-modal-title'
         aria-describedby='spring-modal-description'

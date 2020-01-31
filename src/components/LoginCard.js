@@ -39,7 +39,6 @@ export default function MediaCard() {
           <Typography
             gutterBottom
             variant='h4'
-            className={classes.secondaryTextLight}
             color='textSecondary'
             component='h2'>
             Welcome to the next step in your academics

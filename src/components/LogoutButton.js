@@ -20,8 +20,7 @@ export default class LogoutButton extends Component {
         style={{
           backgroundColor: '#f50057',
           color: '#fff',
-          bottom: 32,
-          position: 'absolute'
+          marginTop: 8
         }}
         onClick={logout}>
         Logout
