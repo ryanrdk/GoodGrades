@@ -11,7 +11,7 @@ import { HomeView } from './views/HomeView';
 import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
 import socketIOClient from "socket.io-client";
-import {USER_CONNECTED, RECEIVEQUICKHELP, QUICKHELPRESPONSE, UPDATEQUICKHELP} from './socketEvents';
+import {USER_CONNECTED, RECEIVEQUICKHELP, QUICKHELPRESPONSE, UPDATEQUICKHELP, LOGOUT} from './socketEvents';
 import moment from 'moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -37,7 +37,7 @@ function App() {
   const [quickHelp, setQuickHelp] = useState([]);
   const [socket, setSocket] = useState(null);
   const [staticListeners, setStaticListeners] = useState(false);
-  const [notifications] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [tab, setTab] = useState('');
 
   const getBookings = useCallback(() => {
@@ -181,6 +181,14 @@ function App() {
     return () => clearInterval(interval);
   }, [socket, user, booked, interval, getBookings, tab])
 
+  const logout = () => {
+    socket.emit(LOGOUT);
+    setSocket(null);
+    localStorage.removeItem('user');
+    setUser(null);
+    setNotifications([]);
+  };
+
   const getTabValue = () => {
     let urlPath = window.location.pathname;
     let currentTab = urlPath.split('/').pop();
@@ -205,6 +213,7 @@ function App() {
             socket={socket}
             setUser={setUser}
             setSocket={setSocket}
+            logout={logout}
           />
           <SwipeableRoutes onChangeIndex={getTabValue}>
             <Route

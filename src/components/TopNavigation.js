@@ -97,9 +97,7 @@ class TopNavigation extends React.Component {
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList className={classes.menuList} disableListWrap={true}>
                     <LogoutButton
-                      socket={this.props.socket}
-                      setUser={this.props.setUser}
-                      setSocket={this.props.setSocket}
+                      logout={this.props.logout}
                       onClick={this.handleClose}
                     />
                   </MenuList>
