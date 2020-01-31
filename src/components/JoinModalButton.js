@@ -156,12 +156,16 @@ export default function SpringModal(props) {
         className={isMobile ? classes.cardMobileStudent : classes.cardStudent}>
         <CardHeader
           avatar={
-            <Avatar aria-label='Recipe' className={classes.avatar}>
+            <Avatar
+              style={{ marginRight: 16 }}
+              aria-label='Recipe'
+              className={classes.avatar}>
               {props.user.givenName.charAt(0)}
             </Avatar>
           }
+          style={{ textAlign: 'left' }}
           title={`Welcome ${props.user ? props.user.givenName : 'Guest'}`}
-          titleTypographyProps={{ textAlign: 'left' }}
+          titleTypographyProps={{ variant: 'overline' }}
         />
         <CardMedia
           className={classes.media}
@@ -170,13 +174,13 @@ export default function SpringModal(props) {
         />
         <Divider variant='middle' />
         <CardContent>
-          <Typography
+          {/* <Typography
             gutterBottom
             variant='h4'
             color='textSecondary'
             component='p'>
-            Welcome to the next step in your academics
-          </Typography>
+            Join a session with your tutor
+          </Typography> */}
         </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
           <Button

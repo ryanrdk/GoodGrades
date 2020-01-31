@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import JoinModalButton from '../components/JoinModalButton';
 import IconTextField from '../components/IconTextField';
-import { Button, Paper } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 
 //Makes API call to GoodGradesServer to create a new room object
 

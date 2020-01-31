@@ -7,6 +7,8 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardHeader,
+  Divider,
   Typography
 } from '@material-ui/core';
 import { NOTIFICATION } from '../socketEvents';
@@ -70,19 +72,21 @@ export const BookingsView = props => {
       <div className='App'>
         <header className='App-header'>
           {props.quickHelp.length ? (
-            props.quickHelp.map((elem, index) => {
+            props.quickHelp.map((elem, index) => { console.log(elem)
               return (
                 <div key={index}>
+                <h3>Quick Help</h3>
                   <Card>
-                    <CardContent>
-                      <Typography>
-                        Tutor : {elem.tutor_username} <br></br>
-                        Student : {elem.student_username} <br></br>
-                      </Typography>
-                    </CardContent>
+                    <CardHeader
+                      style={{ textAlign: 'left' }}
+                      subheader={`Student : ${elem.student_username}`}
+                    />
+                    <Divider variant='middle' />
                     <CardActions>
                       <Button
                         size='small'
+                        variant='contained'
+                        color="primary"
                         onClick={() =>
                           getQuickHelpResponse({
                             username: elem.student_username,
@@ -101,7 +105,6 @@ export const BookingsView = props => {
             <div></div>
           )}
 
-          <h3>Bookings</h3>
           {loading ? (
             <CircularProgress size={40} />
           ) : (
@@ -136,13 +139,15 @@ export const BookingsView = props => {
               return (
                 <div key={index}>
                   <Card>
+                    <CardHeader
+                      style={{ textAlign: 'left' }}
+                      title={`Tutor : ${elem.tutor_username}`}
+                      subheader={`Student : ${elem.students[0].username}`}
+                    />
+                    <Divider variant='middle' />
                     <CardContent>
                       <Typography>
-                        Tutor : {elem.tutor_username} <br></br>
-                        Student : {elem.students[0].username} <br></br>
-                        Date : {moment(elem.start_time).format(
-                          'dddd, MMM DD'
-                        )}{' '}
+                        Date : {moment(elem.start_time).format('dddd, MMM DD')}{' '}
                         <br></br>
                         Time : {moment(elem.start_time).format(
                           'hh:mm a'
@@ -152,7 +157,9 @@ export const BookingsView = props => {
                     {checkIfHourBeforeSession(elem.start_time) ? (
                       <CardActions>
                         <Button
+                          variant='contained'
                           size='small'
+                          color='primary'
                           onClick={() => handleRedirect(elem.room_code)}>
                           Go To Room
                         </Button>

@@ -23,7 +23,7 @@ const styles = theme => ({
     height: 64,
     justifyContent: 'center'
   },
-  menuList: { paddingTop: 0, paddingBottom: 0 },
+  menuList: { paddingLeft: 16, paddingTop: 6, paddingBottom: 0 },
   paper: {
     marginRight: theme.spacing * 2
   },
@@ -97,13 +97,12 @@ class TopNavigation extends React.Component {
               <Paper className={classes.root}>
                 <ClickAwayListener onClickAway={this.handleClose}>
                   <MenuList className={classes.menuList} disableListWrap={true}>
-                    <MenuItem onClick={this.handleClose}>
-                      <LogoutButton
-                        socket={this.props.socket}
-                        setUser={this.props.setUser}
-                        setSocket={this.props.setSocket}
-                      />
-                    </MenuItem>
+                    <LogoutButton
+                      socket={this.props.socket}
+                      setUser={this.props.setUser}
+                      setSocket={this.props.setSocket}
+                      onClick={this.handleClose}
+                    />
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
