@@ -18,10 +18,23 @@ const theme = createMuiTheme({
       main: '#29b6f6',
       dark: '#1c7fac',
       contrastText: '#000'
+    },
+    error: {
+      light: '#f50057',
+      main: '#f50057',
+      dark: '#f50057'
     }
   },
   typography: {
     useNextVariants: true
+  },
+  overrides: {
+    MuiButton: {
+      outlined: {
+        color: '#29b6f6',
+        borderColor: '#29b6f6'
+      }
+    }
   }
 });
 
