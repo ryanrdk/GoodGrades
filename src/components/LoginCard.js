@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     maxWidth: 440,
     marginBottom: 32
   },
-  cardMobile: { maxWidth: '90%', marginBottom: 32 },
+  cardMobile: { maxWidth: '80%', marginBottom: 32 },
   media: {
     height: 210,
     margin: 32,
@@ -39,7 +39,6 @@ export default function MediaCard() {
           <Typography
             gutterBottom
             variant='h4'
-            className={classes.secondaryTextLight}
             color='textSecondary'
             component='h2'>
             Welcome to the next step in your academics

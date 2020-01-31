@@ -24,7 +24,7 @@ export const HomeView = props => {
         .then(blob => blob.json())
         .then(data => {
           setRoom(data);
-          props.user.room_code = data.room_code
+          props.user.room_code = data.room_code;
           return data;
         })
         .catch(e => {
@@ -42,22 +42,26 @@ export const HomeView = props => {
     <div>
       <div className='App'>
         <header className='App-header'>
-          <h1>Welcome {props.user ? props.user.givenName : 'huest'}</h1>
           {room ? (
-            <div>
+            <div style={{ textAlign: 'center' }}>
               <IconTextField value={room.room_code}></IconTextField>
             </div>
           ) : null}
-          <br></br>
           {props.user.type === 'student' ? (
-              <JoinModalButton socket={props.socket} user={props.user}/>
-          ) :
+            <JoinModalButton
+              style={{ textAlign: 'center' }}
+              socket={props.socket}
+              user={props.user}
+            />
+          ) : (
             <Button
               variant='contained'
               color='primary'
+              style={{ margin: 40 }}
               onClick={handleRedirect}>
-              Join Room
-            </Button>}
+              Join Classroom
+            </Button>
+          )}
         </header>
       </div>
     </div>

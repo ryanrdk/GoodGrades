@@ -1,7 +1,6 @@
 /* eslint-disable max-classes-per-file */
 /* eslint-disable react/no-unused-state */
 import * as React from 'react';
-import Paper from '@material-ui/core/Paper';
 import { ViewState, EditingState } from '@devexpress/dx-react-scheduler';
 import {
   Scheduler,
@@ -19,32 +18,34 @@ import {
   CurrentTimeIndicator,
   TodayButton
 } from '@devexpress/dx-react-scheduler-material-ui';
+
 import { connectProps } from '@devexpress/dx-react-core';
+import MomentUtils from '@date-io/moment';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import teal from '@material-ui/core/colors/teal';
 import {
   KeyboardDateTimePicker,
   MuiPickersUtilsProvider
 } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
-import { makeStyles } from '@material-ui/core/styles';
-import { withStyles } from '@material-ui/core/styles';
-import teal from '@material-ui/core/colors/teal';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
-import IconButton from '@material-ui/core/IconButton';
-import AddIcon from '@material-ui/icons/Add';
-import Close from '@material-ui/icons/Close';
-import CalendarToday from '@material-ui/icons/CalendarToday';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Fab,
+  Grid,
+  IconButton,
+  LinearProgress,
+  Paper
+} from '@material-ui/core';
+import { Add, Close, CalendarToday, PeopleAlt } from '@material-ui/icons';
+
 import classNames from 'clsx';
 import { isMobile } from 'react-device-detect';
 
-import { LinearProgress, Grid } from '@material-ui/core';
 
 import {RELOAD_DATA} from '../socketEvents';
 
@@ -692,7 +693,7 @@ class TutorSchedulerView2 extends React.PureComponent {
         appointmentData={appointmentData}>
         <Grid container alignItems='center'>
           <Grid item xs={2} className={classes.textCenter}>
-            <PeopleAltIcon className={classes.icon} />
+            <PeopleAlt className={classes.icon} />
           </Grid>
           <Grid item xs={10}>
             <span>
@@ -828,7 +829,7 @@ class TutorSchedulerView2 extends React.PureComponent {
               endDate: new Date(currentDate).setHours(startDayHour + 1)
             });
           }}>
-          <AddIcon />
+          <Add />
         </Fab>
       </Paper>
     );

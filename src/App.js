@@ -5,13 +5,13 @@ import './App.css';
 import TopNavigation from './components/TopNavigation';
 import Login from './authentication/Login';
 import { PrivateRoute } from './authentication/Login';
+import Footer from './components/Footer';
 import { BookingsView } from './views/BookingsView';
 import { HomeView } from './views/HomeView';
 import SchedulerView from './views/SchedulerView';
 import SwipeableRoutes from 'react-swipeable-routes';
-import { Button } from '@material-ui/core';
 import socketIOClient from "socket.io-client";
-import {USER_CONNECTED, LOGOUT, RECEIVEQUICKHELP, QUICKHELPRESPONSE, UPDATEQUICKHELP, NOTIFICATION} from './socketEvents';
+import {USER_CONNECTED, RECEIVEQUICKHELP, QUICKHELPRESPONSE, UPDATEQUICKHELP} from './socketEvents';
 import moment from 'moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,10 +21,10 @@ import { isMobile } from 'react-device-detect';
 
 const useStateWithLocalStorage = localStorageKey => {
   const [value, setValue] = React.useState(
-      JSON.parse(localStorage.getItem(localStorageKey)) || {}
+    JSON.parse(localStorage.getItem(localStorageKey)) || {}
   );
   React.useEffect(() => {
-      localStorage.setItem(localStorageKey, JSON.stringify(value));
+    localStorage.setItem(localStorageKey, JSON.stringify(value));
   }, [value, localStorageKey]);
   return [value, setValue];
 };
@@ -38,6 +38,7 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [staticListeners, setStaticListeners] = useState(false);
   const [notifications] = useState([]);
+  const [tab, setTab] = useState('');
 
   const getBookings = useCallback(() => {
     var targetUrl = user.type === "tutor" ?
@@ -47,16 +48,19 @@ function App() {
     fetch(targetUrl)
       .then(blob => blob.json())
       .then(data => {
-        console.log({data})
+        // console.log({ data });
         setBooked(data);
         data.forEach(elem => {
           let isDuplicateNotification = notifications.some(elem2 => {
-            return (elem.tutor === elem2.booking.tutor && elem.start_time === elem2.booking.start_time)
+            return (
+              elem.tutor === elem2.booking.tutor &&
+              elem.start_time === elem2.booking.start_time
+            );
           });
           if (!isDuplicateNotification) {
-            notifications.push({ time_type: 1, booking: elem })
+            notifications.push({ time_type: 1, booking: elem });
           }
-        })
+        });
         return data;
       })
       .catch(e => {
@@ -66,19 +70,27 @@ function App() {
   }, [user, notifications])
 
   const sendNotification = (elem, time_diff) => {
-    toast(<div>
-      {time_diff + 1} min till session starts<br/>
-      {user.type === "tutor" ? `Student : ${elem.booking.students[0].username}` : `Tutor : ${elem.booking.tutor_username}`}<br/>
-      {/* Tutor : {elem.booking.tutor_username}<br/> */}
-      {/* Student : { elem.booking.students[0].username }<br/> */}
-      {/* Date : { moment(elem.booking.start_time).format("dddd, MMM DD") }<br/> */}
-      Time : { moment(elem.booking.start_time).format("hh:mm a") } - { moment(elem.booking.end_time).format("hh:mm a") }<br/>
-      </div>
-      , {
+    toast(
+      <div>
+        {time_diff + 1} min till session starts
+        <br />
+        {user.type === 'tutor'
+          ? `Student : ${elem.booking.students[0].username}`
+          : `Tutor : ${elem.booking.tutor_username}`}
+        <br />
+        {/* Tutor : {elem.booking.tutor_username}<br/> */}
+        {/* Student : { elem.booking.students[0].username }<br/> */}
+        {/* Date : { moment(elem.booking.start_time).format("dddd, MMM DD") }<br/> */}
+        Time : {moment(elem.booking.start_time).format('hh:mm a')} -{' '}
+        {moment(elem.booking.end_time).format('hh:mm a')}
+        <br />
+      </div>,
+      {
         autoClose: 10000,
-        type: toast.TYPE.INFO,
-      })
-  }
+        type: toast.TYPE.INFO
+      }
+    );
+  };
 
   const displayQuickHelpResponse = elem => {
     toast(<div>
@@ -95,17 +107,17 @@ function App() {
   }
 
   const getQuickHelp = () => {
-    var targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp'
+    var targetUrl = 'https://good-grades-server.herokuapp.com/api/quickHelp';
     fetch(targetUrl)
-    .then(blob => blob.json())
-    .then(data => {
-      setQuickHelp(data);
-      return data;
-    })
-    .catch(e => {
-      return e;
-    });
-  }
+      .then(blob => blob.json())
+      .then(data => {
+        setQuickHelp(data);
+        return data;
+      })
+      .catch(e => {
+        return e;
+      });
+  };
 
   //SET TUTOR SOCKET LISTENERS
   useEffect(() => {
@@ -160,31 +172,41 @@ function App() {
       });
     }
     if (!booked && user.unique_id) {
-      getBookings()
+      getBookings();
+    }
+    if (!tab) {
+      getTabValue();
     }
     
     return () => clearInterval(interval);
-  }, [socket, user, booked, interval, getBookings])
+  }, [socket, user, booked, interval, getBookings, tab])
 
-  const logout = () => {
-    socket.emit(LOGOUT);
-    setSocket(null)
-    localStorage.removeItem('user');
-    setUser(null)
-  }
+  const getTabValue = () => {
+    let urlPath = window.location.pathname;
+    let currentTab = urlPath.split('/').pop();
+    currentTab = currentTab === 'login' ? '' : currentTab;
+    setTab(currentTab);
+    return currentTab;
+  };
 
   return (
     <BrowserRouter>
-     <ToastContainer position={isMobile ? "top-center" : "bottom-left"}/>
+      <ToastContainer position={isMobile ? 'top-center' : 'bottom-left'} />
       <div>
         <Route
           path='/login'
           render={props => <Login {...props} handleSetUser={setUser} />}
         />
         <PrivateRoute user={user}>
-          <Button onClick={logout}>Logout</Button>
-          <TopNavigation />
-          <SwipeableRoutes>
+          <TopNavigation
+            tab={tab}
+            refreshTabs={getTabValue}
+            user={user}
+            socket={socket}
+            setUser={setUser}
+            setSocket={setSocket}
+          />
+          <SwipeableRoutes onChangeIndex={getTabValue}>
             <Route
               exact
               path='/bookings'
@@ -193,7 +215,15 @@ function App() {
             <Route
               exact
               path='/'
-              render={props => <HomeView {...props} user={user} socket={socket}/>}
+              render={props => (
+                <HomeView
+                  {...props}
+                  user={user}
+                  socket={socket}
+                  setUser={setUser}
+                  setSocket={setSocket}
+                />
+              )}
             />
             <Route
               exact
@@ -202,6 +232,7 @@ function App() {
             />
           </SwipeableRoutes>
         </PrivateRoute>
+<Footer/>
       </div>
     </BrowserRouter>
   );
