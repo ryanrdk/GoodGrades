@@ -37,12 +37,17 @@ function Footer({ children }) {
     <div>
       <div style={phantom} />
       <div style={style}>
-        <img
-          src='img/wtc-logo.png'
-          alt='WeThinkCode_'
-          style={wtc}
-          threshold='200'
-        />
+        <a
+          href='https://www.wethinkcode.co.za'
+          target='_blank'
+          rel='noopener noreferrer'>
+          <img
+            src='img/wtc-logo.png'
+            alt='WeThinkCode_'
+            style={wtc}
+            threshold='200'
+          />
+        </a>
         <Typography style={blurb} noWrap={false} paragraph={false}>
           {`This project was developed in conjuction with WeThinkCode's SME
           module. `}

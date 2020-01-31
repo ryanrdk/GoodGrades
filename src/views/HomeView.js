@@ -57,8 +57,9 @@ export const HomeView = props => {
             <Button
               variant='contained'
               color='primary'
+              style={{ margin: 40 }}
               onClick={handleRedirect}>
-              Join Room
+              Join Classroom
             </Button>
           )}
         </header>

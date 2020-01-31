@@ -172,16 +172,16 @@ export default function SpringModal(props) {
           title='Good Grades Logo'
         />
         <Divider variant='middle' />
-        <CardActions className={classes.actions} disableActionSpacing>
+        <CardActions className={classes.actions}>
           <Button
-            style={{ margin: 24 }}
+            style={{ margin: 14 }}
             variant='contained'
             color='primary'
             onClick={handleOpen}>
             Join Room
           </Button>
           <Button
-            style={{ margin: 24, backgroundColor: '#f50057', color: '#fff' }}
+            style={{ margin: 14, backgroundColor: '#f50057', color: '#fff' }}
             variant='contained'
             onClick={notifyTutors}>
             Quick Help
