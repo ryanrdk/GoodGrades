@@ -32,7 +32,9 @@ const useStateWithLocalStorage = localStorageKey => {
 const socketEndpoint = 'https://good-grades-server.herokuapp.com';
 
 function App() {
-  const [user, setUser] = useStateWithLocalStorage('user');
+  const [user, setUser] =  
+  // useState(null);
+  useStateWithLocalStorage('user');
   const [booked, setBooked] = useState(null);
   const [quickHelp, setQuickHelp] = useState([]);
   const [socket, setSocket] = useState(null);
@@ -171,8 +173,8 @@ function App() {
         return sok;
       });
     }
-    if (!booked && user.unique_id) {
-      getBookings();
+    if (!booked && user && user.unique_id) {
+      getBookings()
     }
     if (!tab) {
       getTabValue();
